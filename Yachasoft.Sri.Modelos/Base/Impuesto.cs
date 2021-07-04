@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Yachasoft.Sri.Modelos.Base
+{
+    public abstract class Impuesto
+    {
+        public Decimal BaseImponible { get; set; }
+
+        public Decimal Tarifa { get; set; }
+
+        public Decimal Valor { get; set; }
+    }
+}

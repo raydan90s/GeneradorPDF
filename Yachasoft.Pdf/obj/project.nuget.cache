@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "f9npu2zgV3mDAAYqot65+uuMjYI05RBX5MkMyi+BWutcEmYQvDo7DLfbMeKEGrHysjDktuSIjRfThN5nT65ymg==",
+  "success": true,
+  "projectFilePath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Joseph\\.nuget\\packages\\microsoft.netcore.platforms\\2.0.0\\microsoft.netcore.platforms.2.0.0.nupkg.sha512",
+    "C:\\Users\\Joseph\\.nuget\\packages\\microsoft.win32.systemevents\\4.5.0\\microsoft.win32.systemevents.4.5.0.nupkg.sha512",
+    "C:\\Users\\Joseph\\.nuget\\packages\\pdfsharpnetstandard2\\1.51.4845\\pdfsharpnetstandard2.1.51.4845.nupkg.sha512",
+    "C:\\Users\\Joseph\\.nuget\\packages\\system.drawing.common\\4.5.0\\system.drawing.common.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}

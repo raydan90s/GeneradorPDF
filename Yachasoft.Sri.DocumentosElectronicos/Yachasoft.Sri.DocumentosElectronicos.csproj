@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Yachasoft.Sri.Core\Yachasoft.Sri.Core.csproj" />
+    <ProjectReference Include="..\Yachasoft.Sri.Ride\Yachasoft.Sri.Ride.csproj" />
+    <ProjectReference Include="..\Yachasoft.Sri.Signer\Yachasoft.Sri.Signer.csproj" />
+    <ProjectReference Include="..\Yachasoft.Sri.WebService\Yachasoft.Sri.WebService.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,13 @@
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\bin\Debug\net5.0\FirmaXadesNet.deps.json
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\bin\Debug\net5.0\FirmaXadesNet.dll
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\bin\Debug\net5.0\ref\FirmaXadesNet.dll
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\bin\Debug\net5.0\FirmaXadesNet.pdb
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\bin\Debug\net5.0\Microsoft.Xades.dll
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\bin\Debug\net5.0\Microsoft.Xades.pdb
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.csproj.AssemblyReference.cache
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.GeneratedMSBuildEditorConfig.editorconfig
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.csproj.CoreCompileInputs.cache
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.csproj.CopyComplete
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.dll
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\ref\FirmaXadesNet.dll
+D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.pdb

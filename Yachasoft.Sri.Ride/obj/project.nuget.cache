@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "nx3oHXlO74fn+1MCrWmmOISevYlx9gQ5x29a6ZzpUozcPGVYlhnt56PctFJEw1xqmkO61mMlYLGuTfRFSZgUgQ==",
+  "success": true,
+  "projectFilePath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Joseph\\.nuget\\packages\\microsoft.netcore.platforms\\2.0.0\\microsoft.netcore.platforms.2.0.0.nupkg.sha512",
+    "C:\\Users\\Joseph\\.nuget\\packages\\microsoft.win32.systemevents\\4.5.0\\microsoft.win32.systemevents.4.5.0.nupkg.sha512",
+    "C:\\Users\\Joseph\\.nuget\\packages\\pdfsharpnetstandard2\\1.51.4845\\pdfsharpnetstandard2.1.51.4845.nupkg.sha512",
+    "C:\\Users\\Joseph\\.nuget\\packages\\system.drawing.common\\4.5.0\\system.drawing.common.4.5.0.nupkg.sha512"
+  ],
+  "logs": []
+}

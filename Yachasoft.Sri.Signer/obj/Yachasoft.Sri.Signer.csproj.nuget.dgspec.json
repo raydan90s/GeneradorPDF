@@ -1,0 +1,211 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj": {}
+  },
+  "projects": {
+    "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj",
+        "projectName": "FirmaXadesNet",
+        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj",
+        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
+        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "D:\\development\\net\\projects\\fr_nuget": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {
+              "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj": {
+                "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "BouncyCastle.NetCore": {
+              "target": "Package",
+              "version": "[1.8.6, )"
+            },
+            "Microsoft.CSharp": {
+              "target": "Package",
+              "version": "[4.7.0, )"
+            },
+            "System.Data.DataSetExtensions": {
+              "target": "Package",
+              "version": "[4.6.0-preview3.19128.7, )"
+            },
+            "System.Security.Cryptography.Xml": {
+              "target": "Package",
+              "version": "[5.0.0-rc.2.20475.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj",
+        "projectName": "Microsoft.Xades",
+        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj",
+        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
+        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "D:\\development\\net\\projects\\fr_nuget": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "System.Security.Cryptography.Xml": {
+              "target": "Package",
+              "version": "[5.0.0-rc.2.20475.5, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj",
+        "projectName": "Yachasoft.Sri.Signer",
+        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj",
+        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
+        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "D:\\development\\net\\projects\\fr_nuget": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {
+              "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj": {
+                "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "Microsoft.Extensions.Logging.Abstractions": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
