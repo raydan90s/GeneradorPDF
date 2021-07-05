@@ -12,12 +12,7 @@ namespace Yachasoft.Sri.Core.Extensions
     {
         public static SRICodigoAttribute GetSRICodigoAttribute(object value) => SRICodigoAttributeExtensions.GetSRICodigoAttribute(value.GetType(), value);
 
-        public static SRICodigoAttribute GetSRICodigoAttribute(
-          Type type,
-          object value)
-        {
-            return ((IEnumerable<MemberInfo>)type.GetMember(value.ToString())).FirstOrDefault<MemberInfo>().GetCustomAttribute<SRICodigoAttribute>();
-        }
+        public static SRICodigoAttribute GetSRICodigoAttribute(Type type, object value) => ((IEnumerable<MemberInfo>)type.GetMember(value.ToString())).FirstOrDefault<MemberInfo>().GetCustomAttribute<SRICodigoAttribute>();
 
         public static SRICodigoAttribute GetSRICodigoAttribute(PropertyInfo property) => property.GetCustomAttribute<SRICodigoAttribute>();
     }

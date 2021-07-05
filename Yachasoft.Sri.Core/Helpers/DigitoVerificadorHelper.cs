@@ -8,34 +8,54 @@ namespace Yachasoft.Sri.Core.Helpers
 {
     public static class DigitoVerificadorHelper
     {
-        public static long ObtenerModulo11(this string cadenaNumeros)
+        public static int ObtenerModulo11(this string cadenaNumeros)
         {
-            string str = "234567";
-            int index = -1;
-            long num1 = 0;
-            foreach (char ch in ((IEnumerable<char>)cadenaNumeros.ToCharArray()).Reverse<char>())
+            int baseMax = 7;
+            int multiplicador = 2;
+            int total = 0;
+            string[] substrings = System.Text.RegularExpressions.Regex.Split(cadenaNumeros, "");
+
+            for (int i = substrings.Length - 1; i >= 1; i--)
             {
-                index = index + 1 >= str.Length ? 0 : index + 1;
-                num1 += (long)(int.Parse(ch.ToString()) * int.Parse(str[index].ToString()));
+                if (substrings[i] != "")
+                {
+                    if (multiplicador > baseMax)
+                    {
+                        multiplicador = 2;
+                    }
+                    int numAux = int.Parse(substrings[i]);
+                    total += (numAux * multiplicador);
+                    multiplicador += 1;
+                }
             }
-            long num2 = num1 % 11L;
-            return num2 != 0L ? 11L - num2 : 0L;
+
+            int verificador = 11 - total % 11;
+
+            return CheckDigitBring(verificador);
         }
 
-        public static long ObtenerModulo10(this string cadenaNumeros)
+        private static int CheckDigitBring(int digit)
         {
-            string str = "21";
-            int index = -1;
-            long num1 = 0;
-            foreach (char ch in ((IEnumerable<char>)cadenaNumeros.ToCharArray()).Reverse<char>())
+            if (digit == 10)
+                digit = 1;
+            else if (digit == 11)
+                    digit = 0;
+            return digit;
+        }
+
+        public static int ObtenerModulo10(this string cadenaNumeros)
+        {
+            int[] coeficientes = { 2, 1, 2, 1, 2, 1, 2, 1, 2 };
+            int index = 0;
+            int suma = 0;
+            foreach (char ch in ((IEnumerable<char>)cadenaNumeros.ToCharArray()).Reverse())
             {
-                index = index + 1 >= str.Length ? 0 : index + 1;
-                int num2 = int.Parse(ch.ToString()) * int.Parse(str[index].ToString());
-                int num3 = num2 < 10 ? num2 : num2 - 9;
-                num1 += (long)num3;
+                int producto = int.Parse(ch.ToString()) * int.Parse(coeficientes[index].ToString());
+                suma += (producto < 10 ? producto : producto - 9);
+                index++;
             }
-            long num4 = num1 % 10L;
-            return num4 != 0L ? 10L - num4 : 0L;
+            int residuo = suma % 10;
+            return residuo != 0 ? 10 - residuo : 0;
         }
     }
 }

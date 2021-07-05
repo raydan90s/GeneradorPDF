@@ -5,7 +5,41 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\AutorizacionComprobanteRequest.xml" />
+    <None Remove="Resources\ValidarComprobanteRequest.xml" />
+    <None Remove="Resources\Yachasoft.Sri.WebService.Request.AutorizacionComprobanteLoteRequest.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Request\AutorizacionComprobanteRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Request\ValidarComprobanteRequest.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Yachasoft.Sri.Core\Yachasoft.Sri.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Yachasoft.Sri.WebService.Request.AutorizacionComprobanteLoteRequest.xml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

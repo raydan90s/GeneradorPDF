@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Yachasoft.Sri.Core.Enumerados;
 
 namespace Yachasoft.Sri.Core.Helpers
@@ -22,9 +19,8 @@ namespace Yachasoft.Sri.Core.Helpers
                     throw new Exception("Cédula inválida");
                 if (tipoIdentificacion == EnumTipoIdentificacionSinConsumidorFinal.RUC && Identificacion1.Length != 13)
                     throw new Exception("RUC inválido");
-                //string MensajeError1;
-                if (!EsValida(Identificacion1, out string MensajeError1))
-                    throw new Exception(MensajeError1);
+                if (!EsValida(Identificacion1, out MensajeError))
+                    throw new Exception(MensajeError);
                 return true;
             }
             catch (Exception ex)
@@ -37,31 +33,25 @@ namespace Yachasoft.Sri.Core.Helpers
         public static bool EsValida(string Identificacion, out string MensajeError)
         {
             MensajeError = null;
-            string str = Identificacion.ToString().Trim();
+            string identificacion = Identificacion.ToString().Trim();
             try
             {
-                if (!str.All<char>(new Func<char, bool>(char.IsDigit)) || str.Length != 10 && str.Length != 13)
+                if (!identificacion.All(new Func<char, bool>(char.IsDigit)) || identificacion.Length != 10 && identificacion.Length != 13)
                     return true;
-                byte num1 = Convert.ToByte(str.Substring(0, 2));
-                if (num1 < 1 || num1 > 24)
+                byte provincia = Convert.ToByte(identificacion.Substring(0, 2));
+                if (provincia < 1 || provincia > 24)
                     throw new Exception("Identificación inválida");
-                byte num2 = Convert.ToByte(str.Substring(2, 1));
-                if (str.Length == 13)
+                if (identificacion.Length == 13)
                 {
-                    if (num2 == 9)
+                    switch (Convert.ToByte(identificacion.Substring(2, 1)))
                     {
-                        RucJuridico(str, "RUC jurídico o extranjeros inválido");
-                        return true;
+                        case 6: RucPublico(identificacion, "RUC público inválido"); break;
+                        case 9: RucJuridico(identificacion, "RUC jurídico o extranjeros inválido"); break;
+                        default: RucPersonaNatural(identificacion, "RUC persona natural inválido"); break;
                     }
-                    if (num2 == 6)
-                    {
-                        RucPublico(str, "RUC público inválido");
-                        return true;
-                    }
-                    RucPersonaNatural(str, "RUC persona natural inválido");
                     return true;
                 }
-                PersonaNatural(str, "Cédula inválida");
+                PersonaNatural(identificacion, "Cédula inválida");
                 return true;
             }
             catch (Exception ex)

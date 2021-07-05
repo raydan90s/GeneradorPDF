@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -16,11 +15,11 @@ namespace Yachasoft.Sri.WebService
 {
     public class SriWebService : ISriWebService
     {
-        private SRIDocumentosElectronicosOptions _options;
+        private readonly SRIDocumentosElectronicosOptions options;
 
         public SriWebService(SRIDocumentosElectronicosOptions options)
         {
-            this._options = options;
+            this.options = options;
             this.TipoEsquema = options.WebService.TipoEsquema;
             this.TipoAmbiente = options.WebService.TipoAmbiente;
         }
@@ -29,46 +28,34 @@ namespace Yachasoft.Sri.WebService
 
         public EnumTipoEsquema TipoEsquema { get; set; }
 
-        public SriWebService Using(
-          EnumTipoAmbiente tipoAmbiente,
-          EnumTipoEsquema tipoEsquema)
+        public SriWebService Using(EnumTipoAmbiente tipoAmbiente, EnumTipoEsquema tipoEsquema)
         {
-            return new SriWebService(this._options)
+            return new SriWebService(this.options)
             {
                 TipoAmbiente = tipoAmbiente,
                 TipoEsquema = tipoEsquema
             };
         }
 
-        public async Task<Response<ValidarComprobanteResponse.RespuestaRecepcionComprobante>> ValidarComprobanteAsync(
-          XmlDocument firmado)
-        {
-            return await this.ValidarComprobanteAsync(firmado.OuterXml);
-        }
+        public async Task<Response<ValidarComprobanteResponse.RespuestaRecepcionComprobante>> ValidarComprobanteAsync(XmlDocument firmado) => await this.ValidarComprobanteAsync(firmado.OuterXml);
 
-        public async Task<Response<ValidarComprobanteResponse.RespuestaRecepcionComprobante>> ValidarComprobanteAsync(
-          string xmlFirmado)
+        public async Task<Response<ValidarComprobanteResponse.RespuestaRecepcionComprobante>> ValidarComprobanteAsync(string xmlFirmado)
         {
-            Response<ValidarComprobanteResponse.RespuestaRecepcionComprobante> response = new Response<ValidarComprobanteResponse.RespuestaRecepcionComprobante>();
+            var response = new Response<ValidarComprobanteResponse.RespuestaRecepcionComprobante>();
             try
             {
-                XmlDocument xmlDocument1 = RequestHelper.GetRequestStream("ValidarComprobanteRequest.xml").ToXmlDocument();
-                XmlDocument soapEnvelopeXml = new XmlDocument();
-                soapEnvelopeXml.LoadXml(xmlDocument1.OuterXml.Replace("{xmlParameter}", SriWebService.EncodeStringToBase64(xmlFirmado)));
-                HttpWebRequest webRequest = SriWebService.CreateWebRequest(this.GenerateUrlValidarComprobante(), "");
-                SriWebService.InsertSoapEnvelopeIntoWebRequest(soapEnvelopeXml, webRequest);
-                string end;
-                using (WebResponse responseAsync = await webRequest.GetResponseAsync())
-                {
-                    using (StreamReader streamReader = new StreamReader(responseAsync.GetResponseStream()))
-                        end = streamReader.ReadToEnd();
-                }
-                XmlDocument xmlDocument2 = new XmlDocument();
-                xmlDocument2.LoadXml(end);
+                var soapEnvelopeXml = new XmlDocument();
+                soapEnvelopeXml.LoadXml(RequestHelper.GetRequestStream("ValidarComprobanteRequest.xml").ToXmlDocument().OuterXml.Replace("{xmlParameter}", EncodeStringToBase64(xmlFirmado)));
+                HttpWebRequest webRequest = CreateWebRequest(this.GenerateUrlValidarComprobante(), "");
+                InsertSoapEnvelopeIntoWebRequest(soapEnvelopeXml, webRequest);
+                using WebResponse responseAsync = await webRequest.GetResponseAsync();
+                using var streamReader = new StreamReader(responseAsync.GetResponseStream());
+                var xmlDocument2 = new XmlDocument();
+                xmlDocument2.LoadXml(streamReader.ReadToEnd());
                 XmlNode firstChild = xmlDocument2.FirstChild;
                 while (firstChild != null && !string.Equals(firstChild.Name, "RespuestaRecepcionComprobante", StringComparison.InvariantCultureIgnoreCase))
                     firstChild = firstChild.FirstChild;
-                XmlDocument objectData = new XmlDocument();
+                var objectData = new XmlDocument();
                 objectData.LoadXml(firstChild.OuterXml);
                 ValidarComprobanteResponse.RespuestaRecepcionComprobante recepcionComprobante = objectData.XmlDeserialize<ValidarComprobanteResponse.RespuestaRecepcionComprobante>();
                 response.Data = recepcionComprobante;
@@ -81,14 +68,14 @@ namespace Yachasoft.Sri.WebService
             return response;
         }
 
-        public Yachasoft.Sri.WebService.Response.Response<AutoAutorizarComprobanteResponse.Autorizacion> AutoAutorizacionComprobante(
+        public Response<AutoAutorizarComprobanteResponse.Autorizacion> AutoAutorizacionComprobante(
           XmlDocument firmado,
           DateTime fechaAutorizacion,
           string numeroAutorizacion)
         {
             if (this.TipoEsquema == EnumTipoEsquema.Online)
                 throw new Exception("Solo se puede usar este método en modo Offline");
-            return new Yachasoft.Sri.WebService.Response.Response<AutoAutorizarComprobanteResponse.Autorizacion>()
+            return new Response<AutoAutorizarComprobanteResponse.Autorizacion>()
             {
                 Ok = true,
                 Data = new AutoAutorizarComprobanteResponse.Autorizacion()
@@ -103,63 +90,37 @@ namespace Yachasoft.Sri.WebService
             };
         }
 
-        public async Task<Yachasoft.Sri.WebService.Response.Response<AutorizarComprobanteResponse.RespuestaAutorizacionComprobante>> AutorizacionComprobanteAsync(
+        public async Task<Response<AutorizarComprobanteResponse.RespuestaAutorizacionComprobante>> AutorizacionComprobanteAsync(
           string claveAcceso)
         {
-            Yachasoft.Sri.WebService.Response.Response<AutorizarComprobanteResponse.RespuestaAutorizacionComprobante> response = new Yachasoft.Sri.WebService.Response.Response<AutorizarComprobanteResponse.RespuestaAutorizacionComprobante>();
+            var response = new Response<AutorizarComprobanteResponse.RespuestaAutorizacionComprobante>();
             try
             {
-                XmlDocument xmlDocument1 = RequestHelper.GetRequestStream("AutorizacionComprobanteRequest.xml").ToXmlDocument();
-                XmlDocument soapEnvelopeXml = new XmlDocument();
-                soapEnvelopeXml.LoadXml(xmlDocument1.OuterXml.Replace("{claveAccesoParameter}", claveAcceso));
-                HttpWebRequest webRequest = SriWebService.CreateWebRequest(this.GenerateUrlAutorizacionComprobante(), "");
-                SriWebService.InsertSoapEnvelopeIntoWebRequest(soapEnvelopeXml, webRequest);
-                string end;
-                using (WebResponse responseAsync = await webRequest.GetResponseAsync())
-                {
-                    using (StreamReader streamReader = new StreamReader(responseAsync.GetResponseStream()))
-                        end = streamReader.ReadToEnd();
-                }
-                XmlDocument xmlDocument2 = new XmlDocument();
-                xmlDocument2.LoadXml(end);
+                var soapEnvelopeXml = new XmlDocument();
+                soapEnvelopeXml.LoadXml(RequestHelper.GetRequestStream("AutorizacionComprobanteRequest.xml").ToXmlDocument().OuterXml.Replace("{claveAccesoParameter}", claveAcceso));
+                HttpWebRequest webRequest = CreateWebRequest(this.GenerateUrlAutorizacionComprobante(), "");
+                InsertSoapEnvelopeIntoWebRequest(soapEnvelopeXml, webRequest);
+                using WebResponse responseAsync = await webRequest.GetResponseAsync();
+                using var streamReader = new StreamReader(responseAsync.GetResponseStream());
+                var xmlDocument2 = new XmlDocument();
+                xmlDocument2.LoadXml(streamReader.ReadToEnd());
                 XmlNode firstChild = xmlDocument2.FirstChild;
                 while (firstChild != null && !string.Equals(firstChild.Name, "RespuestaAutorizacionComprobante", StringComparison.InvariantCultureIgnoreCase))
                     firstChild = firstChild.FirstChild;
-                XmlDocument objectData = new XmlDocument();
+                var objectData = new XmlDocument();
                 objectData.LoadXml(firstChild.OuterXml);
                 AutorizarComprobanteResponse.RespuestaAutorizacionComprobante autorizacionComprobante = objectData.XmlDeserialize<AutorizarComprobanteResponse.RespuestaAutorizacionComprobante>();
                 response.Data = autorizacionComprobante;
-                Yachasoft.Sri.WebService.Response.Response<AutorizarComprobanteResponse.RespuestaAutorizacionComprobante> response1 = response;
-                AutorizarComprobanteResponse.Autorizaciones autorizaciones = autorizacionComprobante.Autorizaciones;
-                string str;
-                if (autorizaciones == null)
-                {
-                    str = (string)null;
-                }
-                else
-                {
-                    List<AutorizarComprobanteResponse.Autorizacion> autorizacion = autorizaciones.Autorizacion;
-                    str = autorizacion != null ? autorizacion.FirstOrDefault<AutorizarComprobanteResponse.Autorizacion>()?.Estado : (string)null;
-                }
-                int num = str == "AUTORIZADO" ? 1 : 0;
-                response1.Ok = num != 0;
+                response.Ok = "AUTORIZADO".Equals(autorizacionComprobante.Autorizaciones?.Autorizacion?.FirstOrDefault()?.Estado);
             }
             catch (Exception ex)
             {
                 response.Error = ex.Message;
             }
-            Yachasoft.Sri.WebService.Response.Response<AutorizarComprobanteResponse.RespuestaAutorizacionComprobante> response2 = response;
-            response = (Yachasoft.Sri.WebService.Response.Response<AutorizarComprobanteResponse.RespuestaAutorizacionComprobante>)null;
-            return response2;
+            return response;
         }
 
-        internal static void InsertSoapEnvelopeIntoWebRequest(
-          XmlDocument soapEnvelopeXml,
-          HttpWebRequest webRequest)
-        {
-            using (Stream requestStream = webRequest.GetRequestStream())
-                soapEnvelopeXml.Save(requestStream);
-        }
+        internal static void InsertSoapEnvelopeIntoWebRequest(XmlDocument soapEnvelopeXml, HttpWebRequest webRequest) => soapEnvelopeXml.Save(webRequest.GetRequestStream());
 
         internal static HttpWebRequest CreateWebRequest(string url, string action)
         {
@@ -175,13 +136,9 @@ namespace Yachasoft.Sri.WebService
 
         private string GenerateUrlAutorizacionComprobante() => this.GenerarUrlPara("AutorizacionComprobantes");
 
-        private string GenerarUrlPara(string metodo)
-        {
-            string str = this.TipoEsquema == EnumTipoEsquema.Offline ? "Offline" : "";
-            return this.GenerateRootUrl() + "/comprobantes-electronicos-ws/" + metodo + str;
-        }
+        private string GenerarUrlPara(string metodo) => $"{this.GenerateRootUrl()}/comprobantes-electronicos-ws/{metodo}{(this.TipoEsquema == EnumTipoEsquema.Offline ? "Offline" : "")}";
 
-        private string GenerateRootUrl() => "https://" + (this.TipoAmbiente == EnumTipoAmbiente.Prueba ? "celcer.sri.gob.ec" : "cel.sri.gob.ec");
+        private string GenerateRootUrl() => $"https://{(this.TipoAmbiente == EnumTipoAmbiente.Prueba ? "celcer.sri.gob.ec" : "cel.sri.gob.ec")}";
 
         internal static string EncodeStringToBase64(string plainTextBytes) => Convert.ToBase64String(Encoding.UTF8.GetBytes(plainTextBytes));
     }

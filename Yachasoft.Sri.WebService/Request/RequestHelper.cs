@@ -12,7 +12,7 @@ namespace Yachasoft.Sri.WebService.Request
     {
         public static Stream GetRequestStream(string relativeFileName)
         {
-            string name = ((IEnumerable<string>)Assembly.GetExecutingAssembly().GetManifestResourceNames()).FirstOrDefault<string>((Func<string, bool>)(p => p.EndsWith(relativeFileName)));
+            string name = ((IEnumerable<string>)Assembly.GetExecutingAssembly().GetManifestResourceNames()).FirstOrDefault(p =>p.EndsWith(relativeFileName));
             return Assembly.GetExecutingAssembly().GetManifestResourceStream(name);
         }
     }

@@ -9,3 +9,14 @@ D:\development\net\projects\Xades.NetCore\Library\obj\Debug\net5.0\Microsoft.Xad
 D:\development\net\projects\Xades.NetCore\Library\obj\Debug\net5.0\Microsoft.Xades.dll
 D:\development\net\projects\Xades.NetCore\Library\obj\Debug\net5.0\ref\Microsoft.Xades.dll
 D:\development\net\projects\Xades.NetCore\Library\obj\Debug\net5.0\Microsoft.Xades.pdb
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\bin\Debug\net5.0\Microsoft.Xades.deps.json
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\bin\Debug\net5.0\Microsoft.Xades.dll
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\bin\Debug\net5.0\ref\Microsoft.Xades.dll
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\bin\Debug\net5.0\Microsoft.Xades.pdb
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\bin\Debug\net5.0\XAdES.xml
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\obj\Debug\net5.0\Microsoft.Xades.csproj.AssemblyReference.cache
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\obj\Debug\net5.0\Microsoft.Xades.GeneratedMSBuildEditorConfig.editorconfig
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\obj\Debug\net5.0\Microsoft.Xades.csproj.CoreCompileInputs.cache
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\obj\Debug\net5.0\Microsoft.Xades.dll
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\obj\Debug\net5.0\ref\Microsoft.Xades.dll
+D:\development\enterprise\Yachasoft.Sri\Microsoft.Xades\obj\Debug\net5.0\Microsoft.Xades.pdb

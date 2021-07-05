@@ -14,7 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static ISRIDocumentosElectronicosBuilder AddSRIDocumentosElectronicosBuilder(
           this IServiceCollection services)
         {
-            return (ISRIDocumentosElectronicosBuilder)new SRIDocumentosElectronicosBuilder(services);
+            return new SRIDocumentosElectronicosBuilder(services);
         }
 
         public static ISRIDocumentosElectronicosBuilder AddSRIDocumentosElectronicos(
@@ -29,7 +29,7 @@ namespace Microsoft.Extensions.DependencyInjection
           this IServiceCollection services,
           Action<SRIDocumentosElectronicosOptions> setupAction)
         {
-            services.Configure<SRIDocumentosElectronicosOptions>(setupAction);
+            services.Configure(setupAction);
             return services.AddSRIDocumentosElectronicos();
         }
 

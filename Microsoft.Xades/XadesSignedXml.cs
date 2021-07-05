@@ -1475,7 +1475,8 @@ namespace Microsoft.Xades
                 {
                     CryptoConfig.AddAlgorithm(typeof(Microsoft.Xades.RSAPKCS1SHA512SignatureDescription), "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512");
                 }
-
+                else if (this.SignedInfo.SignatureMethod == "http://www.w3.org/2000/09/xmldsig#rsa-sha1")
+                    CryptoConfig.AddAlgorithm(typeof(Microsoft.Xades.RSAPKCS1SHA1SignatureDescription), this.SignedInfo.SignatureMethod);
                 description = CryptoConfig.CreateFromName(this.SignedInfo.SignatureMethod) as SignatureDescription;
             }
 

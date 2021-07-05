@@ -11,3 +11,16 @@ D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\FirmaXa
 D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.dll
 D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\ref\FirmaXadesNet.dll
 D:\development\net\projects\Xades.NetCore\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.pdb
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\bin\Debug\net5.0\FirmaXadesNet.deps.json
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\bin\Debug\net5.0\FirmaXadesNet.dll
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\bin\Debug\net5.0\ref\FirmaXadesNet.dll
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\bin\Debug\net5.0\FirmaXadesNet.pdb
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\bin\Debug\net5.0\Microsoft.Xades.dll
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\bin\Debug\net5.0\Microsoft.Xades.pdb
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.csproj.AssemblyReference.cache
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.GeneratedMSBuildEditorConfig.editorconfig
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.csproj.CoreCompileInputs.cache
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.csproj.CopyComplete
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.dll
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\obj\Debug\net5.0\ref\FirmaXadesNet.dll
+D:\development\enterprise\Yachasoft.Sri\FirmaXadesNet\obj\Debug\net5.0\FirmaXadesNet.pdb
