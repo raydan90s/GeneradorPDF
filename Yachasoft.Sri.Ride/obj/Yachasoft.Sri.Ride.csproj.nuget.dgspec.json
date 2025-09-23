@@ -1,28 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj": {}
+    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj": {}
   },
   "projects": {
-    "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Core\\Yachasoft.Core.csproj": {
+    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Core\\Yachasoft.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Core\\Yachasoft.Core.csproj",
+        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Core\\Yachasoft.Core.csproj",
         "projectName": "Yachasoft.Core",
-        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Core\\Yachasoft.Core.csproj",
-        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
-        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Core\\obj\\",
+        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Core\\Yachasoft.Core.csproj",
+        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "D:\\development\\net\\projects\\fr_nuget": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -35,7 +32,13 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net5.0": {
@@ -46,7 +49,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -55,29 +59,26 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj": {
+    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj",
+        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj",
         "projectName": "Yachasoft.Pdf",
-        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj",
-        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
-        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Pdf\\obj\\",
+        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj",
+        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "D:\\development\\net\\projects\\fr_nuget": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -90,7 +91,13 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net5.0": {
@@ -107,7 +114,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -116,37 +124,34 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj": {
+    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj",
+        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj",
         "projectName": "Yachasoft.Sri.Core",
-        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj",
-        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
-        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Core\\obj\\",
+        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj",
+        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "D:\\development\\net\\projects\\fr_nuget": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Core\\Yachasoft.Core.csproj": {
-                "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Core\\Yachasoft.Core.csproj"
+              "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Core\\Yachasoft.Core.csproj": {
+                "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Core\\Yachasoft.Core.csproj"
               }
             }
           }
@@ -155,7 +160,13 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net5.0": {
@@ -166,7 +177,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -175,37 +187,34 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj": {
+    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj",
+        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj",
         "projectName": "Yachasoft.Sri.Modelos",
-        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj",
-        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
-        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\obj\\",
+        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj",
+        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "D:\\development\\net\\projects\\fr_nuget": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj": {
-                "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj"
+              "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj": {
+                "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj"
               }
             }
           }
@@ -214,7 +223,13 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net5.0": {
@@ -225,7 +240,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -234,40 +250,37 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj": {
+    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj",
+        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj",
         "projectName": "Yachasoft.Sri.Ride",
-        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj",
-        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
-        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\obj\\",
+        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj",
+        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "D:\\development\\net\\projects\\fr_nuget": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj": {
-                "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj"
+              "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj": {
+                "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj"
               },
-              "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj": {
-                "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj"
+              "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj": {
+                "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj"
               }
             }
           }
@@ -276,7 +289,13 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net5.0": {
@@ -287,7 +306,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -296,7 +316,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     }

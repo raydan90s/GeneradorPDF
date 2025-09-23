@@ -1,36 +1,33 @@
 {
   "format": 1,
   "restore": {
-    "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj": {}
+    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj": {}
   },
   "projects": {
-    "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj": {
+    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj",
+        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj",
         "projectName": "FirmaXadesNet",
-        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj",
-        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
-        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\obj\\",
+        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj",
+        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "D:\\development\\net\\projects\\fr_nuget": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj": {
-                "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj"
+              "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj": {
+                "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj"
               }
             }
           }
@@ -39,7 +36,13 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net5.0": {
@@ -68,7 +71,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -77,29 +81,26 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj": {
+    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj",
+        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj",
         "projectName": "Microsoft.Xades",
-        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj",
-        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
-        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Microsoft.Xades\\obj\\",
+        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj",
+        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "D:\\development\\net\\projects\\fr_nuget": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -112,7 +113,13 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net5.0": {
@@ -129,7 +136,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -138,37 +146,34 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj": {
+    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj",
+        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj",
         "projectName": "Yachasoft.Sri.Signer",
-        "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj",
-        "packagesPath": "C:\\Users\\Joseph\\.nuget\\packages\\",
-        "outputPath": "D:\\development\\enterprise\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\obj\\",
+        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj",
+        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Joseph\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net5.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "D:\\development\\net\\projects\\fr_nuget": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj": {
-                "projectPath": "D:\\development\\enterprise\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj"
+              "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj": {
+                "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj"
               }
             }
           }
@@ -177,7 +182,13 @@
           "warnAsError": [
             "NU1605"
           ]
-        }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net5.0": {
@@ -194,7 +205,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -203,7 +215,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.301\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
         }
       }
     }
