@@ -53,9 +53,9 @@ namespace Yachasoft.Sri.Ride.Documentos
       {
         90.0,
         190.0
-      }, false, 15.0).AddRow().EstiloNormalNegrita().AddCell("Información adicional", (XParagraphAlignment) 1).EstiloNormal();
+      }, false, 15.0).AddRow().EstiloNormalNegrita().AddCell("Información adicional", (XParagraphAlignment)1).EstiloNormal();
       foreach (CampoAdicional campoAdicional in documento.InfoAdicional)
-        generador.AddRow().AddCell(campoAdicional.Nombre, (XParagraphAlignment) 1).AddCell(campoAdicional.Valor, (XParagraphAlignment) 1);
+        generador.AddRow().AddCell(campoAdicional.Nombre, (XParagraphAlignment)1).AddCell(campoAdicional.Valor, (XParagraphAlignment)1);
       return generador.RectangleEnd(rectangle, 0.0);
     }
 
@@ -88,6 +88,43 @@ namespace Yachasoft.Sri.Ride.Documentos
         }
       }
       return num != 0 ? num : 1;
+    }
+
+    public static double CalcularAlturaCelda(
+    this IGenerator generador,
+    double anchoCelda,
+    string contenido)
+    {
+      if (string.IsNullOrEmpty(contenido))
+        return 12.5; // Altura mínima de una línea
+
+      double anchoEfectivo = anchoCelda - 8.0; // Margen interno
+
+      // Dividir por saltos de línea explícitos
+      string[] lineas = contenido.Split('\n');
+      int totalLineas = 0;
+
+      foreach (string linea in lineas)
+      {
+        if (string.IsNullOrEmpty(linea))
+        {
+          totalLineas += 1;
+          continue;
+        }
+
+        // Medir el ancho del texto
+        XSize medidaTexto = generador.CurrentPage.CurrentGraphics.MeasureString(
+            linea.Trim(),
+            generador.CurrentStyle.Font);
+
+        // Calcular líneas necesarias para esta línea
+        int lineasNecesarias = Math.Max(1,
+            Convert.ToInt32(Math.Ceiling(medidaTexto.Width / anchoEfectivo)));
+
+        totalLineas += lineasNecesarias;
+      }
+
+      return Math.Max(12.5, totalLineas * 12.5 + 5.0); // +5.0 padding vertical
     }
   }
 }
