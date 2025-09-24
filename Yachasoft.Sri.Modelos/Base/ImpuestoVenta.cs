@@ -17,5 +17,10 @@ namespace Yachasoft.Sri.Modelos.Base
         public Decimal ValorDevolucionIVA { get; set; }
 
         public Decimal DescuentoAdicional { get; set; }
+
+        public static explicit operator ImpuestoVenta(ImpuestoIVA v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

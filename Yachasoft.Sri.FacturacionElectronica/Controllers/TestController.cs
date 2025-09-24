@@ -9,8 +9,9 @@ using Yachasoft.Sri.Xsd.Map;
 using Yachasoft.Sri.FacturacionElectronica.Models.Request;
 using Newtonsoft.Json;
 using System.IO;
-
-
+using System.Globalization;
+using Yachasoft.Sri.Modelos.Base;
+using Yachasoft.Sri.Modelos.Enumerados;
 
 namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 {
@@ -403,6 +404,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
         {
             try
             {
+                // --- Emisor ---
                 var emisor = new Modelos.Emisor
                 {
                     RUC = request.DocumentInfo?.RucBusiness,
@@ -416,6 +418,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     Logo = @"C:\Users\siste\Downloads\Logo_UTPL.png"
                 };
 
+                // --- Establecimiento ---
                 var establecimiento = new Modelos.Establecimiento
                 {
                     Codigo = int.Parse(request.DocumentInfo?.Establishment ?? throw new Exception("Establishment no puede ser nulo")),
@@ -423,59 +426,64 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     Emisor = emisor
                 };
 
+                // --- Punto de Emisión ---
                 var puntoEmision = new Modelos.PuntoEmision
                 {
-                    Codigo = int.Parse(request.DocumentInfo?.EmissionPoint
-                                       ?? throw new Exception("EmissionPoint no puede ser nulo")),
+                    Codigo = int.Parse(request.DocumentInfo?.EmissionPoint ?? throw new Exception("EmissionPoint no puede ser nulo")),
                     Establecimiento = establecimiento
                 };
 
+                // --- Info Tributaria ---
                 var infoTributaria = new Modelos.Base.InfoTributaria
                 {
                     EnumTipoEmision = Core.Enumerados.EnumTipoEmision.Normal,
-                    Secuencial = int.Parse(request.DocumentInfo?.Sequential
-                                            ?? throw new Exception("Sequential no puede ser nulo")),
+                    Secuencial = int.Parse(request.DocumentInfo?.Sequential ?? throw new Exception("Sequential no puede ser nulo")),
                     ClaveAcceso = string.IsNullOrEmpty(request.DocumentInfo?.AccessKey)
-                                    ? throw new Exception("AccessKey no puede ser nulo o vacío")
-                                    : request.DocumentInfo.AccessKey
+                        ? throw new Exception("AccessKey no puede ser nulo o vacío")
+                        : request.DocumentInfo.AccessKey
                 };
 
-
+                // --- Detalles ---
                 var detalles = request.Details?.Select(d => new Modelos.Base.DetalleDocumentoItemPrecioSubsidio
                 {
                     Cantidad = d.Quantity,
-                    PrecioUnitario = decimal.TryParse(d.Price, out var p) ? p : 0,
-                    PrecioTotalSinImpuesto = decimal.TryParse(d.SubTotal, out var st) ? st : 0,
-                    Descuento = decimal.TryParse(d.Discount, out var ds) ? ds : 0,
+                    PrecioUnitario = decimal.TryParse(d.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out var p) ? p : 0,
+                    PrecioTotalSinImpuesto = decimal.TryParse(d.SubTotal, NumberStyles.Any, CultureInfo.InvariantCulture, out var st) ? st : 0,
+                    Descuento = decimal.TryParse(d.Discount, NumberStyles.Any, CultureInfo.InvariantCulture, out var ds) ? ds : 0,
                     Item = new Modelos.Base.Item
                     {
                         CodigoPrincipal = string.IsNullOrEmpty(d.ProductCode) ? "SIN CODIGO" : d.ProductCode,
                         Descripcion = string.IsNullOrEmpty(d.Description) ? (d.ProductName ?? "SIN NOMBRE") : d.Description,
-                        CodigoAuxiliar = null // o simplemente no lo pongas si la propiedad permite null
+                        CodigoAuxiliar = null
                     },
-                    Impuestos = new List<Modelos.Base.Impuesto>{
+                    Impuestos = new List<Modelos.Base.Impuesto>
+    {
         new Modelos.Base.ImpuestoIVA
         {
             Codigo = Modelos.Enumerados.EnumTipoImpuesto.IVA,
-            CodigoPorcentaje = Modelos.Enumerados.EnumTipoImpuestoIVA._0,
-            BaseImponible = decimal.TryParse(d.TaxableBaseTax, out var bt) ? bt : 0,
-            Valor = decimal.TryParse(d.TaxValue, out var tv) ? tv : 0
+            CodigoPorcentaje = (EnumTipoImpuestoIVA)Enum.Parse(typeof(EnumTipoImpuestoIVA), d.PercentageCode),
+            BaseImponible = decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
+            Valor = decimal.TryParse(d.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0,
+            Tarifa = decimal.TryParse(d.Rate, NumberStyles.Any, CultureInfo.InvariantCulture, out var rate) ? rate : 0 // <-- aquí lo guardamos
         }
     },
                     DetallesAdicionales = new List<Modelos.Base.CampoAdicional>()
-                }).ToList() ?? new List<Modelos.Base.DetalleDocumentoItemPrecioSubsidio>();
+                }).ToList();
 
 
-                var pagos = new List<Modelos.Base.Pago>{
+                // --- Pagos ---
+                var pagos = new List<Modelos.Base.Pago>
+        {
             new Modelos.Base.Pago
             {
-                FormaPago = ObtenerFormaPago(request.Payment?.PaymentMethodCode ?? "01"),
+                FormaPago = ObtenerFormaPago(request.Payment?.PaymentMethodCode),
                 Plazo = 0,
-                Total = decimal.TryParse(request.Payment?.TotalAmount, out var t) ? t : 0,
+                Total = decimal.TryParse(request.Payment?.TotalAmount, NumberStyles.Any, CultureInfo.InvariantCulture, out var t) ? t : 0,
                 UnidadTiempo = "Dias"
             }
         };
 
+                // --- Factura ---
                 return new Modelos.Factura_1_0_0Modelo.Factura
                 {
                     PuntoEmision = puntoEmision,
@@ -483,26 +491,55 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     InfoTributaria = infoTributaria,
                     InfoFactura = new Modelos.Factura_1_0_0Modelo.InfoFactura
                     {
-                        TotalSinImpuestos = decimal.TryParse(request.Payment?.TotalWithoutTaxes, out var tw) ? tw : 0,
-                        TotalDescuento = decimal.TryParse(request.Payment?.TotalDiscount, out var td) ? td : 0,
-                        ImporteTotal = decimal.TryParse(request.Payment?.TotalAmount, out var ta) ? ta : 0,
+                        TotalSinImpuestos = string.IsNullOrEmpty(request.Payment?.TotalWithoutTaxes) ? 0
+                            : decimal.Parse(request.Payment.TotalWithoutTaxes, CultureInfo.InvariantCulture),
+                        TotalDescuento = string.IsNullOrEmpty(request.Payment?.TotalDiscount) ? 0
+                            : decimal.Parse(request.Payment.TotalDiscount, CultureInfo.InvariantCulture),
+                        ImporteTotal = string.IsNullOrEmpty(request.Payment?.TotalAmount) ? 0
+                            : decimal.Parse(request.Payment.TotalAmount, CultureInfo.InvariantCulture),
                         Moneda = request.Payment?.Currency ?? "DOLAR",
-                        TotalConImpuestos = new List<Modelos.Base.ImpuestoVenta>(),
+
+                        TotalConImpuestos = detalles
+    .SelectMany(d => d.Impuestos.OfType<ImpuestoIVA>(), (d, i) => new ImpuestoVentaIVA
+    {
+        BaseImponible = i.BaseImponible,
+        Tarifa = i.Tarifa, // ahora sí existe
+        Valor = i.Valor,
+        ValorDevolucionIVA = 0,
+        DescuentoAdicional = 0,
+        Codigo = i.Codigo,
+        CodigoPorcentaje = i.CodigoPorcentaje
+    })
+    .ToList<ImpuestoVenta>(),
                         Pagos = pagos
                     },
                     Detalles = detalles,
                     InfoAdicional = request.AdditionalInfo?.Select(a => new Modelos.Base.CampoAdicional
                     {
-                        Nombre = string.IsNullOrEmpty(a.Name) ? "VACIO" : a.Name,
-                        Valor = a.Value ?? ""
+                        Nombre = string.IsNullOrEmpty(a.Name) ? null : a.Name,
+                        Valor = a.Value
                     }).ToList() ?? new List<Modelos.Base.CampoAdicional>(),
+
                     Sujeto = new Modelos.Base.Sujeto
                     {
-                        Identificacion = string.IsNullOrEmpty(request.Customer?.CustomerDni) ? "9999999999999" : request.Customer.CustomerDni,
-                        RazonSocial = string.IsNullOrEmpty(request.Customer?.CustomerName) ? "CONSUMIDOR FINAL" : request.Customer.CustomerName,
-                        TipoIdentificador = Core.Enumerados.EnumTipoIdentificacion.VentaConsumidorFinal
+                        Identificacion = request.Customer?.CustomerDni,
+                        RazonSocial = request.Customer?.CustomerName,
+                        TipoIdentificador = request.Customer?.IdentificationType switch
+                        {
+                            "04" => Core.Enumerados.EnumTipoIdentificacion.RUC,
+                            "05" => Core.Enumerados.EnumTipoIdentificacion.Cedula,
+                            "06" => Core.Enumerados.EnumTipoIdentificacion.Pasaporte,
+                            "07" => Core.Enumerados.EnumTipoIdentificacion.VentaConsumidorFinal,
+                            "08" => Core.Enumerados.EnumTipoIdentificacion.IdentificacionExterior,
+                            _ => Core.Enumerados.EnumTipoIdentificacion.VentaConsumidorFinal // valor por defecto
+                        }
                     },
-                    Autorizacion = new Modelos.Base.Autorizacion() // Inicializamos para evitar null
+
+                    Autorizacion = new Modelos.Base.Autorizacion
+                    {
+                        Numero = request.Autorizacion?.NumeroAutorizacion ?? "SIN AUTORIZACION",
+                        Fecha = request.Autorizacion?.FechaAutorizacion ?? DateTime.Now
+                    }
                 };
             }
             catch (Exception ex)
@@ -511,7 +548,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 throw;
             }
         }
-
 
 
     }

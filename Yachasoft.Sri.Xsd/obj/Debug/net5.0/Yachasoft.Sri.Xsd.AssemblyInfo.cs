@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Yachasoft.Sri.Xsd")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c9ba09e17affc6f675b47ceb6fa28f376c9b01f8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6dbf491f741baa1988a80dc77af94c6422c7d67d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Yachasoft.Sri.Xsd")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Yachasoft.Sri.Xsd")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
