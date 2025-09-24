@@ -178,6 +178,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
         [HttpPost("GenerarPdfDesdeJson")]
         public IActionResult GenerarPdfDesdeJson([FromBody] FacturaRequest request)
         {
+            Console.WriteLine("=== Nueva petición a GenerarPdfDesdeJson ===");
             if (request == null)
                 return BadRequest(new { error = "Request body vacío" });
             Modelos.Factura_1_0_0Modelo.Factura factura;
@@ -273,7 +274,16 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
         new Modelos.Base.ImpuestoIVA
         {
             Codigo = Modelos.Enumerados.EnumTipoImpuesto.IVA,
-            CodigoPorcentaje = (EnumTipoImpuestoIVA)Enum.Parse(typeof(EnumTipoImpuestoIVA), d.PercentageCode),
+            CodigoPorcentaje = d.PercentageCode switch
+            {
+                "0" => EnumTipoImpuestoIVA._0,
+                "2" => EnumTipoImpuestoIVA._12,
+                "3" => EnumTipoImpuestoIVA._14,
+                "4" => EnumTipoImpuestoIVA._15,
+                "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,
+                "7" => EnumTipoImpuestoIVA.ExentoIVA,
+                _   => EnumTipoImpuestoIVA._0
+            },
             BaseImponible = decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
             Valor = decimal.TryParse(d.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0,
             Tarifa = decimal.TryParse(d.Rate, NumberStyles.Any, CultureInfo.InvariantCulture, out var rate) ? rate : 0 // <-- aquí lo guardamos
@@ -312,17 +322,24 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                         Moneda = request.Payment?.Currency ?? "DOLAR",
 
                         TotalConImpuestos = detalles
-    .SelectMany(d => d.Impuestos.OfType<ImpuestoIVA>(), (d, i) => new ImpuestoVentaIVA
-    {
-        BaseImponible = i.BaseImponible,
-        Tarifa = i.Tarifa, // ahora sí existe
-        Valor = i.Valor,
-        ValorDevolucionIVA = 0,
-        DescuentoAdicional = 0,
-        Codigo = i.Codigo,
-        CodigoPorcentaje = i.CodigoPorcentaje
-    })
-    .ToList<ImpuestoVenta>(),
+                            .SelectMany(d => d.Impuestos.OfType<ImpuestoIVA>(), (d, i) => new ImpuestoVentaIVA
+                            {
+                                BaseImponible = i.BaseImponible,
+                                Tarifa = i.CodigoPorcentaje switch
+                                {
+                                    EnumTipoImpuestoIVA._0 => 0m,
+                                    EnumTipoImpuestoIVA._12 => 12m,
+                                    EnumTipoImpuestoIVA._14 => 14m,
+                                    EnumTipoImpuestoIVA._15 => 15m,
+                                    _ => 0m
+                                },
+                                Valor = i.Valor,
+                                ValorDevolucionIVA = 0,
+                                DescuentoAdicional = 0,
+                                Codigo = i.Codigo,
+                                CodigoPorcentaje = i.CodigoPorcentaje
+                            })
+                            .ToList<ImpuestoVenta>(),
                         Pagos = pagos
                     },
                     Detalles = detalles,

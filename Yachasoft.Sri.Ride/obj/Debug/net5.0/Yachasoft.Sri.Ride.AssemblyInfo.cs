@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Yachasoft.Sri.Ride")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6dbf491f741baa1988a80dc77af94c6422c7d67d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5f3e193f932528d446e59b61d23ba8d04f729d5e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Yachasoft.Sri.Ride")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Yachasoft.Sri.Ride")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
