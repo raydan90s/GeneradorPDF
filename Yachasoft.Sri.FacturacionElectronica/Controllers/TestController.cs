@@ -33,8 +33,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
             this.rIDEService = rIDEService;
         }
         [HttpGet]
-        public async Task<IActionResult> Get()
-        {
+        public async Task<IActionResult> Get(){
             var emisor = new Modelos.Emisor
             {
                 //AgenteRetencion = "", //Llenar solo cuando tenga nro de agente de retencion
@@ -156,8 +155,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
             //return Ok(this.rIDEService.Factura_1_0_0(f, "FACTURA.pdf"));
         }
 
-        private Modelos.Enumerados.EnumFormaPago ObtenerFormaPago(string codigo)
-        {
+        private Modelos.Enumerados.EnumFormaPago ObtenerFormaPago(string codigo){
             foreach (Modelos.Enumerados.EnumFormaPago fp in Enum.GetValues(typeof(Modelos.Enumerados.EnumFormaPago)))
             {
                 var attr = fp.GetType()
@@ -230,7 +228,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     ObligadoContabilidad = request.DocumentInfo?.ObligatedAccounting?.ToUpper() == "SI",
                     Logo = @"C:\Users\siste\Downloads\Logo_UTPL.png"
                 };
-
+            
                 // --- Establecimiento ---
                 var establecimiento = new Modelos.Establecimiento
                 {
