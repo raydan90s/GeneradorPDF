@@ -332,6 +332,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                         Valor = a.Value
                     }).ToList() ?? new List<Modelos.Base.CampoAdicional>(),
 
+
                     Sujeto = new Modelos.Base.Sujeto
                     {
                         Identificacion = request.Customer?.CustomerDni,
