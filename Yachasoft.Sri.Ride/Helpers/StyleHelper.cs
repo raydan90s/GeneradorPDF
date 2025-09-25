@@ -6,7 +6,7 @@
 
 using Yachasoft.Pdf;
 using Yachasoft.Pdf.Helpers;
-using PdfSharp.Drawing;
+using PdfSharpCore.Drawing;
 
 namespace Yachasoft.Sri.Ride.Helpers
 {

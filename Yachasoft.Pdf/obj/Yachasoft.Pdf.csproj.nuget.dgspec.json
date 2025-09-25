@@ -1,30 +1,30 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj": {}
+    "/home/bitnami/GeneradorPDF/Yachasoft.Pdf/Yachasoft.Pdf.csproj": {}
   },
   "projects": {
-    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj": {
+    "/home/bitnami/GeneradorPDF/Yachasoft.Pdf/Yachasoft.Pdf.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj",
+        "projectUniqueName": "/home/bitnami/GeneradorPDF/Yachasoft.Pdf/Yachasoft.Pdf.csproj",
         "projectName": "Yachasoft.Pdf",
-        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj",
-        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\obj\\",
+        "projectPath": "/home/bitnami/GeneradorPDF/Yachasoft.Pdf/Yachasoft.Pdf.csproj",
+        "packagesPath": "/home/bitnami/.nuget/packages/",
+        "outputPath": "/home/bitnami/GeneradorPDF/Yachasoft.Pdf/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/home/bitnami/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
-          "net5.0"
+          "net7.0"
         ],
         "sources": {
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net5.0": {
-            "targetAlias": "net5.0",
+          "net7.0": {
+            "targetAlias": "net7.0",
             "projectReferences": {}
           }
         },
@@ -32,21 +32,15 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "9.0.300"
+        }
       },
       "frameworks": {
-        "net5.0": {
-          "targetAlias": "net5.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "dependencies": {
-            "PDFsharpNetStandard2": {
+            "PdfSharpCore": {
               "target": "Package",
-              "version": "[1.51.4845, )"
+              "version": "[1.3.18, )"
             }
           },
           "imports": [
@@ -65,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/home/bitnami/.dotnet/sdk/7.0.410/RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -1,0 +1,17 @@
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/bin/Debug/net5.0/Yachasoft.Sri.Modelos.deps.json
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/bin/Debug/net5.0/Yachasoft.Sri.Modelos.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/bin/Debug/net5.0/Yachasoft.Sri.Modelos.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/bin/Debug/net5.0/Yachasoft.Core.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/bin/Debug/net5.0/Yachasoft.Sri.Core.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/bin/Debug/net5.0/Yachasoft.Sri.Core.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/bin/Debug/net5.0/Yachasoft.Core.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/obj/Debug/net5.0/Yachasoft.Sri.Modelos.csproj.AssemblyReference.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/obj/Debug/net5.0/Yachasoft.Sri.Modelos.GeneratedMSBuildEditorConfig.editorconfig
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/obj/Debug/net5.0/Yachasoft.Sri.Modelos.AssemblyInfoInputs.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/obj/Debug/net5.0/Yachasoft.Sri.Modelos.AssemblyInfo.cs
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/obj/Debug/net5.0/Yachasoft.Sri.Modelos.csproj.CoreCompileInputs.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/obj/Debug/net5.0/Yachasoft.Sri.Modelos.csproj.CopyComplete
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/obj/Debug/net5.0/Yachasoft.Sri.Modelos.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/obj/Debug/net5.0/refint/Yachasoft.Sri.Modelos.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/obj/Debug/net5.0/Yachasoft.Sri.Modelos.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/obj/Debug/net5.0/ref/Yachasoft.Sri.Modelos.dll

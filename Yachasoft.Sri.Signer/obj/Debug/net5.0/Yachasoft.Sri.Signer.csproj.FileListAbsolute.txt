@@ -1,0 +1,17 @@
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/bin/Debug/net5.0/Yachasoft.Sri.Signer.deps.json
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/bin/Debug/net5.0/Yachasoft.Sri.Signer.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/bin/Debug/net5.0/Yachasoft.Sri.Signer.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/bin/Debug/net5.0/FirmaXadesNet.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/bin/Debug/net5.0/Microsoft.Xades.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/bin/Debug/net5.0/FirmaXadesNet.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/bin/Debug/net5.0/Microsoft.Xades.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/obj/Debug/net5.0/Yachasoft.Sri.Signer.csproj.AssemblyReference.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/obj/Debug/net5.0/Yachasoft.Sri.Signer.GeneratedMSBuildEditorConfig.editorconfig
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/obj/Debug/net5.0/Yachasoft.Sri.Signer.AssemblyInfoInputs.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/obj/Debug/net5.0/Yachasoft.Sri.Signer.AssemblyInfo.cs
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/obj/Debug/net5.0/Yachasoft.Sri.Signer.csproj.CoreCompileInputs.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/obj/Debug/net5.0/Yachasoft.Sri.Signer.csproj.CopyComplete
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/obj/Debug/net5.0/Yachasoft.Sri.Signer.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/obj/Debug/net5.0/refint/Yachasoft.Sri.Signer.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/obj/Debug/net5.0/Yachasoft.Sri.Signer.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/obj/Debug/net5.0/ref/Yachasoft.Sri.Signer.dll

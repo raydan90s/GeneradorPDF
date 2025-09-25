@@ -176,7 +176,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 [HttpPost("GenerarPdfDesdeJson")]
 public IActionResult GenerarPdfDesdeJson([FromBody] FacturaRequest request)
 {
-    Console.WriteLine("=== Nueva petición a GenerarPdfDesdeJson ===");
     if (request == null)
         return BadRequest(new { error = "Request body vacío" });
         
@@ -199,38 +198,28 @@ public IActionResult GenerarPdfDesdeJson([FromBody] FacturaRequest request)
     {
         return BadRequest(new { error = "Error al mapear factura: " + ex.Message });
     }
+    // Usar el AccessKey del documento como nombre de archivo
+    var accessKey = request.DocumentInfo?.AccessKey ?? "SINCLAVE";
+    var pdfFileName = $"Factura_{accessKey}.pdf"; // O solo "Factura.pdf"
+    var pdfPath = Path.Combine("/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica", pdfFileName);
 
-    var pdfPath = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/FACTURA.pdf";
 
     try
-    {
-        Console.WriteLine("📄 Intentando generar PDF en: " + pdfPath);
-        
+    {        
         // Verificar permisos del directorio
         var directory = Path.GetDirectoryName(pdfPath);
         if (!Directory.Exists(directory))
         {
             Directory.CreateDirectory(directory);
-            Console.WriteLine("✅ Directorio creado: " + directory);
         }
         
         // Verificar permisos de escritura
         var testFile = Path.Combine(directory, "test_write.tmp");
         System.IO.File.WriteAllText(testFile, "test");
         System.IO.File.Delete(testFile);
-        Console.WriteLine("✅ Permisos de escritura verificados");
         
         this.rIDEService.Factura_1_0_0(factura, pdfPath);
-        Console.WriteLine("✅ Método Factura_1_0_0 ejecutado sin excepción.");
         
-        if (System.IO.File.Exists(pdfPath))
-        {
-            Console.WriteLine("✅ PDF generado en: " + pdfPath);
-        }
-        else
-        {
-            Console.WriteLine("⚠️ El método terminó pero el archivo no existe.");
-        }
         return Ok(new { message = "PDF generado correctamente", pdfPath });
     }
     catch (UnauthorizedAccessException ex)

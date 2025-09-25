@@ -1,0 +1,12 @@
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/obj/Debug/net7.0/Yachasoft.Pdf.csproj.AssemblyReference.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/obj/Debug/net7.0/Yachasoft.Pdf.GeneratedMSBuildEditorConfig.editorconfig
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/obj/Debug/net7.0/Yachasoft.Pdf.AssemblyInfoInputs.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/obj/Debug/net7.0/Yachasoft.Pdf.AssemblyInfo.cs
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/obj/Debug/net7.0/Yachasoft.Pdf.csproj.CoreCompileInputs.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/bin/Debug/net7.0/Yachasoft.Pdf.deps.json
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/bin/Debug/net7.0/Yachasoft.Pdf.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/bin/Debug/net7.0/Yachasoft.Pdf.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/obj/Debug/net7.0/Yachasoft.Pdf.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/obj/Debug/net7.0/refint/Yachasoft.Pdf.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/obj/Debug/net7.0/Yachasoft.Pdf.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Pdf/obj/Debug/net7.0/ref/Yachasoft.Pdf.dll

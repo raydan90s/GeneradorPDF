@@ -1,7 +1,7 @@
 {
   "version": 3,
   "targets": {
-    "net5.0": {
+    "net7.0": {
       "BouncyCastle.NetCore/1.8.6": {
         "type": "package",
         "compile": {
@@ -254,7 +254,7 @@
       },
       "Microsoft.Xades/1.0.0": {
         "type": "project",
-        "framework": ".NETCoreApp,Version=v5.0",
+        "framework": ".NETCoreApp,Version=v7.0",
         "dependencies": {
           "System.Security.Cryptography.Xml": "5.0.0-rc.2.20475.5"
         },
@@ -808,7 +808,7 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net5.0": [
+    "net7.0": [
       "BouncyCastle.NetCore >= 1.8.6",
       "Microsoft.CSharp >= 4.7.0",
       "Microsoft.Xades >= 1.0.0",
@@ -817,32 +817,32 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\siste\\.nuget\\packages\\": {}
+    "/home/bitnami/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj",
+      "projectUniqueName": "/home/bitnami/GeneradorPDF/FirmaXadesNet/FirmaXadesNet.csproj",
       "projectName": "FirmaXadesNet",
-      "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj",
-      "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\obj\\",
+      "projectPath": "/home/bitnami/GeneradorPDF/FirmaXadesNet/FirmaXadesNet.csproj",
+      "packagesPath": "/home/bitnami/.nuget/packages/",
+      "outputPath": "/home/bitnami/GeneradorPDF/FirmaXadesNet/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/bitnami/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
-        "net5.0"
+        "net7.0"
       ],
       "sources": {
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net5.0": {
-          "targetAlias": "net5.0",
+        "net7.0": {
+          "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj"
+            "/home/bitnami/GeneradorPDF/Microsoft.Xades/Microsoft.Xades.csproj": {
+              "projectPath": "/home/bitnami/GeneradorPDF/Microsoft.Xades/Microsoft.Xades.csproj"
             }
           }
         }
@@ -851,17 +851,11 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.300"
+      }
     },
     "frameworks": {
-      "net5.0": {
-        "targetAlias": "net5.0",
+      "net7.0": {
+        "targetAlias": "net7.0",
         "dependencies": {
           "BouncyCastle.NetCore": {
             "target": "Package",
@@ -896,7 +890,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/home/bitnami/.dotnet/sdk/7.0.410/RuntimeIdentifierGraph.json"
       }
     }
   }
