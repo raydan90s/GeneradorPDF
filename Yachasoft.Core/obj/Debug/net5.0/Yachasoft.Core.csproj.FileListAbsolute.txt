@@ -1,0 +1,12 @@
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\bin\Debug\net5.0\Yachasoft.Core.deps.json
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\bin\Debug\net5.0\Yachasoft.Core.dll
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\bin\Debug\net5.0\Yachasoft.Core.pdb
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\obj\Debug\net5.0\Yachasoft.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\obj\Debug\net5.0\Yachasoft.Core.AssemblyInfoInputs.cache
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\obj\Debug\net5.0\Yachasoft.Core.AssemblyInfo.cs
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\obj\Debug\net5.0\Yachasoft.Core.csproj.CoreCompileInputs.cache
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\obj\Debug\net5.0\Yachasoft.Core.sourcelink.json
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\obj\Debug\net5.0\Yachasoft.Core.dll
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\obj\Debug\net5.0\refint\Yachasoft.Core.dll
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\obj\Debug\net5.0\Yachasoft.Core.pdb
+C:\Users\siste\Documents\GitHub\Yachasoft.Sri\Yachasoft.Core\obj\Debug\net5.0\ref\Yachasoft.Core.dll
