@@ -80,11 +80,6 @@ namespace Yachasoft.Sri.Ride.Documentos
         Decimal num2 = 0M;
         foreach (DetalleDocumentoItemPrecioSubsidio detalle in documento.Detalles)
         {
-          Impuesto impuesto = detalle.Impuestos.Where<Impuesto>((Func<Impuesto, bool>)(x => x is Yachasoft.Sri.Modelos.Base.ImpuestoIVA)).FirstOrDefault<Impuesto>();
-          Decimal num3 = impuesto != null ? impuesto.Tarifa : 0M;
-          num2 += Math.Round((Decimal)detalle.Cantidad * detalle.PrecioUnitario * (1M + num3 / 100M), 2);
-          num1 += Math.Round((Decimal)detalle.Cantidad * (detalle.PrecioSinSubsidio > 0M ? detalle.PrecioSinSubsidio : detalle.PrecioUnitario) * (1M + num3 / 100M), 2);
-
           // Preparar contenidos de cada celda
           string codigoPrincipal = detalle.Item.CodigoPrincipal ?? "";
           string codigoAuxiliar = detalle.Item.CodigoAuxiliar ?? "";
@@ -93,37 +88,22 @@ namespace Yachasoft.Sri.Ride.Documentos
           string detalleAdicional = detalle.DetallesAdicionales == null ? "" :
               string.Join('\n', detalle.DetallesAdicionales.Select(x => x.Nombre + " " + x.Valor));
 
-          // OPTIMIZACIÓN: Solo agregar salto de línea si realmente es necesario
-          string codigoPrincipalModificado = codigoPrincipal;
-          int lineasEnCodigo = 1;
-
-          // Solo modificar códigos muy largos
-          double anchoCodigoPrincipal = flag ? 35.0 : 40.0;
-          if (codigoPrincipal.Length > 10)
+          // -------------------------------
+          // DIVIDIR CodigoPrincipal POR CARACTERES
+          // -------------------------------
+          int maxCharsPorLinea = 9; // Ajusta según el ancho de la columna
+          List<string> lineasCodigo = new List<string>();
+          for (int i = 0; i < codigoPrincipal.Length; i += maxCharsPorLinea)
           {
-            // Medir si realmente necesita salto de línea
-            XSize medidaTexto = generator.CurrentPage.CurrentGraphics.MeasureString(codigoPrincipal, generator.CurrentStyle.Font);
-            if (medidaTexto.Width > (anchoCodigoPrincipal - 8.0))
-            {
-              int puntoCorte = codigoPrincipal.IndexOf('_');
-              if (puntoCorte > 0 && puntoCorte < codigoPrincipal.Length - 1)
-              {
-                codigoPrincipalModificado = codigoPrincipal.Substring(0, puntoCorte + 1) + "\n" + codigoPrincipal.Substring(puntoCorte + 1);
-                lineasEnCodigo = 2;
-              }
-            }
+            int length = Math.Min(maxCharsPorLinea, codigoPrincipal.Length - i);
+            lineasCodigo.Add(codigoPrincipal.Substring(i, length));
           }
+          string codigoPrincipalModificado = string.Join("\n", lineasCodigo);
+          int lineasEnCodigo = lineasCodigo.Count;
 
-          // Calcular líneas en detalles adicionales
-          int lineasEnDetalleAdicional = 1;
-          if (!string.IsNullOrEmpty(detalleAdicional) && detalleAdicional.Contains('\n'))
-          {
-            lineasEnDetalleAdicional = detalleAdicional.Split('\n').Length;
-          }
-
-          // Calcular líneas en descripción larga
+          // Calcular líneas en descripción
           int lineasEnDescripcion = 1;
-          if (!string.IsNullOrEmpty(descripcion) && descripcion.Length > 30)
+          if (!string.IsNullOrEmpty(descripcion))
           {
             double anchoDescripcion = flag ? 120.0 : 140.0;
             XSize medidaDescripcion = generator.CurrentPage.CurrentGraphics.MeasureString(descripcion, generator.CurrentStyle.Font);
@@ -133,28 +113,21 @@ namespace Yachasoft.Sri.Ride.Documentos
             }
           }
 
-          // Calcular altura MÍNIMA necesaria basada en el contenido que más líneas requiere
+          // Calcular líneas en detalle adicional
+          int lineasEnDetalleAdicional = 1;
+          if (!string.IsNullOrEmpty(detalleAdicional) && detalleAdicional.Contains('\n'))
+            lineasEnDetalleAdicional = detalleAdicional.Split('\n').Length;
+
+          // Determinar la altura máxima de la fila
           int maxLineas = Math.Max(Math.Max(lineasEnCodigo, lineasEnDescripcion), lineasEnDetalleAdicional);
-          double alturaFila;
-
-          if (maxLineas == 1)
-          {
-            alturaFila = 25.0; // Altura normal para una línea
-          }
-          else
-          {
-            // Fórmula consistente: 25px base + 6px por cada línea adicional
-            alturaFila = 18.0 + ((maxLineas - 1) * 6.0);
-          }
-
-          System.Console.WriteLine($"Código: '{codigoPrincipal}' -> '{codigoPrincipalModificado}', Líneas: {maxLineas}, Altura: {alturaFila}px");
+          double alturaFila = maxLineas == 1 ? 25.0 : 18.0 + ((maxLineas - 1) * 6.0);
 
           // Verificar nueva página
           generator.CheckEndOfPage(alturaFila);
 
-          // Agregar fila con altura optimizada
+          // Agregar fila con altura dinámica
           generator.AddRow(new double?(alturaFila))
-              .AddCell(codigoPrincipalModificado)
+              .AddCell(codigoPrincipalModificado) // Esto ahora sí se rompe por caracteres
               .AddCell(codigoAuxiliar)
               .AddCell(new int?(detalle.Cantidad))
               .AddCell(descripcion)
@@ -170,6 +143,7 @@ namespace Yachasoft.Sri.Ride.Documentos
           generator.AddCell(new Decimal?(detalle.Descuento))
                    .AddCell(new Decimal?(detalle.PrecioTotalSinImpuesto));
         }
+
         GeneratorPage pagePointer;
         generator.GetPagePointer(out pagePointer).CrearInfoAdicional((Documento)documento).CrearFormasPago(documento.InfoFactura.Pagos);
         documento.InfoFactura.TotalConImpuestos.Where<ImpuestoVenta>((Func<ImpuestoVenta, bool>)(x => x is ImpuestoVentaIVA)).Select<ImpuestoVenta, ImpuestoVentaIVA>((Func<ImpuestoVenta, ImpuestoVentaIVA>)(x => (ImpuestoVentaIVA)x));

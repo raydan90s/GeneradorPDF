@@ -11,7 +11,7 @@ namespace Yachasoft.Sri.Modelos.Base
 {
     public class Documento : InfoDocumento
     {
-        public EnumTipoImpuestoIVA TipoImpuestoIVAVigente => this.GetTipoImpuestoIVAGravadoVigente();
+        public EnumTipoImpuestoIVA TipoImpuestoIVAVigente => EnumTipoImpuestoIVA._15;
 
         public EnumTipoDocumento TipoDocumento { get; init; }
 

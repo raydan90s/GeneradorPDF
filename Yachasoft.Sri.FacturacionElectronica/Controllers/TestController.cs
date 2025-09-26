@@ -12,6 +12,7 @@ using System.IO;
 using System.Globalization;
 using Yachasoft.Sri.Modelos.Base;
 using Yachasoft.Sri.Modelos.Enumerados;
+using Yachasoft.Sri.Modelos;
 
 namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 {
@@ -255,6 +256,9 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                         ? throw new Exception("AccessKey no puede ser nulo o vacío")
                         : request.DocumentInfo.AccessKey
                 };
+                bool todosBaseCero = request.Details != null &&
+                     request.Details.All(d => decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var baseTax) && baseTax == 0);
+
 
                 // --- Detalles ---
                 var detalles = request.Details?.Select(d => new Modelos.Base.DetalleDocumentoItemPrecioSubsidio
@@ -269,26 +273,32 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                         Descripcion = string.IsNullOrEmpty(d.Description) ? (d.ProductName ?? "SIN NOMBRE") : d.Description,
                         CodigoAuxiliar = null
                     },
+
                     Impuestos = new List<Modelos.Base.Impuesto>
-    {
-        new Modelos.Base.ImpuestoIVA
-        {
-            Codigo = Modelos.Enumerados.EnumTipoImpuesto.IVA,
-            CodigoPorcentaje = d.PercentageCode switch
-            {
-                "0" => EnumTipoImpuestoIVA._0,
-                "2" => EnumTipoImpuestoIVA._12,
-                "3" => EnumTipoImpuestoIVA._14,
-                "4" => EnumTipoImpuestoIVA._15,
-                "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,
-                "7" => EnumTipoImpuestoIVA.ExentoIVA,
-                _   => EnumTipoImpuestoIVA._0
-            },
-            BaseImponible = decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
-            Valor = decimal.TryParse(d.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0,
-            Tarifa = decimal.TryParse(d.Rate, NumberStyles.Any, CultureInfo.InvariantCulture, out var rate) ? rate : 0 // <-- aquí lo guardamos
-        }
-    },
+                    {
+                    new Modelos.Base.ImpuestoIVA
+                    {
+                            Codigo = Modelos.Enumerados.EnumTipoImpuesto.IVA,
+                            CodigoPorcentaje = (d.PercentageCode switch
+                            {
+                                "0" => EnumTipoImpuestoIVA._0,
+                                "2" => EnumTipoImpuestoIVA._12,
+                                "3" => EnumTipoImpuestoIVA._14,
+                                "4" => EnumTipoImpuestoIVA._15,
+                                "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,
+                                "7" => EnumTipoImpuestoIVA.ExentoIVA,
+                                _   => EnumTipoImpuestoIVA._0
+                            }) switch
+                            {
+                                EnumTipoImpuestoIVA._0 when todosBaseCero => EnumTipoImpuestoIVA._15, // <-- cambio global si todos base 0
+                                EnumTipoImpuestoIVA._0 when decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var baseTax) && baseTax == 0 => EnumTipoImpuestoIVA._15,
+                                var val => val
+                            },
+                            BaseImponible = decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
+                            Valor = decimal.TryParse(d.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0,
+                            Tarifa = decimal.TryParse(d.Rate, NumberStyles.Any, CultureInfo.InvariantCulture, out var rate) ? rate : 0
+                        }
+                    },
                     DetallesAdicionales = new List<Modelos.Base.CampoAdicional>()
                 }).ToList();
 
@@ -379,6 +389,218 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
             }
         }
 
+        //GENERAR PDF DESDE JSON PARA NOTA DE CRÉDITO
+        [HttpPost("GenerarPdfNotaCreditoDesdeJson")]
+        public IActionResult GenerarPdfNotaCreditoDesdeJson([FromBody] NotaCreditoRequest request)
+        {
+            Console.WriteLine("=== Nueva petición a GenerarPdfNotaCreditoDesdeJson ===");
+
+            if (request == null)
+                return BadRequest(new { error = "Request body vacío" });
+
+            NotaCredito_1_0_0Modelo.NotaCredito notaCredito;
+
+            try
+            {
+                notaCredito = MapNotaCreditoRequestToNotaCredito(request);
+
+                // Imprimir para debug
+                Console.WriteLine("Nota de crédito mapeada: " +
+                    System.Text.Json.JsonSerializer.Serialize(notaCredito, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = "Error al mapear nota de crédito: " + ex.Message });
+            }
+
+            var pdfPath = @"C:\Users\siste\Desktop\NOTA_CREDITO.pdf";
+
+            try
+            {
+                var notaCreditoService = new Yachasoft.Sri.Ride.Documentos.NotaCredito_1_0_0();
+                notaCreditoService.GenerarRIDE(notaCredito, pdfPath);
+
+                return Ok(new { message = "PDF de nota de crédito generado correctamente", pdfPath });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = "Error al generar PDF de nota de crédito: " + ex.Message });
+            }
+        }
+
+        // Mapper JSON -> Nota de crédito
+        // Mapper JSON -> Nota de crédito CORREGIDO
+        private NotaCredito_1_0_0Modelo.NotaCredito MapNotaCreditoRequestToNotaCredito(NotaCreditoRequest request)
+        {
+            try
+            {
+                // --- Emisor ---
+                var emisor = new Modelos.Emisor
+                {
+                    RUC = request.DocumentInfo?.RucBusiness,
+                    RazonSocial = request.DocumentInfo?.BusinessName,
+                    NombreComercial = request.DocumentInfo?.CommercialName,
+                    DireccionMatriz = request.DocumentInfo?.BusinessAddress,
+                    EnumTipoAmbiente = request.DocumentInfo?.Environment == "1"
+                        ? Core.Enumerados.EnumTipoAmbiente.Prueba
+                        : Core.Enumerados.EnumTipoAmbiente.Produccion,
+                    ObligadoContabilidad = request.DocumentInfo?.ObligatedAccounting?.ToUpper() == "SI",
+                    Logo = @"C:\Users\siste\Downloads\Logo_UTPL.png"
+                };
+
+                // --- Establecimiento ---
+                var establecimiento = new Modelos.Establecimiento
+                {
+                    Codigo = int.Parse(request.DocumentInfo?.Establishment ?? throw new Exception("Establishment no puede ser nulo")),
+                    DireccionEstablecimiento = request.DocumentInfo?.EstablishmentAddress ?? throw new Exception("DireccionEstablecimiento no puede ser nula"),
+                    Emisor = emisor
+                };
+
+                // --- Punto de emisión ---
+                var puntoEmision = new Modelos.PuntoEmision
+                {
+                    Codigo = int.Parse(request.DocumentInfo?.EmissionPoint ?? throw new Exception("EmissionPoint no puede ser nulo")),
+                    Establecimiento = establecimiento
+                };
+
+                // --- Info Tributaria ---
+                var infoTributaria = new Modelos.Base.InfoTributaria
+                {
+                    EnumTipoEmision = Core.Enumerados.EnumTipoEmision.Normal,
+                    Secuencial = int.Parse(request.DocumentInfo?.Sequential ?? throw new Exception("Sequential no puede ser nulo")),
+                    ClaveAcceso = string.IsNullOrEmpty(request.DocumentInfo?.AccessKey)
+                        ? throw new Exception("AccessKey no puede ser nulo o vacío")
+                        : request.DocumentInfo.AccessKey
+                };
+
+                // --- Detalles ---
+                var detalles = request.Details?.Select(d => new Modelos.Base.DetalleDocumentoItemPrecio
+                {
+                    Cantidad = int.TryParse(d.Quantity, out var qty) ? qty : 0,
+                    PrecioUnitario = decimal.TryParse(d.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out var p) ? p : 0,
+                    PrecioTotalSinImpuesto = decimal.TryParse(d.SubTotal, NumberStyles.Any, CultureInfo.InvariantCulture, out var st) ? st : 0,
+                    Descuento = decimal.TryParse(d.Discount, NumberStyles.Any, CultureInfo.InvariantCulture, out var ds) ? ds : 0,
+                    Item = new Modelos.Base.Item
+                    {
+                        CodigoPrincipal = string.IsNullOrEmpty(d.ProductCode) ? "SIN CODIGO" : d.ProductCode,
+                        Descripcion = string.IsNullOrEmpty(d.Description) ? (d.ProductName ?? "SIN NOMBRE") : d.Description,
+                        CodigoAuxiliar = null
+                    },
+                    Impuestos = new List<Modelos.Base.Impuesto>
+            {
+                new Modelos.Base.ImpuestoIVA
+                {
+                    Codigo = Modelos.Enumerados.EnumTipoImpuesto.IVA,
+                    // CORREGIDO: Usar el percentageCode correcto del JSON
+                    CodigoPorcentaje = (d.PercentageCode switch
+{
+    "0" => EnumTipoImpuestoIVA._0,
+    "2" => EnumTipoImpuestoIVA._12,
+    "3" => EnumTipoImpuestoIVA._14,
+    "4" => EnumTipoImpuestoIVA._15,
+    "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,
+    "7" => EnumTipoImpuestoIVA.ExentoIVA,
+    _   => EnumTipoImpuestoIVA._0
+}) switch
+{
+    EnumTipoImpuestoIVA._0 when decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var baseTax) && baseTax == 0 => EnumTipoImpuestoIVA._15,
+    var val => val
+},
+
+                    BaseImponible = decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
+                    Valor = decimal.TryParse(d.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0,
+                    // CORREGIDO: Calcular tarifa basada en percentageCode
+                    Tarifa = d.PercentageCode switch
+                    {
+                        "0" => 0m,
+                        "2" => 12m,
+                        "3" => 14m,
+                        "4" => 15m,
+                        "6" => 0m,
+                        "7" => 0m,
+                        _ => 0m
+                    }
+                }
+            },
+                    DetallesAdicionales = new List<Modelos.Base.CampoAdicional>()
+                }).ToList();
+
+                // --- Nota de crédito ---
+                return new NotaCredito_1_0_0Modelo.NotaCredito
+                {
+                    PuntoEmision = puntoEmision,
+                    FechaEmision = DateTime.Now,
+                    InfoTributaria = infoTributaria,
+                    Detalles = detalles,
+                    // --- InfoNotaCredito ---
+                    InfoNotaCredito = new NotaCredito_1_0_0Modelo.InfoNotaCredito
+                    {
+                        DocumentoModificado = new DocumentoSustento
+                        {
+                            CodDocumento = request.CreditNote?.ModifiedDocument?.Code switch
+                            {
+                                "01" => Core.Enumerados.EnumTipoDocumento.Factura,
+                                "04" => Core.Enumerados.EnumTipoDocumento.NotaCredito,
+                                "05" => Core.Enumerados.EnumTipoDocumento.NotaDebito,
+                                "06" => Core.Enumerados.EnumTipoDocumento.GuiaRemision,
+                                "07" => Core.Enumerados.EnumTipoDocumento.ComprobanteRetencion,
+                                _ => Core.Enumerados.EnumTipoDocumento.Factura
+                            },
+                            NumDocumento = request.CreditNote?.ModifiedDocument?.Number,
+                            FechaEmisionDocumento = request.CreditNote?.ModifiedDocument?.IssueDate ?? DateTime.Now
+                        },
+                        Motivo = request.CreditNote?.Reason ?? "SIN MOTIVO",
+
+                        // Aquí asignamos totalAmount al ValorModificacion
+                        ValorModificacion = decimal.TryParse(request.Payment?.TotalAmount, NumberStyles.Any, CultureInfo.InvariantCulture, out var valor) ? valor : 0m,
+
+                        // Mapeo de impuestos del JSON
+                        TotalConImpuestos = request.TotalsWithTax?.Select(t => new ImpuestoVentaIVA
+                        {
+                            BaseImponible = decimal.TryParse(t.TaxableBase, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
+                            Tarifa = t.PercentageCode switch
+                            {
+                                "0" => 0m,
+                                "2" => 12m,
+                                "3" => 14m,
+                                "4" => 15m,
+                                "6" => 0m,
+                                "7" => 0m,
+                                _ => 0m
+                            },
+                            Valor = decimal.TryParse(t.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0
+                        }).ToList<ImpuestoVenta>()
+                    },
+
+
+
+                    Sujeto = new Modelos.Base.Sujeto
+                    {
+                        Identificacion = request.Customer?.CustomerDni,
+                        RazonSocial = request.Customer?.CustomerName,
+                        TipoIdentificador = request.Customer?.IdentificationType switch
+                        {
+                            "04" => Core.Enumerados.EnumTipoIdentificacion.RUC,
+                            "05" => Core.Enumerados.EnumTipoIdentificacion.Cedula,
+                            "06" => Core.Enumerados.EnumTipoIdentificacion.Pasaporte,
+                            "07" => Core.Enumerados.EnumTipoIdentificacion.VentaConsumidorFinal,
+                            "08" => Core.Enumerados.EnumTipoIdentificacion.IdentificacionExterior,
+                            _ => Core.Enumerados.EnumTipoIdentificacion.VentaConsumidorFinal
+                        }
+                    },
+                    Autorizacion = new Modelos.Base.Autorizacion
+                    {
+                        Numero = request.Autorizacion?.NumeroAutorizacion ?? "SIN AUTORIZACION",
+                        Fecha = request.Autorizacion?.FechaAutorizacion ?? DateTime.Now
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error en MapNotaCreditoRequestToNotaCredito: " + ex.Message);
+                throw;
+            }
+        }
 
     }
 
