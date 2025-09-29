@@ -242,10 +242,14 @@
           "System.Security.Cryptography.Xml": "5.0.0-rc.2.20475.5"
         },
         "runtime": {
+<<<<<<< HEAD
           "FirmaXadesNet.dll": {
             "assemblyVersion": "2.2.1.0",
             "fileVersion": "2.2.1.0"
           }
+=======
+          "FirmaXadesNet.dll": {}
+>>>>>>> linuxCredito
         }
       },
       "Microsoft.Xades/1.0.0": {
@@ -253,18 +257,26 @@
           "System.Security.Cryptography.Xml": "5.0.0-rc.2.20475.5"
         },
         "runtime": {
+<<<<<<< HEAD
           "Microsoft.Xades.dll": {
             "assemblyVersion": "1.0.7.0",
             "fileVersion": "1.0.7.0"
           }
+=======
+          "Microsoft.Xades.dll": {}
+>>>>>>> linuxCredito
         }
       },
       "Yachasoft.Core/1.0.0": {
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Core.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Core.dll": {}
+>>>>>>> linuxCredito
         }
       },
       "Yachasoft.Pdf/1.0.0": {
@@ -272,10 +284,14 @@
           "PDFsharpNetStandard2": "1.51.4845"
         },
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Pdf.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Pdf.dll": {}
+>>>>>>> linuxCredito
         }
       },
       "Yachasoft.Sri.Core/1.0.0": {
@@ -283,10 +299,14 @@
           "Yachasoft.Core": "1.0.0"
         },
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Sri.Core.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Sri.Core.dll": {}
+>>>>>>> linuxCredito
         }
       },
       "Yachasoft.Sri.Modelos/1.0.0": {
@@ -294,10 +314,14 @@
           "Yachasoft.Sri.Core": "1.0.0"
         },
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Sri.Modelos.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Sri.Modelos.dll": {}
+>>>>>>> linuxCredito
         }
       },
       "Yachasoft.Sri.Ride/1.0.0": {
@@ -306,10 +330,14 @@
           "Yachasoft.Sri.Modelos": "1.0.0"
         },
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Sri.Ride.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Sri.Ride.dll": {}
+>>>>>>> linuxCredito
         }
       },
       "Yachasoft.Sri.Signer/1.0.0": {
@@ -318,10 +346,14 @@
           "Microsoft.Extensions.Logging.Abstractions": "5.0.0"
         },
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Sri.Signer.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Sri.Signer.dll": {}
+>>>>>>> linuxCredito
         }
       },
       "Yachasoft.Sri.WebService/1.0.0": {
@@ -329,10 +361,14 @@
           "Yachasoft.Sri.Core": "1.0.0"
         },
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Sri.WebService.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Sri.WebService.dll": {}
+>>>>>>> linuxCredito
         }
       }
     }

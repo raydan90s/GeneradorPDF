@@ -16,10 +16,14 @@
       },
       "Yachasoft.Core/1.0.0": {
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Core.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Core.dll": {}
+>>>>>>> linuxCredito
         }
       }
     }

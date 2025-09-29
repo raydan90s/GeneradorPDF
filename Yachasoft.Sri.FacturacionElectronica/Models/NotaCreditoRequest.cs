@@ -8,7 +8,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Models.Request
         public DocumentInfo DocumentInfo { get; set; }
         public Customer Customer { get; set; }
         public Payment Payment { get; set; }
-        public CreditNote CreditNote { get; set; }
+        public CreditNoteData CreditNoteData { get; set; }  // <-- AGREGAR ESTA
         public List<Detail> Details { get; set; }
         public List<AdditionalInfo> AdditionalInfo { get; set; }
         public Authorization Autorizacion { get; set; }
@@ -16,10 +16,12 @@ namespace Yachasoft.Sri.FacturacionElectronica.Models.Request
 
     }
 
-    public class CreditNote
+    public class CreditNoteData
     {
-        public ModifiedDocument ModifiedDocument { get; set; }
-        public string Reason { get; set; }
+    public string ModifiedDocCode { get; set; }
+    public string ModifiedDocNumber { get; set; }
+    public string ModifiedDocDate { get; set; }
+    public string Reason { get; set; }
     }
 
     public class ModifiedDocument

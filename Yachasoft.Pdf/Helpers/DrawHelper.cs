@@ -1,5 +1,5 @@
-﻿using PdfSharp.Drawing;
-using PdfSharp.Drawing.BarCodes;
+﻿using PdfSharpCore.Drawing;
+using PdfSharpCore.Drawing.BarCodes;
 using System;
 using System.Collections.Generic;
 using System.Linq;

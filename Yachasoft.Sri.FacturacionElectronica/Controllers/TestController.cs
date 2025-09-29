@@ -174,135 +174,161 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 
 
         //GENERAR PDF DESDE XML
-        [HttpPost("GenerarPdfDesdeJson")]
-        public IActionResult GenerarPdfDesdeJson([FromBody] FacturaRequest request)
+[HttpPost("GenerarPdfDesdeJson")]
+public IActionResult GenerarPdfDesdeJson([FromBody] FacturaRequest request)
+{
+    if (request == null)
+        return BadRequest(new { error = "Request body vacío" });
+        
+    Modelos.Factura_1_0_0Modelo.Factura factura;
+    
+    try
+    {
+        factura = MapFacturaRequestToFactura(request);
+
+        //AQUI DEBO PASARLE LA AUTORIZACION
+        if (factura.Autorizacion == null)
+            factura.Autorizacion = new Modelos.Base.Autorizacion();
+        factura.Autorizacion.Numero ??= "SIN AUTORIZACION";
+
+        // Imprimir factura para debug
+        Console.WriteLine("Factura mapeada: " +
+            System.Text.Json.JsonSerializer.Serialize(factura, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { error = "Error al mapear factura: " + ex.Message });
+    }
+    // Usar el AccessKey del documento como nombre de archivo
+    var accessKey = request.DocumentInfo?.AccessKey ?? "SINCLAVE";
+    var pdfFileName = $"Factura_{accessKey}.pdf"; // O solo "Factura.pdf"
+    var pdfPath = Path.Combine("/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica", pdfFileName);
+
+
+    try
+    {        
+        // Verificar permisos del directorio
+        var directory = Path.GetDirectoryName(pdfPath);
+        if (!Directory.Exists(directory))
         {
-            Console.WriteLine("=== Nueva petición a GenerarPdfDesdeJson ===");
-            if (request == null)
-                return BadRequest(new { error = "Request body vacío" });
-            Modelos.Factura_1_0_0Modelo.Factura factura;
-            try
-            {
-                factura = MapFacturaRequestToFactura(request);
-
-                //AQUI DEBO PASARLE LA AUTORIZACION
-                if (factura.Autorizacion == null)
-                    factura.Autorizacion = new Modelos.Base.Autorizacion();
-                factura.Autorizacion.Numero ??= "SIN AUTORIZACION";
-
-                // Imprimir factura para debug
-                Console.WriteLine("Factura mapeada: " +
-                    System.Text.Json.JsonSerializer.Serialize(factura, new System.Text.Json.JsonSerializerOptions { WriteIndented = true }));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = "Error al mapear factura: " + ex.Message });
-            }
-
-            var pdfPath = @"C:\Users\siste\Desktop\FACTURA.pdf";
-            try
-            {
-                this.rIDEService.Factura_1_0_0(factura, pdfPath);
-                return Ok(new { message = "PDF generado correctamente", pdfPath });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = "Error al generar PDF: " + ex.Message });
-            }
+            Directory.CreateDirectory(directory);
         }
+        
+        // Verificar permisos de escritura
+        var testFile = Path.Combine(directory, "test_write.tmp");
+        System.IO.File.WriteAllText(testFile, "test");
+        System.IO.File.Delete(testFile);
+        
+        this.rIDEService.Factura_1_0_0(factura, pdfPath);
+        
+        return Ok(new { message = "PDF generado correctamente", pdfPath });
+    }
+    catch (UnauthorizedAccessException ex)
+    {
+        return BadRequest(new { error = "Error de permisos: " + ex.Message });
+    }
+    catch (DirectoryNotFoundException ex)
+    {
+        return BadRequest(new { error = "Directorio no encontrado: " + ex.Message });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new { error = "Error al generar PDF: " + ex.Message });
+    }
+}
 
-        // Mapper JSON -> Factura (sin firmar)
-        private Modelos.Factura_1_0_0Modelo.Factura MapFacturaRequestToFactura(FacturaRequest request)
+// Mapper JSON -> Factura (sin firmar)
+private Modelos.Factura_1_0_0Modelo.Factura MapFacturaRequestToFactura(FacturaRequest request)
+{
+    try
+    {
+        // --- Emisor ---
+        var logoPath = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/Logo_UTPL.png";
+        
+        var emisor = new Modelos.Emisor
         {
-            try
+            RUC = request.DocumentInfo?.RucBusiness,
+            RazonSocial = request.DocumentInfo?.BusinessName,
+            NombreComercial = request.DocumentInfo?.CommercialName,
+            DireccionMatriz = request.DocumentInfo?.BusinessAddress,
+            EnumTipoAmbiente = request.DocumentInfo?.Environment == "1"
+                ? Core.Enumerados.EnumTipoAmbiente.Prueba
+                : Core.Enumerados.EnumTipoAmbiente.Produccion,
+            ObligadoContabilidad = request.DocumentInfo?.ObligatedAccounting?.ToUpper() == "SI",
+            Logo = logoPath
+        };
+        
+        // Verificar que el logo existe
+        if (!System.IO.File.Exists(logoPath))
+        {
+            Console.WriteLine("⚠️ Logo no encontrado en: " + logoPath);
+            // Usa un logo por defecto o continúa sin logo
+            emisor.Logo = null;
+        }
+        
+        // --- Establecimiento ---
+        var establecimiento = new Modelos.Establecimiento
+        {
+            Codigo = int.Parse(request.DocumentInfo?.Establishment ?? throw new Exception("Establishment no puede ser nulo")),
+            DireccionEstablecimiento = request.DocumentInfo?.EstablishmentAddress ?? throw new Exception("DireccionEstablecimiento no puede ser nula"),
+            Emisor = emisor
+        };
+
+        // --- Punto de Emisión ---
+        var puntoEmision = new Modelos.PuntoEmision
+        {
+            Codigo = int.Parse(request.DocumentInfo?.EmissionPoint ?? throw new Exception("EmissionPoint no puede ser nulo")),
+            Establecimiento = establecimiento
+        };
+
+        // --- Info Tributaria ---
+        var infoTributaria = new Modelos.Base.InfoTributaria
+        {
+            EnumTipoEmision = Core.Enumerados.EnumTipoEmision.Normal,
+            Secuencial = int.Parse(request.DocumentInfo?.Sequential ?? throw new Exception("Sequential no puede ser nulo")),
+            ClaveAcceso = string.IsNullOrEmpty(request.DocumentInfo?.AccessKey)
+                ? throw new Exception("AccessKey no puede ser nulo o vacío")
+                : request.DocumentInfo.AccessKey
+        };
+
+        // --- Detalles ---
+        var detalles = request.Details?.Select(d => new Modelos.Base.DetalleDocumentoItemPrecioSubsidio
+        {
+            Cantidad = d.Quantity,
+            PrecioUnitario = decimal.TryParse(d.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out var p) ? p : 0,
+            PrecioTotalSinImpuesto = decimal.TryParse(d.SubTotal, NumberStyles.Any, CultureInfo.InvariantCulture, out var st) ? st : 0,
+            Descuento = decimal.TryParse(d.Discount, NumberStyles.Any, CultureInfo.InvariantCulture, out var ds) ? ds : 0,
+            Item = new Modelos.Base.Item
             {
-                // --- Emisor ---
-                var emisor = new Modelos.Emisor
+                CodigoPrincipal = string.IsNullOrEmpty(d.ProductCode) ? "SIN CODIGO" : d.ProductCode,
+                Descripcion = string.IsNullOrEmpty(d.Description) ? (d.ProductName ?? "SIN NOMBRE") : d.Description,
+                CodigoAuxiliar = null
+            },
+            Impuestos = new List<Modelos.Base.Impuesto>
+            {
+                new Modelos.Base.ImpuestoIVA
                 {
-                    RUC = request.DocumentInfo?.RucBusiness,
-                    RazonSocial = request.DocumentInfo?.BusinessName,
-                    NombreComercial = request.DocumentInfo?.CommercialName,
-                    DireccionMatriz = request.DocumentInfo?.BusinessAddress,
-                    EnumTipoAmbiente = request.DocumentInfo?.Environment == "1"
-                        ? Core.Enumerados.EnumTipoAmbiente.Prueba
-                        : Core.Enumerados.EnumTipoAmbiente.Produccion,
-                    ObligadoContabilidad = request.DocumentInfo?.ObligatedAccounting?.ToUpper() == "SI",
-                    Logo = @"C:\Users\siste\Downloads\Logo_UTPL.png"
-                };
-            
-                // --- Establecimiento ---
-                var establecimiento = new Modelos.Establecimiento
-                {
-                    Codigo = int.Parse(request.DocumentInfo?.Establishment ?? throw new Exception("Establishment no puede ser nulo")),
-                    DireccionEstablecimiento = request.DocumentInfo?.EstablishmentAddress ?? throw new Exception("DireccionEstablecimiento no puede ser nula"),
-                    Emisor = emisor
-                };
-
-                // --- Punto de Emisión ---
-                var puntoEmision = new Modelos.PuntoEmision
-                {
-                    Codigo = int.Parse(request.DocumentInfo?.EmissionPoint ?? throw new Exception("EmissionPoint no puede ser nulo")),
-                    Establecimiento = establecimiento
-                };
-
-                // --- Info Tributaria ---
-                var infoTributaria = new Modelos.Base.InfoTributaria
-                {
-                    EnumTipoEmision = Core.Enumerados.EnumTipoEmision.Normal,
-                    Secuencial = int.Parse(request.DocumentInfo?.Sequential ?? throw new Exception("Sequential no puede ser nulo")),
-                    ClaveAcceso = string.IsNullOrEmpty(request.DocumentInfo?.AccessKey)
-                        ? throw new Exception("AccessKey no puede ser nulo o vacío")
-                        : request.DocumentInfo.AccessKey
-                };
-                bool todosBaseCero = request.Details != null &&
-                     request.Details.All(d => decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var baseTax) && baseTax == 0);
-
-
-                // --- Detalles ---
-                var detalles = request.Details?.Select(d => new Modelos.Base.DetalleDocumentoItemPrecioSubsidio
-                {
-                    Cantidad = d.Quantity,
-                    PrecioUnitario = decimal.TryParse(d.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out var p) ? p : 0,
-                    PrecioTotalSinImpuesto = decimal.TryParse(d.SubTotal, NumberStyles.Any, CultureInfo.InvariantCulture, out var st) ? st : 0,
-                    Descuento = decimal.TryParse(d.Discount, NumberStyles.Any, CultureInfo.InvariantCulture, out var ds) ? ds : 0,
-                    Item = new Modelos.Base.Item
+                    Codigo = Modelos.Enumerados.EnumTipoImpuesto.IVA,
+                    CodigoPorcentaje = d.PercentageCode switch
                     {
-                        CodigoPrincipal = string.IsNullOrEmpty(d.ProductCode) ? "SIN CODIGO" : d.ProductCode,
-                        Descripcion = string.IsNullOrEmpty(d.Description) ? (d.ProductName ?? "SIN NOMBRE") : d.Description,
-                        CodigoAuxiliar = null
+                        "0" => EnumTipoImpuestoIVA._0,
+                        "2" => EnumTipoImpuestoIVA._12,
+                        "3" => EnumTipoImpuestoIVA._14,
+                        "4" => EnumTipoImpuestoIVA._15,
+                        "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,
+                        "7" => EnumTipoImpuestoIVA.ExentoIVA,
+                        _   => EnumTipoImpuestoIVA._0
                     },
+                    BaseImponible = decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
+                    Valor = decimal.TryParse(d.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0,
+                    Tarifa = decimal.TryParse(d.Rate, NumberStyles.Any, CultureInfo.InvariantCulture, out var rate) ? rate : 0
+                }
+            },
+            DetallesAdicionales = new List<Modelos.Base.CampoAdicional>()
+        }).ToList();
 
-                    Impuestos = new List<Modelos.Base.Impuesto>
-                    {
-                    new Modelos.Base.ImpuestoIVA
-                    {
-                            Codigo = Modelos.Enumerados.EnumTipoImpuesto.IVA,
-                            CodigoPorcentaje = (d.PercentageCode switch
-                            {
-                                "0" => EnumTipoImpuestoIVA._0,
-                                "2" => EnumTipoImpuestoIVA._12,
-                                "3" => EnumTipoImpuestoIVA._14,
-                                "4" => EnumTipoImpuestoIVA._15,
-                                "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,
-                                "7" => EnumTipoImpuestoIVA.ExentoIVA,
-                                _   => EnumTipoImpuestoIVA._0
-                            }) switch
-                            {
-                                EnumTipoImpuestoIVA._0 when todosBaseCero => EnumTipoImpuestoIVA._15, // <-- cambio global si todos base 0
-                                EnumTipoImpuestoIVA._0 when decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var baseTax) && baseTax == 0 => EnumTipoImpuestoIVA._15,
-                                var val => val
-                            },
-                            BaseImponible = decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
-                            Valor = decimal.TryParse(d.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0,
-                            Tarifa = decimal.TryParse(d.Rate, NumberStyles.Any, CultureInfo.InvariantCulture, out var rate) ? rate : 0
-                        }
-                    },
-                    DetallesAdicionales = new List<Modelos.Base.CampoAdicional>()
-                }).ToList();
-
-
-                // --- Pagos ---
-                var pagos = new List<Modelos.Base.Pago>
+        // --- Pagos ---
+        var pagos = new List<Modelos.Base.Pago>
         {
             new Modelos.Base.Pago
             {
@@ -313,79 +339,78 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
             }
         };
 
-                // --- Factura ---
-                return new Modelos.Factura_1_0_0Modelo.Factura
-                {
-                    PuntoEmision = puntoEmision,
-                    FechaEmision = DateTime.Now,
-                    InfoTributaria = infoTributaria,
-                    InfoFactura = new Modelos.Factura_1_0_0Modelo.InfoFactura
-                    {
-                        TotalSinImpuestos = string.IsNullOrEmpty(request.Payment?.TotalWithoutTaxes) ? 0
-                            : decimal.Parse(request.Payment.TotalWithoutTaxes, CultureInfo.InvariantCulture),
-                        TotalDescuento = string.IsNullOrEmpty(request.Payment?.TotalDiscount) ? 0
-                            : decimal.Parse(request.Payment.TotalDiscount, CultureInfo.InvariantCulture),
-                        ImporteTotal = string.IsNullOrEmpty(request.Payment?.TotalAmount) ? 0
-                            : decimal.Parse(request.Payment.TotalAmount, CultureInfo.InvariantCulture),
-                        Moneda = request.Payment?.Currency ?? "DOLAR",
-
-                        TotalConImpuestos = detalles
-                            .SelectMany(d => d.Impuestos.OfType<ImpuestoIVA>(), (d, i) => new ImpuestoVentaIVA
-                            {
-                                BaseImponible = i.BaseImponible,
-                                Tarifa = i.CodigoPorcentaje switch
-                                {
-                                    EnumTipoImpuestoIVA._0 => 0m,
-                                    EnumTipoImpuestoIVA._12 => 12m,
-                                    EnumTipoImpuestoIVA._14 => 14m,
-                                    EnumTipoImpuestoIVA._15 => 15m,
-                                    _ => 0m
-                                },
-                                Valor = i.Valor,
-                                ValorDevolucionIVA = 0,
-                                DescuentoAdicional = 0,
-                                Codigo = i.Codigo,
-                                CodigoPorcentaje = i.CodigoPorcentaje
-                            })
-                            .ToList<ImpuestoVenta>(),
-                        Pagos = pagos
-                    },
-                    Detalles = detalles,
-                    InfoAdicional = request.AdditionalInfo?.Select(a => new Modelos.Base.CampoAdicional
-                    {
-                        Nombre = string.IsNullOrEmpty(a.Name) ? null : a.Name,
-                        Valor = a.Value
-                    }).ToList() ?? new List<Modelos.Base.CampoAdicional>(),
-
-
-                    Sujeto = new Modelos.Base.Sujeto
-                    {
-                        Identificacion = request.Customer?.CustomerDni,
-                        RazonSocial = request.Customer?.CustomerName,
-                        TipoIdentificador = request.Customer?.IdentificationType switch
-                        {
-                            "04" => Core.Enumerados.EnumTipoIdentificacion.RUC,
-                            "05" => Core.Enumerados.EnumTipoIdentificacion.Cedula,
-                            "06" => Core.Enumerados.EnumTipoIdentificacion.Pasaporte,
-                            "07" => Core.Enumerados.EnumTipoIdentificacion.VentaConsumidorFinal,
-                            "08" => Core.Enumerados.EnumTipoIdentificacion.IdentificacionExterior,
-                            _ => Core.Enumerados.EnumTipoIdentificacion.VentaConsumidorFinal // valor por defecto
-                        }
-                    },
-
-                    Autorizacion = new Modelos.Base.Autorizacion
-                    {
-                        Numero = request.Autorizacion?.NumeroAutorizacion ?? "SIN AUTORIZACION",
-                        Fecha = request.Autorizacion?.FechaAutorizacion ?? DateTime.Now
-                    }
-                };
-            }
-            catch (Exception ex)
+        // --- Factura ---
+        return new Modelos.Factura_1_0_0Modelo.Factura
+        {
+            PuntoEmision = puntoEmision,
+            FechaEmision = DateTime.Now,
+            InfoTributaria = infoTributaria,
+            InfoFactura = new Modelos.Factura_1_0_0Modelo.InfoFactura
             {
-                Console.WriteLine("Error en MapFacturaRequestToFactura: " + ex.Message);
-                throw;
+                TotalSinImpuestos = string.IsNullOrEmpty(request.Payment?.TotalWithoutTaxes) ? 0
+                    : decimal.Parse(request.Payment.TotalWithoutTaxes, CultureInfo.InvariantCulture),
+                TotalDescuento = string.IsNullOrEmpty(request.Payment?.TotalDiscount) ? 0
+                    : decimal.Parse(request.Payment.TotalDiscount, CultureInfo.InvariantCulture),
+                ImporteTotal = string.IsNullOrEmpty(request.Payment?.TotalAmount) ? 0
+                    : decimal.Parse(request.Payment.TotalAmount, CultureInfo.InvariantCulture),
+                Moneda = request.Payment?.Currency ?? "DOLAR",
+
+                TotalConImpuestos = detalles
+                    .SelectMany(d => d.Impuestos.OfType<ImpuestoIVA>(), (d, i) => new ImpuestoVentaIVA
+                    {
+                        BaseImponible = i.BaseImponible,
+                        Tarifa = i.CodigoPorcentaje switch
+                        {
+                            EnumTipoImpuestoIVA._0 => 0m,
+                            EnumTipoImpuestoIVA._12 => 12m,
+                            EnumTipoImpuestoIVA._14 => 14m,
+                            EnumTipoImpuestoIVA._15 => 15m,
+                            _ => 0m
+                        },
+                        Valor = i.Valor,
+                        ValorDevolucionIVA = 0,
+                        DescuentoAdicional = 0,
+                        Codigo = i.Codigo,
+                        CodigoPorcentaje = i.CodigoPorcentaje
+                    })
+                    .ToList<ImpuestoVenta>(),
+                Pagos = pagos
+            },
+            Detalles = detalles,
+            InfoAdicional = request.AdditionalInfo?.Select(a => new Modelos.Base.CampoAdicional
+            {
+                Nombre = string.IsNullOrEmpty(a.Name) ? null : a.Name,
+                Valor = a.Value
+            }).ToList() ?? new List<Modelos.Base.CampoAdicional>(),
+
+            Sujeto = new Modelos.Base.Sujeto
+            {
+                Identificacion = request.Customer?.CustomerDni,
+                RazonSocial = request.Customer?.CustomerName,
+                TipoIdentificador = request.Customer?.IdentificationType switch
+                {
+                    "04" => Core.Enumerados.EnumTipoIdentificacion.RUC,
+                    "05" => Core.Enumerados.EnumTipoIdentificacion.Cedula,
+                    "06" => Core.Enumerados.EnumTipoIdentificacion.Pasaporte,
+                    "07" => Core.Enumerados.EnumTipoIdentificacion.VentaConsumidorFinal,
+                    "08" => Core.Enumerados.EnumTipoIdentificacion.IdentificacionExterior,
+                    _ => Core.Enumerados.EnumTipoIdentificacion.VentaConsumidorFinal // valor por defecto
+                }
+            },
+
+            Autorizacion = new Modelos.Base.Autorizacion
+            {
+                Numero = request.Autorizacion?.NumeroAutorizacion ?? "SIN AUTORIZACION",
+                Fecha = request.Autorizacion?.FechaAutorizacion ?? DateTime.Now
             }
-        }
+        };
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Error en MapFacturaRequestToFactura: " + ex.Message);
+        throw;
+    }
+}
 
         //GENERAR PDF DESDE JSON PARA NOTA DE CRÉDITO
         [HttpPost("GenerarPdfNotaCreditoDesdeJson")]
@@ -411,7 +436,9 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 return BadRequest(new { error = "Error al mapear nota de crédito: " + ex.Message });
             }
 
-            var pdfPath = @"C:\Users\siste\Desktop\NOTA_CREDITO.pdf";
+            var accessKey = request.DocumentInfo?.AccessKey ?? "SINCLAVE";
+            var pdfFileName = $"Factura_{accessKey}.pdf"; // O solo "Factura.pdf"
+            var pdfPath = Path.Combine("/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica", pdfFileName);
 
             try
             {
@@ -433,6 +460,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
             try
             {
                 // --- Emisor ---
+                var logoPath = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/Logo_UTPL.png";
                 var emisor = new Modelos.Emisor
                 {
                     RUC = request.DocumentInfo?.RucBusiness,
@@ -443,7 +471,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                         ? Core.Enumerados.EnumTipoAmbiente.Prueba
                         : Core.Enumerados.EnumTipoAmbiente.Produccion,
                     ObligadoContabilidad = request.DocumentInfo?.ObligatedAccounting?.ToUpper() == "SI",
-                    Logo = @"C:\Users\siste\Downloads\Logo_UTPL.png"
+                    Logo= logoPath
                 };
 
                 // --- Establecimiento ---
@@ -472,56 +500,41 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 };
 
                 // --- Detalles ---
-                var detalles = request.Details?.Select(d => new Modelos.Base.DetalleDocumentoItemPrecio
-                {
-                    Cantidad = int.TryParse(d.Quantity, out var qty) ? qty : 0,
-                    PrecioUnitario = decimal.TryParse(d.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out var p) ? p : 0,
-                    PrecioTotalSinImpuesto = decimal.TryParse(d.SubTotal, NumberStyles.Any, CultureInfo.InvariantCulture, out var st) ? st : 0,
-                    Descuento = decimal.TryParse(d.Discount, NumberStyles.Any, CultureInfo.InvariantCulture, out var ds) ? ds : 0,
-                    Item = new Modelos.Base.Item
-                    {
-                        CodigoPrincipal = string.IsNullOrEmpty(d.ProductCode) ? "SIN CODIGO" : d.ProductCode,
-                        Descripcion = string.IsNullOrEmpty(d.Description) ? (d.ProductName ?? "SIN NOMBRE") : d.Description,
-                        CodigoAuxiliar = null
-                    },
-                    Impuestos = new List<Modelos.Base.Impuesto>
+            var detalles = request.Details?.Select(d => new Modelos.Base.DetalleDocumentoItemPrecio
+{
+    Cantidad = int.TryParse(d.Quantity, out var q) ? q : 0,
+    PrecioUnitario = decimal.TryParse(d.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out var p) ? p : 0,
+    PrecioTotalSinImpuesto = decimal.TryParse(d.SubTotal, NumberStyles.Any, CultureInfo.InvariantCulture, out var st) ? st : 0,
+    Descuento = decimal.TryParse(d.Discount, NumberStyles.Any, CultureInfo.InvariantCulture, out var ds) ? ds : 0,
+    Item = new Modelos.Base.Item
+    {
+        CodigoPrincipal = string.IsNullOrEmpty(d.ProductCode) ? "SIN CODIGO" : d.ProductCode,
+        Descripcion = string.IsNullOrEmpty(d.Description) ? (d.ProductName ?? "SIN NOMBRE") : d.Description,
+        CodigoAuxiliar = null
+    },
+    Impuestos = new List<Modelos.Base.Impuesto>
+    {
+        new Modelos.Base.ImpuestoIVA
+        {
+            Codigo = Modelos.Enumerados.EnumTipoImpuesto.IVA,
+            CodigoPorcentaje = d.PercentageCode switch
             {
-                new Modelos.Base.ImpuestoIVA
-                {
-                    Codigo = Modelos.Enumerados.EnumTipoImpuesto.IVA,
-                    // CORREGIDO: Usar el percentageCode correcto del JSON
-                    CodigoPorcentaje = (d.PercentageCode switch
-{
-    "0" => EnumTipoImpuestoIVA._0,
-    "2" => EnumTipoImpuestoIVA._12,
-    "3" => EnumTipoImpuestoIVA._14,
-    "4" => EnumTipoImpuestoIVA._15,
-    "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,
-    "7" => EnumTipoImpuestoIVA.ExentoIVA,
-    _   => EnumTipoImpuestoIVA._0
-}) switch
-{
-    EnumTipoImpuestoIVA._0 when decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var baseTax) && baseTax == 0 => EnumTipoImpuestoIVA._15,
-    var val => val
-},
-
-                    BaseImponible = decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
-                    Valor = decimal.TryParse(d.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0,
-                    // CORREGIDO: Calcular tarifa basada en percentageCode
-                    Tarifa = d.PercentageCode switch
-                    {
-                        "0" => 0m,
-                        "2" => 12m,
-                        "3" => 14m,
-                        "4" => 15m,
-                        "6" => 0m,
-                        "7" => 0m,
-                        _ => 0m
-                    }
-                }
+                "0" => EnumTipoImpuestoIVA._0,
+                "2" => EnumTipoImpuestoIVA._12,
+                "3" => EnumTipoImpuestoIVA._14,
+                "4" => EnumTipoImpuestoIVA._15,
+                "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,
+                "7" => EnumTipoImpuestoIVA.ExentoIVA,
+                _   => EnumTipoImpuestoIVA._0
             },
-                    DetallesAdicionales = new List<Modelos.Base.CampoAdicional>()
-                }).ToList();
+            BaseImponible = decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
+            Valor = decimal.TryParse(d.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0,
+            Tarifa = decimal.TryParse(d.Rate, NumberStyles.Any, CultureInfo.InvariantCulture, out var rate) ? rate : 0
+        }
+    },
+    DetallesAdicionales = new List<Modelos.Base.CampoAdicional>()
+}).ToList();
+
 
                 // --- Nota de crédito ---
                 return new NotaCredito_1_0_0Modelo.NotaCredito
@@ -532,45 +545,48 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     Detalles = detalles,
                     // --- InfoNotaCredito ---
                     InfoNotaCredito = new NotaCredito_1_0_0Modelo.InfoNotaCredito
-                    {
-                        DocumentoModificado = new DocumentoSustento
-                        {
-                            CodDocumento = request.CreditNote?.ModifiedDocument?.Code switch
-                            {
-                                "01" => Core.Enumerados.EnumTipoDocumento.Factura,
-                                "04" => Core.Enumerados.EnumTipoDocumento.NotaCredito,
-                                "05" => Core.Enumerados.EnumTipoDocumento.NotaDebito,
-                                "06" => Core.Enumerados.EnumTipoDocumento.GuiaRemision,
-                                "07" => Core.Enumerados.EnumTipoDocumento.ComprobanteRetencion,
-                                _ => Core.Enumerados.EnumTipoDocumento.Factura
-                            },
-                            NumDocumento = request.CreditNote?.ModifiedDocument?.Number,
-                            FechaEmisionDocumento = request.CreditNote?.ModifiedDocument?.IssueDate ?? DateTime.Now
-                        },
-                        Motivo = request.CreditNote?.Reason ?? "SIN MOTIVO",
+{
+    DocumentoModificado = new DocumentoSustento
+    {
+        CodDocumento = request.CreditNoteData?.ModifiedDocCode switch
+        {
+            "01" => Core.Enumerados.EnumTipoDocumento.Factura,
+            "04" => Core.Enumerados.EnumTipoDocumento.NotaCredito,
+            "05" => Core.Enumerados.EnumTipoDocumento.NotaDebito,
+            "06" => Core.Enumerados.EnumTipoDocumento.GuiaRemision,
+            "07" => Core.Enumerados.EnumTipoDocumento.ComprobanteRetencion,
+            _ => Core.Enumerados.EnumTipoDocumento.Factura
+        },
+        NumDocumento = request.CreditNoteData?.ModifiedDocNumber,
+        FechaEmisionDocumento = DateTime.TryParseExact(
+            request.CreditNoteData?.ModifiedDocDate,
+            "dd/MM/yyyy",
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.None,
+            out var fechaMod)
+            ? fechaMod
+            : DateTime.Now
+    },
+    Motivo = request.CreditNoteData?.Reason ?? "SIN MOTIVO",
 
-                        // Aquí asignamos totalAmount al ValorModificacion
-                        ValorModificacion = decimal.TryParse(request.Payment?.TotalAmount, NumberStyles.Any, CultureInfo.InvariantCulture, out var valor) ? valor : 0m,
+    ValorModificacion = decimal.TryParse(request.Payment?.TotalAmount, NumberStyles.Any, CultureInfo.InvariantCulture, out var valor) ? valor : 0m,
 
-                        // Mapeo de impuestos del JSON
-                        TotalConImpuestos = request.TotalsWithTax?.Select(t => new ImpuestoVentaIVA
-                        {
-                            BaseImponible = decimal.TryParse(t.TaxableBase, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
-                            Tarifa = t.PercentageCode switch
-                            {
-                                "0" => 0m,
-                                "2" => 12m,
-                                "3" => 14m,
-                                "4" => 15m,
-                                "6" => 0m,
-                                "7" => 0m,
-                                _ => 0m
-                            },
-                            Valor = decimal.TryParse(t.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0
-                        }).ToList<ImpuestoVenta>()
-                    },
-
-
+    TotalConImpuestos = request.TotalsWithTax?.Select(t => new ImpuestoVentaIVA
+    {
+        BaseImponible = decimal.TryParse(t.TaxableBase, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
+        Tarifa = t.PercentageCode switch
+        {
+            "0" => 0m,
+            "2" => 12m,
+            "3" => 14m,
+            "4" => 15m,
+            "6" => 0m,
+            "7" => 0m,
+            _ => 0m
+        },
+        Valor = decimal.TryParse(t.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0
+    }).ToList<ImpuestoVenta>()
+},
 
                     Sujeto = new Modelos.Base.Sujeto
                     {

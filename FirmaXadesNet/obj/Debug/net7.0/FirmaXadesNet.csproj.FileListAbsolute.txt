@@ -1,0 +1,13 @@
+/home/bitnami/GeneradorPDF/FirmaXadesNet/bin/Debug/net7.0/FirmaXadesNet.deps.json
+/home/bitnami/GeneradorPDF/FirmaXadesNet/bin/Debug/net7.0/FirmaXadesNet.dll
+/home/bitnami/GeneradorPDF/FirmaXadesNet/bin/Debug/net7.0/FirmaXadesNet.pdb
+/home/bitnami/GeneradorPDF/FirmaXadesNet/bin/Debug/net7.0/Microsoft.Xades.dll
+/home/bitnami/GeneradorPDF/FirmaXadesNet/bin/Debug/net7.0/Microsoft.Xades.pdb
+/home/bitnami/GeneradorPDF/FirmaXadesNet/obj/Debug/net7.0/FirmaXadesNet.csproj.AssemblyReference.cache
+/home/bitnami/GeneradorPDF/FirmaXadesNet/obj/Debug/net7.0/FirmaXadesNet.GeneratedMSBuildEditorConfig.editorconfig
+/home/bitnami/GeneradorPDF/FirmaXadesNet/obj/Debug/net7.0/FirmaXadesNet.csproj.CoreCompileInputs.cache
+/home/bitnami/GeneradorPDF/FirmaXadesNet/obj/Debug/net7.0/FirmaXadesNet.csproj.CopyComplete
+/home/bitnami/GeneradorPDF/FirmaXadesNet/obj/Debug/net7.0/FirmaXadesNet.dll
+/home/bitnami/GeneradorPDF/FirmaXadesNet/obj/Debug/net7.0/refint/FirmaXadesNet.dll
+/home/bitnami/GeneradorPDF/FirmaXadesNet/obj/Debug/net7.0/FirmaXadesNet.pdb
+/home/bitnami/GeneradorPDF/FirmaXadesNet/obj/Debug/net7.0/ref/FirmaXadesNet.dll

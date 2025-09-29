@@ -1,0 +1,11 @@
+/home/bitnami/GeneradorPDF/Microsoft.Xades/bin/Debug/net7.0/Microsoft.Xades.deps.json
+/home/bitnami/GeneradorPDF/Microsoft.Xades/bin/Debug/net7.0/Microsoft.Xades.dll
+/home/bitnami/GeneradorPDF/Microsoft.Xades/bin/Debug/net7.0/Microsoft.Xades.pdb
+/home/bitnami/GeneradorPDF/Microsoft.Xades/bin/Debug/net7.0/XAdES.xml
+/home/bitnami/GeneradorPDF/Microsoft.Xades/obj/Debug/net7.0/Microsoft.Xades.csproj.AssemblyReference.cache
+/home/bitnami/GeneradorPDF/Microsoft.Xades/obj/Debug/net7.0/Microsoft.Xades.GeneratedMSBuildEditorConfig.editorconfig
+/home/bitnami/GeneradorPDF/Microsoft.Xades/obj/Debug/net7.0/Microsoft.Xades.csproj.CoreCompileInputs.cache
+/home/bitnami/GeneradorPDF/Microsoft.Xades/obj/Debug/net7.0/Microsoft.Xades.dll
+/home/bitnami/GeneradorPDF/Microsoft.Xades/obj/Debug/net7.0/refint/Microsoft.Xades.dll
+/home/bitnami/GeneradorPDF/Microsoft.Xades/obj/Debug/net7.0/Microsoft.Xades.pdb
+/home/bitnami/GeneradorPDF/Microsoft.Xades/obj/Debug/net7.0/ref/Microsoft.Xades.dll

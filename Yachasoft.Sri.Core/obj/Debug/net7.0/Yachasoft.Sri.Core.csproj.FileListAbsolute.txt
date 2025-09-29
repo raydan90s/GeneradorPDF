@@ -1,0 +1,15 @@
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/bin/Debug/net7.0/Yachasoft.Sri.Core.deps.json
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/bin/Debug/net7.0/Yachasoft.Sri.Core.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/bin/Debug/net7.0/Yachasoft.Sri.Core.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/bin/Debug/net7.0/Yachasoft.Core.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/bin/Debug/net7.0/Yachasoft.Core.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/obj/Debug/net7.0/Yachasoft.Sri.Core.csproj.AssemblyReference.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/obj/Debug/net7.0/Yachasoft.Sri.Core.GeneratedMSBuildEditorConfig.editorconfig
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/obj/Debug/net7.0/Yachasoft.Sri.Core.AssemblyInfoInputs.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/obj/Debug/net7.0/Yachasoft.Sri.Core.AssemblyInfo.cs
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/obj/Debug/net7.0/Yachasoft.Sri.Core.csproj.CoreCompileInputs.cache
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/obj/Debug/net7.0/Yachasoft.Sri.Core.csproj.CopyComplete
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/obj/Debug/net7.0/Yachasoft.Sri.Core.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/obj/Debug/net7.0/refint/Yachasoft.Sri.Core.dll
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/obj/Debug/net7.0/Yachasoft.Sri.Core.pdb
+/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/obj/Debug/net7.0/ref/Yachasoft.Sri.Core.dll

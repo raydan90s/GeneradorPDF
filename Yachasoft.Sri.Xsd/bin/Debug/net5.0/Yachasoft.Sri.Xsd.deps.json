@@ -17,10 +17,14 @@
       },
       "Yachasoft.Core/1.0.0": {
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Core.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Core.dll": {}
+>>>>>>> linuxCredito
         }
       },
       "Yachasoft.Sri.Core/1.0.0": {
@@ -28,10 +32,14 @@
           "Yachasoft.Core": "1.0.0"
         },
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Sri.Core.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Sri.Core.dll": {}
+>>>>>>> linuxCredito
         }
       },
       "Yachasoft.Sri.Modelos/1.0.0": {
@@ -39,10 +47,14 @@
           "Yachasoft.Sri.Core": "1.0.0"
         },
         "runtime": {
+<<<<<<< HEAD
           "Yachasoft.Sri.Modelos.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
+=======
+          "Yachasoft.Sri.Modelos.dll": {}
+>>>>>>> linuxCredito
         }
       }
     }

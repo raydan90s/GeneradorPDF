@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PDFsharpNetStandard2" Version="1.51.4845" />
+    <PackageReference Include="PdfSharpCore" Version="1.3.18" />
   </ItemGroup>
 
 </Project>
