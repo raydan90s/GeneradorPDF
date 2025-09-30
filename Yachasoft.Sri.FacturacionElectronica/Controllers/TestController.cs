@@ -710,40 +710,90 @@ private NotaDebito_1_0_0Modelo.NotaDebito MapNotaDebitoRequestToNotaDebito(NotaD
             ClaveAcceso = request.DocumentInfo?.AccessKey ?? "0000000000000000000000000000000000000000000000000"
         };
 
-        // --- Detalles ---
-        var detalles = request.Details?.Select(d => new Modelos.Base.DetalleDocumentoItemPrecio
-        {
-            Cantidad = int.TryParse(d.Quantity, out var q) ? q : 0,
-            PrecioUnitario = decimal.TryParse(d.Price, NumberStyles.Any, CultureInfo.InvariantCulture, out var p) ? p : 0,
-            PrecioTotalSinImpuesto = decimal.TryParse(d.SubTotal, NumberStyles.Any, CultureInfo.InvariantCulture, out var st) ? st : 0,
-            Descuento = decimal.TryParse(d.Discount, NumberStyles.Any, CultureInfo.InvariantCulture, out var ds) ? ds : 0,
-            Item = new Modelos.Base.Item
-            {
-                CodigoPrincipal = string.IsNullOrEmpty(d.ProductCode) ? "SIN CODIGO" : d.ProductCode,
-                Descripcion = string.IsNullOrEmpty(d.Description) ? (d.ProductName ?? "SIN NOMBRE") : d.Description
-            },
-            Impuestos = new List<Modelos.Base.Impuesto>
-            {
-                new Modelos.Base.ImpuestoIVA
-                {
-                    Codigo = Modelos.Enumerados.EnumTipoImpuesto.IVA,
-                    CodigoPorcentaje = d.PercentageCode switch
-                    {
-                        "0" => EnumTipoImpuestoIVA._0,
-                        "2" => EnumTipoImpuestoIVA._12,
-                        "3" => EnumTipoImpuestoIVA._14,
-                        "4" => EnumTipoImpuestoIVA._15,
-                        "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,
-                        "7" => EnumTipoImpuestoIVA.ExentoIVA,
-                        _   => EnumTipoImpuestoIVA._0
-                    },
-                    BaseImponible = decimal.TryParse(d.TaxableBaseTax, NumberStyles.Any, CultureInfo.InvariantCulture, out var bt) ? bt : 0,
-                    Valor = decimal.TryParse(d.TaxValue, NumberStyles.Any, CultureInfo.InvariantCulture, out var tv) ? tv : 0,
-                    Tarifa = decimal.TryParse(d.Rate, NumberStyles.Any, CultureInfo.InvariantCulture, out var rate) ? rate : 0
-                }
-            }
-        }).ToList();
+        // --- Detalles y cálculo de impuestos ---
+        var detalles = new List<Modelos.Base.DetalleDocumentoItemPrecio>();
+        decimal subtotal0 = 0, subtotal15 = 0, subtotalNoObjetoIVA = 0, subtotalExento = 0, ivaTotal = 0;
 
+        foreach (var d in request.Details ?? Enumerable.Empty<Detail>())
+        {
+            int cantidad = int.TryParse(d.Quantity, out var q) ? q : 0;
+            decimal precioUnitario = decimal.TryParse(d.Price, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var p) ? p : 0;
+            decimal descuento = decimal.TryParse(d.Discount, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var ds) ? ds : 0;
+
+            decimal baseImponible = cantidad * precioUnitario - descuento;
+
+            // Determinar tipo de IVA
+            EnumTipoImpuestoIVA tipoIVA = d.PercentageCode switch
+            {
+                "0" => EnumTipoImpuestoIVA._0,
+                "2" => EnumTipoImpuestoIVA._12,
+                "3" => EnumTipoImpuestoIVA._14,
+                "4" => EnumTipoImpuestoIVA._15,
+                "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,
+                "7" => EnumTipoImpuestoIVA.ExentoIVA,
+                _ => EnumTipoImpuestoIVA._0
+            };
+
+            decimal tarifa = tipoIVA switch
+            {
+                EnumTipoImpuestoIVA._0 => 0,
+                EnumTipoImpuestoIVA._12 => 12,
+                EnumTipoImpuestoIVA._14 => 14,
+                EnumTipoImpuestoIVA._15 => 15,
+                _ => 0
+            };
+
+            decimal valorIVA = baseImponible * tarifa / 100;
+
+            // Acumular según tipo de IVA
+            switch (tipoIVA)
+            {
+                case EnumTipoImpuestoIVA._0:
+                    subtotal0 += baseImponible;
+                    break;
+                case EnumTipoImpuestoIVA._12:
+                case EnumTipoImpuestoIVA._14:
+                case EnumTipoImpuestoIVA._15:
+                    subtotal15 += baseImponible;
+                    ivaTotal += valorIVA;
+                    break;
+                case EnumTipoImpuestoIVA.NoObjetoImpuesto:
+                    subtotalNoObjetoIVA += baseImponible;
+                    break;
+                case EnumTipoImpuestoIVA.ExentoIVA:
+                    subtotalExento += baseImponible;
+                    break;
+            }
+
+            // Crear detalle
+            detalles.Add(new Modelos.Base.DetalleDocumentoItemPrecio
+            {
+                Cantidad = cantidad,
+                PrecioUnitario = precioUnitario,
+                PrecioTotalSinImpuesto = baseImponible,
+                Descuento = descuento,
+                Item = new Modelos.Base.Item
+                {
+                    CodigoPrincipal = string.IsNullOrEmpty(d.ProductCode) ? "SIN CODIGO" : d.ProductCode,
+                    Descripcion = string.IsNullOrEmpty(d.Description) ? (d.ProductName ?? "SIN NOMBRE") : d.Description
+                },
+                Impuestos = new List<Modelos.Base.Impuesto>
+                {
+                    new Modelos.Base.ImpuestoIVA
+                    {
+                        CodigoPorcentaje = tipoIVA,
+                        BaseImponible = baseImponible,
+                        Valor = valorIVA,
+                        Tarifa = tarifa
+                    }
+                }
+            });
+        }
+
+        decimal totalSinImpuestos = subtotal0 + subtotal15 + subtotalNoObjetoIVA + subtotalExento;
+        decimal valorTotal = totalSinImpuestos + ivaTotal;
+
+        // --- Pagos ---
         var pagos = new List<List<Modelos.Base.Pago>>
         {
             new List<Modelos.Base.Pago>
@@ -752,12 +802,11 @@ private NotaDebito_1_0_0Modelo.NotaDebito MapNotaDebitoRequestToNotaDebito(NotaD
                 {
                     FormaPago = ObtenerFormaPago(request.Payment?.PaymentMethodCode),
                     Plazo = 0,
-                    Total = decimal.TryParse(request.DebitNoteData?.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var t) ? t : 0,
+                    Total = valorTotal,
                     UnidadTiempo = "Dias"
                 }
             }
         };
-
 
         // --- Nota de débito ---
         var notaDebito = new NotaDebito_1_0_0Modelo.NotaDebito
@@ -783,47 +832,56 @@ private NotaDebito_1_0_0Modelo.NotaDebito MapNotaDebitoRequestToNotaDebito(NotaD
             {
                 Numero = request.Autorizacion?.NumeroAutorizacion ?? "SIN AUTORIZACION",
                 Fecha = request.Autorizacion?.FechaAutorizacion ?? DateTime.Now
-            }
-        };
-
-        // --- Info Nota Débito ---
-        notaDebito.InfoNotaDebito = new NotaDebito_1_0_0Modelo.InfoNotaDebito
-        {
-            DocumentoModificado = new DocumentoSustento
-            {
-                CodDocumento = request.DebitNoteData?.ModifiedDocCode switch
-                {
-                    "01" => Core.Enumerados.EnumTipoDocumento.Factura,
-                    "04" => Core.Enumerados.EnumTipoDocumento.NotaCredito,
-                    "05" => Core.Enumerados.EnumTipoDocumento.NotaDebito,
-                    "06" => Core.Enumerados.EnumTipoDocumento.GuiaRemision,
-                    "07" => Core.Enumerados.EnumTipoDocumento.ComprobanteRetencion,
-                    _ => Core.Enumerados.EnumTipoDocumento.Factura
-                },
-                NumDocumento = request.DebitNoteData?.ModifiedDocNumber,
-                FechaEmisionDocumento = DateTime.TryParseExact(
-                    request.DebitNoteData?.ModifiedDocDate,
-                    "dd/MM/yyyy",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None,
-                    out var fechaMod)
-                    ? fechaMod
-                    : DateTime.Now
             },
-            TotalSinImpuestos = detalles?.Sum(d => d.PrecioTotalSinImpuesto) ?? 0,
-            ValorTotal = decimal.TryParse(request.DebitNoteData?.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var valorTotal) ? valorTotal : 0,
-            Pagos = pagos 
-        };
-
-        // --- Motivos ---
-        notaDebito.Motivos = new List<Modelos.Base.Motivo>
-        {
-            new Modelos.Base.Motivo
+            InfoNotaDebito = new NotaDebito_1_0_0Modelo.InfoNotaDebito
             {
-                Razon = request.DebitNoteData?.Reason ?? "Ajuste al valor",
-                Valor = decimal.TryParse(request.DebitNoteData?.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var motivoValor) ? motivoValor : 0
+                DocumentoModificado = new DocumentoSustento
+                {
+                    CodDocumento = request.DebitNoteData?.ModifiedDocCode switch
+                    {
+                        "01" => Core.Enumerados.EnumTipoDocumento.Factura,
+                        "04" => Core.Enumerados.EnumTipoDocumento.NotaCredito,
+                        "05" => Core.Enumerados.EnumTipoDocumento.NotaDebito,
+                        "06" => Core.Enumerados.EnumTipoDocumento.GuiaRemision,
+                        "07" => Core.Enumerados.EnumTipoDocumento.ComprobanteRetencion,
+                        _ => Core.Enumerados.EnumTipoDocumento.Factura
+                    },
+                    NumDocumento = request.DebitNoteData?.ModifiedDocNumber,
+                    FechaEmisionDocumento = DateTime.TryParseExact(
+                        request.DebitNoteData?.ModifiedDocDate,
+                        "dd/MM/yyyy",
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None,
+                        out var fechaMod) ? fechaMod : DateTime.Now
+                },
+                TotalSinImpuestos = totalSinImpuestos,
+                ValorTotal = valorTotal,
+                Pagos = pagos
+            },
+            Motivos = new List<Modelos.Base.Motivo>
+            {
+                new Modelos.Base.Motivo
+                {
+                    Razon = request.DebitNoteData?.Reason ?? "Ajuste al valor",
+                    Valor = valorTotal
+                }
             }
         };
+
+        // --- Mapear solo IVA a ImpuestoVenta ---
+        notaDebito.InfoNotaDebito.Impuestos = detalles
+            .SelectMany(d => d.Impuestos.OfType<ImpuestoIVA>())
+            .GroupBy(i => i.CodigoPorcentaje) // Agrupar por tipo de IVA
+            .Select(g => new ImpuestoVentaIVA
+            {
+                CodigoPorcentaje = g.Key,
+                BaseImponible = g.Sum(x => x.BaseImponible),
+                Valor = g.Sum(x => x.Valor),
+                Tarifa = g.First().Tarifa
+            })
+            .Cast<ImpuestoVenta>()
+            .ToList();
+
 
         return notaDebito;
     }
@@ -833,7 +891,6 @@ private NotaDebito_1_0_0Modelo.NotaDebito MapNotaDebitoRequestToNotaDebito(NotaD
         throw;
     }
 }
-
 
     }
 
