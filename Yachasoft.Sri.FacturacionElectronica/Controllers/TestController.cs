@@ -356,24 +356,29 @@ private Modelos.Factura_1_0_0Modelo.Factura MapFacturaRequestToFactura(FacturaRe
                 Moneda = request.Payment?.Currency ?? "DOLAR",
 
                 TotalConImpuestos = detalles
-                    .SelectMany(d => d.Impuestos.OfType<ImpuestoIVA>(), (d, i) => new ImpuestoVentaIVA
-                    {
-                        BaseImponible = i.BaseImponible,
-                        Tarifa = i.CodigoPorcentaje switch
-                        {
-                            EnumTipoImpuestoIVA._0 => 0m,
-                            EnumTipoImpuestoIVA._12 => 12m,
-                            EnumTipoImpuestoIVA._14 => 14m,
-                            EnumTipoImpuestoIVA._15 => 15m,
-                            _ => 0m
-                        },
-                        Valor = i.Valor,
-                        ValorDevolucionIVA = 0,
-                        DescuentoAdicional = 0,
-                        Codigo = i.Codigo,
-                        CodigoPorcentaje = i.CodigoPorcentaje
-                    })
-                    .ToList<ImpuestoVenta>(),
+    .SelectMany(d => d.Impuestos.OfType<ImpuestoIVA>())
+    .GroupBy(i => i.CodigoPorcentaje) // Agrupar por tipo de IVA
+    .Select(g => new ImpuestoVentaIVA
+    {
+        CodigoPorcentaje = g.Key,
+        Tarifa = g.Key switch
+        {
+            EnumTipoImpuestoIVA._0 => 0m,
+            EnumTipoImpuestoIVA._12 => 12m,
+            EnumTipoImpuestoIVA._14 => 14m,
+            EnumTipoImpuestoIVA._15 => 15m,
+            _ => 0m
+        },
+        BaseImponible = g.Sum(x => x.BaseImponible),
+        Valor = g.Sum(x => x.Valor),
+        ValorDevolucionIVA = 0,
+        DescuentoAdicional = 0,
+        Codigo = g.First().Codigo
+    })
+    .Cast<ImpuestoVenta>() // <- Esto lo convierte al tipo base esperado
+    .ToList(),
+
+
                 Pagos = pagos
             },
             Detalles = detalles,
