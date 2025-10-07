@@ -10,7 +10,7 @@ using Yachasoft.Sri.Modelos.Enumerados;
 using Yachasoft.Sri.Xsd;
 using Yachasoft.Sri.Xsd.Map;
 
-namespace Yachasoft.Sri.FacturacionElectronica.Controllers
+namespace Yachasoft.Sri.FacturacionElectronica. ollers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -45,7 +45,9 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     ObligadoContabilidad = false,
                     RazonSocial = "Sri pruebas",
                     RegimenMicroEmpresas = false,
-                    RUC = "0992352434001"
+                    RUC = "0992352434001",
+                    ContribuyenteEspecial = null,
+                    //AgenteRetencion = "1",
                 };
 
                 var establecimiento = new Establecimiento
@@ -68,7 +70,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     FechaEmision = DateTime.Now,
                     InfoCompRetencion = new ComprobanteRetencion_1_0_0Modelo.InfoCompRetencion
                     {
-                        PeriodoFiscal = "10/2025"
+                        PeriodoFiscal = "10/2025",
                     },
                     Sujeto = new Sujeto
                     {
@@ -102,7 +104,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 // 3️⃣ Generar InfoTributaria y ClaveAcceso
                 retencion.InfoTributaria = new InfoTributaria
                 {
-                    Secuencial = 3,
+                    Secuencial = 4,
                     EnumTipoEmision = EnumTipoEmision.Normal
                 };
 
