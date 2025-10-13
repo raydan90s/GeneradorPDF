@@ -76,7 +76,7 @@ namespace Yachasoft.Sri.FacturacionElectronica. ollers
                     {
                         Identificacion = "9999999999999",
                         RazonSocial = "Proveedor Prueba",
-                        TipoIdentificador = Core.Enumerados.EnumTipoIdentificacion.RUC
+                        TipoIdentificador = EnumTipoIdentificacion.RUC
                     },
                     Impuestos = new List<ComprobanteRetencion_1_0_0Modelo.ImpuestoRetencion>
             {
