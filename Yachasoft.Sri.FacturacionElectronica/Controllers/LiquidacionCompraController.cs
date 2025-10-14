@@ -12,6 +12,7 @@ using Yachasoft.Sri.Modelos.Enumerados;
 using Yachasoft.Sri.Xsd;
 using Yachasoft.Sri.Xsd.Contratos.LiquidacionCompra_1_0_0;
 using Yachasoft.Sri.Xsd.Map;
+using Yachasoft.Sri.FacturacionElectronica.DTOs;
 
 namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 {
@@ -23,6 +24,12 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
         private readonly WebService.ISriWebService webService;
         private readonly Ride.IRIDEService rIDEService;
 
+        // ⚙️ Configuración hardcoded
+        private const string LOGO_PATH = @"C:\Users\Sistemas\Documents\GeneradorPDF\Yachasoft.Sri.FacturacionElectronica\Logo_UTPL.png";
+        private const string PDF_OUTPUT_PATH = @"C:\Users\Sistemas\Desktop\LIQUIDACION.pdf";
+        private const string CERTIFICADO_PATH = @"C:\Users\Sistemas\Downloads\FIRMA\signature.p12";
+        private const string CERTIFICADO_PASSWORD = "Compus1234";
+
         public LiquidacionController(
             Signer.ICertificadoService certificadoService,
             WebService.ISriWebService webService,
@@ -33,215 +40,282 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
             this.rIDEService = rIDEService;
         }
 
-        [HttpGet("GenerarLiquidacion")]
-       public async Task<IActionResult> GenerarLiquidacion()
-{
-    try
-    {
-        // 1️⃣ Crear emisor, establecimiento y punto de emisión
-        var emisor = new Emisor
+        /// <summary>
+        /// Genera, firma y envía una liquidación de compra al SRI con datos dinámicos (POST)
+        /// </summary>
+        /// <param name="request">Datos de la liquidación en formato JSON</param>
+        /// <returns>Respuesta del SRI con la clave de acceso</returns>
+        [HttpPost("Generar")]
+        public async Task<IActionResult> GenerarLiquidacionDinamica([FromBody] LiquidacionRequestDto request)
         {
-            DireccionMatriz = "Casa",
-            EnumTipoAmbiente = EnumTipoAmbiente.Prueba,
-            Logo = @"C:\Users\siste\Downloads\Logo_UTPL.png",
-            NombreComercial = "Yachasoft pruebas",
-            ObligadoContabilidad = false,
-            RazonSocial = "Sri pruebas",
-            RegimenMicroEmpresas = false,
-            RUC = "0992352434001"
-        };
-
-        var establecimiento = new Establecimiento
-        {
-            Codigo = 1,
-            DireccionEstablecimiento = "Mi casa",
-            Emisor = emisor
-        };
-
-        var puntoEmision = new PuntoEmision
-        {
-            Codigo = 2,
-            Establecimiento = establecimiento
-        };
-
-        // 2️⃣ Crear Liquidación de compra (datos de ejemplo)
-        var liquidacion = new LiquidacionCompra_1_0_0Modelo.LiquidacionCompra
-        {
-            PuntoEmision = puntoEmision,
-            FechaEmision = DateTime.Now,
-            Sujeto = new Sujeto
+            try
             {
-                Identificacion = "1799999999001",
-                RazonSocial = "Proveedor Ejemplo",
-                TipoIdentificador = EnumTipoIdentificacion.RUC
-            },
-            InfoLiquidacionCompra = new LiquidacionCompra_1_0_0Modelo.InfoLiquidacionCompra
-            {
-                TotalSinImpuestos = 100m,
-                TotalDescuento = 0m,
-                ImporteTotal = 112m,
-                DireccionProveedor = "Av. Amazonas y NNUU, Quito",
-                TotalConImpuestos = new List<ImpuestoVenta>
+                // 🔍 Validar request
+                if (request == null)
                 {
-                    new ImpuestoVentaIVA
-                    {
-                        BaseImponible = 100m,
-                        Tarifa = 15m,
-                        Valor = 15m,
-                        CodigoPorcentaje = EnumTipoImpuestoIVA._15
-                    }
-                },
-                Pagos = new List<Pago>
-                {
-                    new Pago
-                    {
-                        FormaPago = EnumFormaPago.SinUtilizarSistemaFinanciero,
-                        Total = 112m,
-                        Plazo = 30,
-                        UnidadTiempo = "dias"
-                    }
+                    return BadRequest(new { mensaje = "El cuerpo de la solicitud no puede estar vacío" });
                 }
-            },
-            Detalles = new List<DetalleDocumentoItemPrecio>
+
+                // 1️⃣ Crear emisor, establecimiento y punto de emisión
+                var emisor = new Emisor
+                {
+                    DireccionMatriz = request.Emisor.DireccionMatriz,
+                    EnumTipoAmbiente = request.Emisor.EsAmbientePrueba ? EnumTipoAmbiente.Prueba : EnumTipoAmbiente.Produccion,
+                    Logo = LOGO_PATH,
+                    NombreComercial = request.Emisor.NombreComercial,
+                    ObligadoContabilidad = request.Emisor.ObligadoContabilidad,
+                    RazonSocial = request.Emisor.RazonSocial,
+                    RegimenMicroEmpresas = request.Emisor.RegimenMicroEmpresas,
+                    RUC = request.Emisor.RUC
+                };
+
+                var establecimiento = new Establecimiento
+                {
+                    Codigo = request.Establecimiento.Codigo,
+                    DireccionEstablecimiento = request.Establecimiento.Direccion,
+                    Emisor = emisor
+                };
+
+                var puntoEmision = new PuntoEmision
+                {
+                    Codigo = request.PuntoEmision.Codigo,
+                    Establecimiento = establecimiento
+                };
+
+                // 2️⃣ Crear Liquidación de compra
+                var liquidacion = new LiquidacionCompra_1_0_0Modelo.LiquidacionCompra
+                {
+                    PuntoEmision = puntoEmision,
+                    FechaEmision = request.FechaEmision,
+                    Sujeto = new Sujeto
+                    {
+                        Identificacion = request.Proveedor.Identificacion,
+                        RazonSocial = request.Proveedor.RazonSocial,
+                        TipoIdentificador = (EnumTipoIdentificacion)request.Proveedor.TipoIdentificacion
+                    },
+                    InfoLiquidacionCompra = new LiquidacionCompra_1_0_0Modelo.InfoLiquidacionCompra
+                    {
+                        TotalSinImpuestos = request.InfoLiquidacion.TotalSinImpuestos,
+                        TotalDescuento = request.InfoLiquidacion.TotalDescuento,
+                        ImporteTotal = request.InfoLiquidacion.ImporteTotal,
+                        DireccionProveedor = request.Proveedor.Direccion,
+                        TotalConImpuestos = MapearImpuestosVenta(request.InfoLiquidacion.TotalConImpuestos),
+                        Pagos = MapearPagos(request.InfoLiquidacion.Pagos)
+                    },
+                    Detalles = MapearDetalles(request.Detalles),
+                    InfoAdicional = MapearCamposAdicionales(request.InfoAdicional)
+                };
+
+                // 3️⃣ Crear InfoTributaria y clave de acceso
+                liquidacion.InfoTributaria = new InfoTributaria
+                {
+                    Secuencial = request.Secuencial,
+                    EnumTipoEmision = EnumTipoEmision.Normal
+                };
+
+                liquidacion.InfoTributaria.ClaveAcceso = Utils.GenerarClaveAcceso(
+                    liquidacion.TipoDocumento,
+                    liquidacion.FechaEmision,
+                    liquidacion.PuntoEmision,
+                    liquidacion.InfoTributaria.Secuencial,
+                    liquidacion.InfoTributaria.EnumTipoEmision
+                );
+
+                // 4️⃣ Mapear al XSD
+                var xmlObj = LiquidacionCompra_1_0_0Mapper.Map(liquidacion);
+
+                // 5️⃣ Serializar a XmlDocument (para firmar)
+                var xmlDoc = new XmlDocument();
+                using (var memoryStream = new MemoryStream())
+                {
+                    var serializer = new XmlSerializer(typeof(liquidacionCompra));
+                    serializer.Serialize(memoryStream, xmlObj);
+                    memoryStream.Position = 0;
+                    xmlDoc.Load(memoryStream);
+                }
+
+                // Forzar Id="comprobante"
+                xmlDoc.DocumentElement.SetAttribute("id", "comprobante");
+
+                // 6️⃣ Guardar XML sin firmar (opcional para debug)
+                xmlDoc.Save("LIQUIDACION_COMPRA_SIN_FIRMAR.xml");
+
+                // 7️⃣ Firmar
+                certificadoService.CargarDesdeP12(CERTIFICADO_PATH, CERTIFICADO_PASSWORD);
+                var xmlFirmado = certificadoService.FirmarDocumento(xmlDoc);
+
+                // 8️⃣ Guardar XML firmado
+                xmlFirmado.Save("LIQUIDACION_COMPRA_FIRMADO.xml");
+
+                // 9️⃣ Convertir a string para enviar al SRI
+                string xmlFirmadoStr = xmlFirmado.OuterXml;
+                Console.WriteLine(xmlFirmadoStr.Substring(0, Math.Min(500, xmlFirmadoStr.Length)));
+
+                // 🔟 Enviar al SRI
+                var envio = await webService.ValidarComprobanteAsync(xmlFirmadoStr);
+                Console.WriteLine("✅ Respuesta SRI: " + Newtonsoft.Json.JsonConvert.SerializeObject(envio));
+
+                if (!envio.Ok)
+                {
+                    return BadRequest(new
+                    {
+                        mensaje = "Error al enviar la liquidación al SRI",
+                        detalle = envio
+                    });
+                }
+
+                // 1️⃣1️⃣ Solicitar autorización
+                var auto = await webService.AutorizacionComprobanteAsync(liquidacion.InfoTributaria.ClaveAcceso);
+                Console.WriteLine("✅ Respuesta de autorización SRI: " + Newtonsoft.Json.JsonConvert.SerializeObject(auto));
+
+                if (!auto.Ok)
+                {
+                    return Ok(new
+                    {
+                        mensaje = "Liquidación enviada pero no autorizada",
+                        claveAcceso = liquidacion.InfoTributaria.ClaveAcceso,
+                        respuestaSri = auto
+                    });
+                }
+
+                // 1️⃣2️⃣ Generar PDF RIDE
+                rIDEService.LiquidacionCompra_1_0_0(liquidacion, PDF_OUTPUT_PATH);
+                Console.WriteLine("📄 PDF generado correctamente");
+
+                return Ok(new
+                {
+                    mensaje = "Liquidación autorizada correctamente",
+                    claveAcceso = liquidacion.InfoTributaria.ClaveAcceso,
+                    respuestaSri = auto
+                });
+            }
+            catch (Exception ex)
             {
-                new DetalleDocumentoItemPrecio
+                Console.WriteLine("❌ ERROR: " + ex.Message);
+                Console.WriteLine(ex.StackTrace);
+
+                return BadRequest(new
+                {
+                    error = ex.Message,
+                    stack = ex.StackTrace
+                });
+            }
+        }
+
+        #region Métodos de mapeo privados
+
+        private List<ImpuestoVenta> MapearImpuestosVenta(List<ImpuestoVentaDto> impuestosDto)
+        {
+            var impuestos = new List<ImpuestoVenta>();
+            foreach (var imp in impuestosDto)
+            {
+                // Mapeo seguro de código a enum
+                EnumTipoImpuestoIVA codigoPorcentaje = ObtenerCodigoIVA(imp.CodigoPorcentaje);
+
+                impuestos.Add(new ImpuestoVentaIVA
+                {
+                    BaseImponible = imp.BaseImponible,
+                    Tarifa = imp.Tarifa,
+                    Valor = imp.Valor,
+                    CodigoPorcentaje = codigoPorcentaje
+                });
+            }
+            return impuestos;
+        }
+
+        private List<Pago> MapearPagos(List<PagoDto> pagosDto)
+        {
+            var pagos = new List<Pago>();
+            foreach (var pago in pagosDto)
+            {
+                pagos.Add(new Pago
+                {
+                    FormaPago = (EnumFormaPago)pago.FormaPago,
+                    Total = pago.Total,
+                    Plazo = pago.Plazo,
+                    UnidadTiempo = pago.UnidadTiempo
+                });
+            }
+            return pagos;
+        }
+
+        private List<DetalleDocumentoItemPrecio> MapearDetalles(List<DetalleDto> detallesDto)
+        {
+            var detalles = new List<DetalleDocumentoItemPrecio>();
+            foreach (var det in detallesDto)
+            {
+                var detalle = new DetalleDocumentoItemPrecio
                 {
                     Item = new Item
                     {
-                        CodigoPrincipal = "P001",
-                        CodigoAuxiliar = "P001-EXT",
-                        Descripcion = "Servicio de mantenimiento"
+                        CodigoPrincipal = det.CodigoPrincipal,
+                        CodigoAuxiliar = det.CodigoAuxiliar,
+                        Descripcion = det.Descripcion
                     },
-                    Cantidad = 1,
-                    PrecioUnitario = 100m,
-                    Descuento = 0m,
-                    PrecioTotalSinImpuesto = 100m,
-                    Impuestos = new List<Impuesto>
-                    {
-                        new ImpuestoIVA
-                        {
-                            BaseImponible = 100m,
-                            Tarifa = 15m,
-                            Valor = 15m,
-                            CodigoPorcentaje = EnumTipoImpuestoIVA._15
-                        }
-                    },
-                    DetallesAdicionales = new List<CampoAdicional>
-                    {
-                        new CampoAdicional { Nombre = "Detalle", Valor = "Servicio realizado en sitio" }
-                    }
-                }
-            },
-            InfoAdicional = new List<CampoAdicional>
-            {
-                new CampoAdicional { Nombre = "Email", Valor = "proveedor@ejemplo.com" }
+                    Cantidad = (int)det.Cantidad,
+                    PrecioUnitario = det.PrecioUnitario,
+                    Descuento = det.Descuento,
+                    PrecioTotalSinImpuesto = det.PrecioTotalSinImpuesto,
+                    Impuestos = MapearImpuestosDetalle(det.Impuestos),
+                    DetallesAdicionales = MapearCamposAdicionales(det.DetallesAdicionales)
+                };
+                detalles.Add(detalle);
             }
-        };
-
-        // 3️⃣ Crear InfoTributaria y clave de acceso
-        liquidacion.InfoTributaria = new InfoTributaria
-        {
-            Secuencial = 1,
-            EnumTipoEmision = EnumTipoEmision.Normal
-        };
-
-        liquidacion.InfoTributaria.ClaveAcceso = Utils.GenerarClaveAcceso(
-            liquidacion.TipoDocumento,
-            liquidacion.FechaEmision,
-            liquidacion.PuntoEmision,
-            liquidacion.InfoTributaria.Secuencial,
-            liquidacion.InfoTributaria.EnumTipoEmision
-        );
-
-        // 4️⃣ Mapear al XSD
-        var xmlObj = LiquidacionCompra_1_0_0Mapper.Map(liquidacion);
-
-        // 2️⃣ Serializar a XmlDocument (para firmar)
-        var xmlDoc = new XmlDocument();
-        using (var memoryStream = new MemoryStream())
-        {
-            var serializer = new XmlSerializer(typeof(liquidacionCompra));
-            serializer.Serialize(memoryStream, xmlObj);
-            memoryStream.Position = 0;
-            xmlDoc.Load(memoryStream);
+            return detalles;
         }
 
-        // Forzar Id="comprobante" (por seguridad)
-        xmlDoc.DocumentElement.SetAttribute("id", "comprobante");
-
-        // 3️⃣ Guardar XML sin firmar para depuración
-        xmlDoc.Save("LIQUIDACION_COMPRA_SIN_FIRMAR.xml");
-
-        // 4️⃣ Firmar
-        certificadoService.CargarDesdeP12(@"C:\Users\siste\Downloads\signature.p12", "Compus1234");
-        var xmlFirmado = certificadoService.FirmarDocumento(xmlDoc);
-
-        // 5️⃣ Guardar XML firmado
-        xmlFirmado.Save("LIQUIDACION_COMPRA_FIRMADO.xml");
-
-        // 6️⃣ Convertir a string para enviar al SRI
-        string xmlFirmadoStr = xmlFirmado.OuterXml;
-        Console.WriteLine(xmlFirmadoStr.Substring(0, Math.Min(500, xmlFirmadoStr.Length)));
-
-        // 6️⃣ Enviar al SRI
-        var envio = await webService.ValidarComprobanteAsync(xmlFirmadoStr);
-
-        // 🔹 Debug de envío
-        Console.WriteLine("✅ Respuesta SRI: " + Newtonsoft.Json.JsonConvert.SerializeObject(envio));
-
-        if (!envio.Ok)
+        private List<Impuesto> MapearImpuestosDetalle(List<ImpuestoDto> impuestosDto)
         {
-            return BadRequest(new
+            var impuestos = new List<Impuesto>();
+            foreach (var imp in impuestosDto)
             {
-                mensaje = "Error al enviar la liquidación al SRI",
-                detalle = envio
-            });
+                // Mapeo seguro de código a enum
+                EnumTipoImpuestoIVA codigoPorcentaje = ObtenerCodigoIVA(imp.CodigoPorcentaje);
+
+                impuestos.Add(new ImpuestoIVA
+                {
+                    BaseImponible = imp.BaseImponible,
+                    Tarifa = imp.Tarifa,
+                    Valor = imp.Valor,
+                    CodigoPorcentaje = codigoPorcentaje
+                });
+            }
+            return impuestos;
         }
 
-        // 7️⃣ Solicitar autorización
-        var auto = await webService.AutorizacionComprobanteAsync(liquidacion.InfoTributaria.ClaveAcceso);
-
-        // 🔹 Debug de autorización
-        Console.WriteLine("✅ Respuesta de autorización SRI: " + Newtonsoft.Json.JsonConvert.SerializeObject(auto));
-
-        if (!auto.Ok)
+        private List<CampoAdicional> MapearCamposAdicionales(List<CampoAdicionalDto> camposDto)
         {
-            return Ok(new
+            if (camposDto == null) return new List<CampoAdicional>();
+
+            var campos = new List<CampoAdicional>();
+            foreach (var campo in camposDto)
             {
-                mensaje = "Liquidación enviada pero no autorizada",
-                claveAcceso = liquidacion.InfoTributaria.ClaveAcceso,
-                respuestaSri = auto
-            });
+                campos.Add(new CampoAdicional
+                {
+                    Nombre = campo.Nombre,
+                    Valor = campo.Valor
+                });
+            }
+            return campos;
         }
 
-        // 8️⃣ Generar PDF RIDE
-        rIDEService.LiquidacionCompra_1_0_0(
-            liquidacion,
-            @"C:\Users\siste\Desktop\LIQUIDACION.pdf"
-        );
-        Console.WriteLine("📄 PDF generado correctamente");
-
-        return Ok(new
+        /// <summary>
+        /// Mapea el código numérico del JSON al enum EnumTipoImpuestoIVA
+        /// </summary>
+        private EnumTipoImpuestoIVA ObtenerCodigoIVA(int codigo)
         {
-            mensaje = "Liquidación autorizada correctamente",
-            claveAcceso = liquidacion.InfoTributaria.ClaveAcceso,
-            respuestaSri = auto
-        });
-    }
-    catch (Exception ex)
-    {
-        // 🔹 Guardar log detallado
-        Console.WriteLine("❌ ERROR: " + ex.Message);
-        Console.WriteLine(ex.StackTrace);
+            return codigo switch
+            {
+                0 => EnumTipoImpuestoIVA._0,                 // IVA 0%
+                2 => EnumTipoImpuestoIVA._12,                // IVA 12%
+                3 => EnumTipoImpuestoIVA._14,                // IVA 14%
+                4 => EnumTipoImpuestoIVA._15,                // IVA 15%
+                6 => EnumTipoImpuestoIVA.NoObjetoImpuesto,   // No objeto de impuesto
+                7 => EnumTipoImpuestoIVA.ExentoIVA,          // Exento de IVA
+                _ => throw new ArgumentException($"Código de IVA '{codigo}' no es válido. Códigos válidos: 0, 2, 3, 4, 6, 7")
+            };
+        }
 
-        return BadRequest(new
-        {
-            error = ex.Message,
-            stack = ex.StackTrace
-        });
-    }
-}
-
-
+        #endregion
     }
 }

@@ -1,0 +1,78 @@
+{
+  "emisor": {
+    "ruc": "0992352434001",
+    "razonSocial": "Sri pruebas",
+    "nombreComercial": "Yachasoft pruebas",
+    "direccionMatriz": "Casa",
+    "obligadoContabilidad": false,
+    "regimenMicroEmpresas": false,
+    "esAmbientePrueba": true
+  },
+  "establecimiento": {
+    "codigo": 1,
+    "direccion": "Mi casa"
+  },
+  "puntoEmision": {
+    "codigo": 2
+  },
+  "proveedor": {
+    "identificacion": "1799999999001",
+    "razonSocial": "Proveedor Ejemplo",
+    "direccion": "Av. Amazonas y NNUU, Quito",
+    "tipoIdentificacion": 4
+  },
+  "infoLiquidacion": {
+    "totalSinImpuestos": 100.00,
+    "totalDescuento": 0.00,
+    "importeTotal": 115.00,
+    "totalConImpuestos": [
+      {
+        "baseImponible": 100.00,
+        "codigoPorcentaje": 3,
+        "tarifa": 15.00,
+        "valor": 15.00
+      }
+    ],
+    "pagos": [
+      {
+        "formaPago": 1,
+        "total": 115.00,
+        "plazo": 30,
+        "unidadTiempo": "dias"
+      }
+    ]
+  },
+  "detalles": [
+    {
+      "codigoPrincipal": "P001",
+      "codigoAuxiliar": "P001-EXT",
+      "descripcion": "Servicio de mantenimiento",
+      "cantidad": 1,
+      "precioUnitario": 100.00,
+      "descuento": 0.00,
+      "precioTotalSinImpuesto": 100.00,
+      "impuestos": [
+        {
+          "baseImponible": 100.00,
+          "codigoPorcentaje": 3,
+          "tarifa": 15.00,
+          "valor": 15.00
+        }
+      ],
+      "detallesAdicionales": [
+        {
+          "nombre": "Detalle",
+          "valor": "Servicio realizado en sitio"
+        }
+      ]
+    }
+  ],
+  "infoAdicional": [
+    {
+      "nombre": "Email",
+      "valor": "proveedor@ejemplo.com"
+    }
+  ],
+  "fechaEmision": "2025-10-14T10:30:00",
+  "secuencial": 8
+}
