@@ -1652,19 +1652,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\siste\\.nuget\\packages\\": {}
+    "C:\\Users\\Sistemas\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.DocumentosElectronicos\\Yachasoft.Sri.DocumentosElectronicos.csproj",
+      "projectUniqueName": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.DocumentosElectronicos\\Yachasoft.Sri.DocumentosElectronicos.csproj",
       "projectName": "Yachasoft.Sri.DocumentosElectronicos",
-      "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.DocumentosElectronicos\\Yachasoft.Sri.DocumentosElectronicos.csproj",
-      "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.DocumentosElectronicos\\obj\\",
+      "projectPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.DocumentosElectronicos\\Yachasoft.Sri.DocumentosElectronicos.csproj",
+      "packagesPath": "C:\\Users\\Sistemas\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.DocumentosElectronicos\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\Sistemas\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -1676,17 +1676,17 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj"
+            "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj": {
+              "projectPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj"
             },
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj"
+            "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj": {
+              "projectPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj"
             },
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj"
+            "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj": {
+              "projectPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj"
             },
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.WebService\\Yachasoft.Sri.WebService.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.WebService\\Yachasoft.Sri.WebService.csproj"
+            "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.WebService\\Yachasoft.Sri.WebService.csproj": {
+              "projectPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.WebService\\Yachasoft.Sri.WebService.csproj"
             }
           }
         }
@@ -1701,7 +1701,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net7.0": {
@@ -1723,12 +1723,26 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[7.0.20, 7.0.20]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[7.0.20, 7.0.20]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[7.0.20, 7.0.20]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200\\RuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj": {}
+    "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\FirmaXadesNet\\FirmaXadesNet.csproj": {}
   },
   "projects": {
-    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj": {
+    "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\FirmaXadesNet\\FirmaXadesNet.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj",
+        "projectUniqueName": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\FirmaXadesNet\\FirmaXadesNet.csproj",
         "projectName": "FirmaXadesNet",
-        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\FirmaXadesNet.csproj",
-        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\FirmaXadesNet\\obj\\",
+        "projectPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\FirmaXadesNet\\FirmaXadesNet.csproj",
+        "packagesPath": "C:\\Users\\Sistemas\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\FirmaXadesNet\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Sistemas\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -26,8 +26,8 @@
           "net7.0": {
             "targetAlias": "net7.0",
             "projectReferences": {
-              "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj": {
-                "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj"
+              "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Microsoft.Xades\\Microsoft.Xades.csproj": {
+                "projectPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Microsoft.Xades\\Microsoft.Xades.csproj"
               }
             }
           }
@@ -42,7 +42,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net7.0": {
@@ -76,26 +76,40 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj": {
+    "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Microsoft.Xades\\Microsoft.Xades.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj",
+        "projectUniqueName": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Microsoft.Xades\\Microsoft.Xades.csproj",
         "projectName": "Microsoft.Xades",
-        "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\Microsoft.Xades.csproj",
-        "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Microsoft.Xades\\obj\\",
+        "projectPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Microsoft.Xades\\Microsoft.Xades.csproj",
+        "packagesPath": "C:\\Users\\Sistemas\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Microsoft.Xades\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Sistemas\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -119,7 +133,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.200"
       },
       "frameworks": {
         "net7.0": {
@@ -141,12 +155,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[7.0.20, 7.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200\\RuntimeIdentifierGraph.json"
         }
       }
     }

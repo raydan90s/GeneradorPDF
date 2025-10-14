@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Yachasoft.Sri.DocumentosElectronicos")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+192c1c3592264cfdd02f0004633ee3099ce5fe7f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ac4458bc0c2968e4b935f5b60c95a6fddfbe4337")]
 [assembly: System.Reflection.AssemblyProductAttribute("Yachasoft.Sri.DocumentosElectronicos")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Yachasoft.Sri.DocumentosElectronicos")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

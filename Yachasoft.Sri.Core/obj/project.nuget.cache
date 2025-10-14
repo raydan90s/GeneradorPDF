@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "MIFVG4nSWec=",
+  "dgSpecHash": "gYqZR1UH75Y=",
   "success": true,
-  "projectFilePath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Sistemas\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.20\\microsoft.netcore.app.ref.7.0.20.nupkg.sha512",
+    "C:\\Users\\Sistemas\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.20\\microsoft.windowsdesktop.app.ref.7.0.20.nupkg.sha512",
+    "C:\\Users\\Sistemas\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.20\\microsoft.aspnetcore.app.ref.7.0.20.nupkg.sha512"
+  ],
   "logs": []
 }
