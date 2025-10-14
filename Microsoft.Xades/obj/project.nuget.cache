@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "KTTN+WLp0cY=",
+  "dgSpecHash": "PCpkyMX2xFw=",
   "success": true,
   "projectFilePath": "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Microsoft.Xades\\Microsoft.Xades.csproj",
   "expectedPackageFiles": [
@@ -14,10 +14,7 @@
     "C:\\Users\\Sistemas\\.nuget\\packages\\system.security.cryptography.xml\\5.0.0-rc.2.20475.5\\system.security.cryptography.xml.5.0.0-rc.2.20475.5.nupkg.sha512",
     "C:\\Users\\Sistemas\\.nuget\\packages\\system.security.permissions\\5.0.0-rc.2.20475.5\\system.security.permissions.5.0.0-rc.2.20475.5.nupkg.sha512",
     "C:\\Users\\Sistemas\\.nuget\\packages\\system.security.principal.windows\\5.0.0-rc.2.20475.5\\system.security.principal.windows.5.0.0-rc.2.20475.5.nupkg.sha512",
-    "C:\\Users\\Sistemas\\.nuget\\packages\\system.windows.extensions\\5.0.0-rc.2.20475.5\\system.windows.extensions.5.0.0-rc.2.20475.5.nupkg.sha512",
-    "C:\\Users\\Sistemas\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.20\\microsoft.netcore.app.ref.7.0.20.nupkg.sha512",
-    "C:\\Users\\Sistemas\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.20\\microsoft.windowsdesktop.app.ref.7.0.20.nupkg.sha512",
-    "C:\\Users\\Sistemas\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.20\\microsoft.aspnetcore.app.ref.7.0.20.nupkg.sha512"
+    "C:\\Users\\Sistemas\\.nuget\\packages\\system.windows.extensions\\5.0.0-rc.2.20475.5\\system.windows.extensions.5.0.0-rc.2.20475.5.nupkg.sha512"
   ],
   "logs": []
 }
