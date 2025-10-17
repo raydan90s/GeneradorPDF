@@ -25,9 +25,9 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
         private readonly Ride.IRIDEService rIDEService;
 
         // ⚙️ Configuración hardcoded
-        private const string LOGO_PATH = @"C:\Users\Sistemas\Documents\GeneradorPDF\Yachasoft.Sri.FacturacionElectronica\Logo_UTPL.png";
-        private const string PDF_OUTPUT_PATH = @"C:\Users\Sistemas\Desktop\LIQUIDACION.pdf";
-        private const string CERTIFICADO_PATH = @"C:\Users\Sistemas\Downloads\FIRMA\signature.p12";
+        private const string LOGO_PATH = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/Logo_UTPL.png";
+        private const string PDF_OUTPUT_PATH = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/LIQUIDACION.pdf";
+        private const string CERTIFICADO_PATH = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/signature.p12";
         private const string CERTIFICADO_PASSWORD = "Compus1234";
 
         public LiquidacionController(

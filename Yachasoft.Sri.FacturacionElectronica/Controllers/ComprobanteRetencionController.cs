@@ -38,10 +38,8 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
         [HttpPost("GenerarRetencion")]
         public async Task<IActionResult> GenerarRetencion([FromBody] RetencionRequest request)
         {
-            Console.Write("LLego la peticion");
             try
             {
-                Console.WriteLine($"Recibido request para RUC: {request.Emisor.RUC}, Secuencial: {request.Secuencial}, Fecha: {request.FechaEmision}");
                 var emisor = new Emisor
                 {
                     DireccionMatriz = request.Emisor.DireccionMatriz,
@@ -111,44 +109,120 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 
                 var envio = await webService.ValidarComprobanteAsync(xmlFirmado);
                 Console.WriteLine($"ESTADO DE COMPROBANTE DE ENVIO: {System.Text.Json.JsonSerializer.Serialize(envio, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
+
                 if (envio.Ok)
                 {
-                    Console.WriteLine("RECIBIDA");
                     System.Threading.Thread.Sleep(3000);
-
                     var auto = await webService.AutorizacionComprobanteAsync(retencion.InfoTributaria.ClaveAcceso);
+                    var autorizacionData = auto.Data?.Autorizaciones?.Autorizacion?.FirstOrDefault();
                     Console.WriteLine($"ESTADO DE COMPROBANTE DE AUTORIZACION: {System.Text.Json.JsonSerializer.Serialize(auto, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
+
                     if (auto.Ok)
                     {
-                        Console.WriteLine(auto.Ok ? "AUTORIZADO" : auto.Error);
-                        rIDEService.ComprobanteRetencion_1_0_0(retencion, "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/RETENCION.pdf");
-                        Console.WriteLine("PDF generado correctamente");
-                        
-                        return Ok(new
+                        Console.WriteLine("AUTORIZADO");
+
+                        if (autorizacionData != null)
+                        {
+                            retencion.Autorizacion.Numero = autorizacionData.NumeroAutorizacion;
+                            if (DateTimeOffset.TryParse(autorizacionData.FechaAutorizacion, out var fechaOffset))
+                            {
+                                retencion.Autorizacion.Fecha = fechaOffset.ToOffset(TimeSpan.FromHours(-5)).DateTime;
+                            }
+                            else
+                            {
+                                throw new Exception($"Fecha de autorización inválida: {autorizacionData.FechaAutorizacion}");
+                            }
+                        }
+
+                        rIDEService.ComprobanteRetencion_1_0_0(
+                            retencion,
+                            "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/RETENCION.pdf"
+                        );
+
+                        var resultado = new
                         {
                             success = true,
                             claveAcceso = retencion.InfoTributaria.ClaveAcceso,
                             mensaje = "Retención autorizada y PDF generado correctamente",
-                            autorizacion = auto
+                            numeroAutorizacion = retencion.Autorizacion.Numero,
+                            fechaAutorizacion = retencion.Autorizacion.Fecha.ToString("yyyy-MM-dd HH:mm:ss")
+                        };
+
+                        Console.WriteLine($"DATOS RETORNADOS:\n" +
+                                        $"Success: {resultado.success}\n" +
+                                        $"Clave Acceso: {resultado.claveAcceso}\n" +
+                                        $"Mensaje: {resultado.mensaje}\n" +
+                                        $"Número Autorización: {resultado.numeroAutorizacion}\n" +
+                                        $"Fecha Autorización: {resultado.fechaAutorizacion}");
+
+                        return Ok(resultado);
+                    }
+                    else
+                    {
+                        // Manejo de errores de autorización
+                        var mensajesAutorizacion = autorizacionData?.Mensajes?.Mensaje?
+                            .Select(m => new { m.Identificador, m.Mensaje_, m.Tipo, m.InformacionAdicional })
+                            .ToList();
+
+                        // Imprimir mensajes en consola
+                        if (mensajesAutorizacion != null && mensajesAutorizacion.Count > 0)
+                        {
+                            Console.WriteLine("MENSAJES DE AUTORIZACIÓN:");
+                            foreach (var msg in mensajesAutorizacion)
+                            {
+                                Console.WriteLine($"- Identificador: {msg.Identificador}");
+                                Console.WriteLine($"  Mensaje: {msg.Mensaje_}");
+                                Console.WriteLine($"  Tipo: {msg.Tipo}");
+                                Console.WriteLine($"  Información Adicional: {msg.InformacionAdicional}");
+                                Console.WriteLine("-------------------------------");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No hay mensajes de autorización disponibles.");
+                        }
+
+                        return Ok(new
+                        {
+                            success = false,
+                            estado = autorizacionData?.Estado,
+                            mensajes = mensajesAutorizacion
                         });
+                    }
+                }
+                else
+                {
+                    // Manejo de errores de envío
+                    var primerComprobante = envio.Data?.Comprobantes?.Comprobante?.FirstOrDefault();
+                    var mensajesEnvio = primerComprobante?.Mensajes?.Mensaje
+                        ?.Select(m => new { m.Identificador, m.Mensaje_, m.Tipo, m.InformacionAdicional })
+                        .ToList();
+
+                    // Imprimir mensajes de envío en consola
+                    if (mensajesEnvio != null && mensajesEnvio.Count > 0)
+                    {
+                        Console.WriteLine("MENSAJES DE ENVÍO:");
+                        foreach (var msg in mensajesEnvio)
+                        {
+                            Console.WriteLine($"- Identificador: {msg.Identificador}");
+                            Console.WriteLine($"  Mensaje: {msg.Mensaje_}");
+                            Console.WriteLine($"  Tipo: {msg.Tipo}");
+                            Console.WriteLine($"  Información Adicional: {msg.InformacionAdicional}");
+                            Console.WriteLine("-------------------------------");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No hay mensajes de envío disponibles.");
                     }
 
                     return Ok(new
                     {
                         success = false,
-                        mensaje = "Error en la autorización",
-                        error = auto.Error,
-                        autorizacion = auto
+                        estado = envio.Data?.Estado,
+                        mensajes = mensajesEnvio
                     });
                 }
-
-                return Ok(new
-                {
-                    success = false,
-                    mensaje = "Error en el envío al SRI",
-                    error = envio.Error,
-                    envio = envio
-                });
             }
             catch (Exception ex)
             {

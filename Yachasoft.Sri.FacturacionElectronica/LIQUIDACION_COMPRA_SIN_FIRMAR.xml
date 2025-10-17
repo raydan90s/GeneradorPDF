@@ -1,42 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <liquidacionCompra xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0.0" id="comprobante">
   <infoTributaria>
-    <ambiente>1</ambiente>
+    <ambiente>2</ambiente>
     <tipoEmision>1</tipoEmision>
-    <razonSocial>Sri pruebas</razonSocial>
-    <nombreComercial>Yachasoft pruebas</nombreComercial>
+    <razonSocial>COMPUSTORE S.A.</razonSocial>
+    <nombreComercial />
     <ruc>0992352434001</ruc>
-    <claveAcceso>1410202503099235243400110010020000000081234567819</claveAcceso>
+    <claveAcceso>1710202503099235243400120010010000000501234567811</claveAcceso>
     <codDoc>03</codDoc>
     <estab>001</estab>
-    <ptoEmi>002</ptoEmi>
-    <secuencial>000000008</secuencial>
-    <dirMatriz>Casa</dirMatriz>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000000050</secuencial>
+    <dirMatriz>GUAYAS / GUAYAQUIL / TARQUI / O CONNORS S/N</dirMatriz>
   </infoTributaria>
   <infoLiquidacionCompra>
-    <fechaEmision>14/10/2025</fechaEmision>
-    <dirEstablecimiento>Mi casa</dirEstablecimiento>
+    <fechaEmision>17/10/2025</fechaEmision>
+    <dirEstablecimiento>GUAYAS / GUAYAQUIL / TARQUI / O CONNORS S/N</dirEstablecimiento>
     <obligadoContabilidad>NO</obligadoContabilidad>
-    <tipoIdentificacionProveedor>04</tipoIdentificacionProveedor>
-    <razonSocialProveedor>Proveedor Ejemplo</razonSocialProveedor>
-    <identificacionProveedor>1799999999001</identificacionProveedor>
-    <direccionProveedor>Av. Amazonas y NNUU, Quito</direccionProveedor>
-    <totalSinImpuestos>100</totalSinImpuestos>
+    <tipoIdentificacionProveedor>05</tipoIdentificacionProveedor>
+    <razonSocialProveedor>marcito</razonSocialProveedor>
+    <identificacionProveedor>0956777692</identificacionProveedor>
+    <direccionProveedor>samanes 1</direccionProveedor>
+    <totalSinImpuestos>500</totalSinImpuestos>
     <totalDescuento>0</totalDescuento>
     <totalConImpuestos>
       <totalImpuesto>
         <codigo>2</codigo>
-        <codigoPorcentaje>4</codigoPorcentaje>
-        <baseImponible>100</baseImponible>
-        <valor>15</valor>
+        <codigoPorcentaje>3</codigoPorcentaje>
+        <baseImponible>500</baseImponible>
+        <valor>75</valor>
       </totalImpuesto>
     </totalConImpuestos>
-    <importeTotal>115</importeTotal>
+    <importeTotal>575</importeTotal>
     <moneda>DOLAR</moneda>
     <pagos>
       <pago>
         <formaPago>15</formaPago>
-        <total>115</total>
+        <total>575</total>
         <plazo>30</plazo>
         <unidadTiempo>dias</unidadTiempo>
       </pago>
@@ -44,28 +44,27 @@
   </infoLiquidacionCompra>
   <detalles>
     <detalle>
-      <codigoPrincipal>P001</codigoPrincipal>
-      <codigoAuxiliar>P001-EXT</codigoAuxiliar>
-      <descripcion>Servicio de mantenimiento</descripcion>
-      <cantidad>1</cantidad>
-      <precioUnitario>100</precioUnitario>
+      <codigoPrincipal>print_Service</codigoPrincipal>
+      <codigoAuxiliar />
+      <descripcion>servicios de impresion</descripcion>
+      <cantidad>5000</cantidad>
+      <precioUnitario>0.1</precioUnitario>
       <descuento>0</descuento>
-      <precioTotalSinImpuesto>100</precioTotalSinImpuesto>
-      <detallesAdicionales>
-        <detAdicional nombre="Detalle" valor="Servicio realizado en sitio" />
-      </detallesAdicionales>
+      <precioTotalSinImpuesto>500</precioTotalSinImpuesto>
+      <detallesAdicionales />
       <impuestos>
         <impuesto>
           <codigo>2</codigo>
-          <codigoPorcentaje>4</codigoPorcentaje>
+          <codigoPorcentaje>3</codigoPorcentaje>
           <tarifa>15</tarifa>
-          <baseImponible>100</baseImponible>
-          <valor>15</valor>
+          <baseImponible>500</baseImponible>
+          <valor>75</valor>
         </impuesto>
       </impuestos>
     </detalle>
   </detalles>
   <infoAdicional>
-    <campoAdicional nombre="Email">proveedor@ejemplo.com</campoAdicional>
+    <campoAdicional nombre="Email">inffodox@gmail.com</campoAdicional>
+    <campoAdicional nombre="Teléfono">124567890</campoAdicional>
   </infoAdicional>
 </liquidacionCompra>

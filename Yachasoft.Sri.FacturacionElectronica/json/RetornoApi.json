@@ -1,0 +1,26 @@
+[
+  {
+    "Data": {
+      "Estado": "RECIBIDA",
+      "Comprobantes": { "Comprobante": [] }
+    },
+    "Error": null,
+    "Ok": true
+  },
+  {
+    "Data": {
+      "Autorizaciones": {
+        "Autorizacion": [
+          {
+            "Estado": "AUTORIZADO",
+            "NumeroAutorizacion": "1710202507099235243400110010010000000071234567814",
+            "FechaAutorizacion": "2025-10-17T11:44:20-05:00",
+            "Ambiente": "PRUEBAS"
+          }
+        ]
+      }
+    },
+    "Error": null,
+    "Ok": true
+  }
+]
