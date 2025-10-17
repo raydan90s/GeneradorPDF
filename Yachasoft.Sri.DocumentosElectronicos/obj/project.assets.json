@@ -1652,19 +1652,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\siste\\.nuget\\packages\\": {}
+    "/home/bitnami/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.DocumentosElectronicos\\Yachasoft.Sri.DocumentosElectronicos.csproj",
+      "projectUniqueName": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.DocumentosElectronicos/Yachasoft.Sri.DocumentosElectronicos.csproj",
       "projectName": "Yachasoft.Sri.DocumentosElectronicos",
-      "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.DocumentosElectronicos\\Yachasoft.Sri.DocumentosElectronicos.csproj",
-      "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.DocumentosElectronicos\\obj\\",
+      "projectPath": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.DocumentosElectronicos/Yachasoft.Sri.DocumentosElectronicos.csproj",
+      "packagesPath": "/home/bitnami/.nuget/packages/",
+      "outputPath": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.DocumentosElectronicos/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/bitnami/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -1676,17 +1676,17 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Core\\Yachasoft.Sri.Core.csproj"
+            "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/Yachasoft.Sri.Core.csproj": {
+              "projectPath": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Core/Yachasoft.Sri.Core.csproj"
             },
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj"
+            "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Ride/Yachasoft.Sri.Ride.csproj": {
+              "projectPath": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Ride/Yachasoft.Sri.Ride.csproj"
             },
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Signer\\Yachasoft.Sri.Signer.csproj"
+            "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/Yachasoft.Sri.Signer.csproj": {
+              "projectPath": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Signer/Yachasoft.Sri.Signer.csproj"
             },
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.WebService\\Yachasoft.Sri.WebService.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.WebService\\Yachasoft.Sri.WebService.csproj"
+            "/home/bitnami/GeneradorPDF/Yachasoft.Sri.WebService/Yachasoft.Sri.WebService.csproj": {
+              "projectPath": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.WebService/Yachasoft.Sri.WebService.csproj"
             }
           }
         }
@@ -1695,13 +1695,7 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.300"
+      }
     },
     "frameworks": {
       "net7.0": {
@@ -1728,7 +1722,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/home/bitnami/.dotnet/sdk/7.0.410/RuntimeIdentifierGraph.json"
       }
     }
   }

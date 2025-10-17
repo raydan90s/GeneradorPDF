@@ -1,0 +1,47 @@
+{
+  "emisor": {
+    "ruc": "0992352434001",
+    "razonSocial": "Sri pruebas",
+    "nombreComercial": "Yachasoft pruebas",
+    "direccionMatriz": "Casa",
+    "direccionEstablecimiento": "Mi casa",
+    "obligadoContabilidad": false,
+    "regimenMicroEmpresas": false,
+    "enumTipoAmbiente": "1",
+    "contribuyenteEspecial": "NO",
+    "agenteRetencion": null
+  },
+  "codigoEstablecimiento": 1,
+  "codigoPuntoEmision": 2,
+  "fechaEmision": "2025-10-13T10:30:00",
+  "periodoFiscal": "10/2025",
+  "sujeto": {
+    "identificacion": "9999999999999",
+    "razonSocial": "Proveedor Prueba",
+    "tipoIdentificador": "04"
+  },
+  "impuestos": [
+    {
+      "baseImponible": 100.00,
+      "tarifa": 1.75,
+      "codigoRetencion": "343B",
+      "documentoSustento": {
+        "codDocumento": 1,
+        "numDocumento": "001001000000001",
+        "fechaEmisionDocumento": "2025-10-13T10:00:00"
+      }
+    }
+  ],
+  "infoAdicional": [
+    {
+      "nombre": "CorreoProveedor",
+      "valor": "proveedor@test.com"
+    },
+    {
+      "nombre": "Observacion",
+      "valor": "Pago por servicios de octubre 2025"
+    }
+  ],
+  "secuencial": 4,
+  "enumTipoEmision": "1"
+}

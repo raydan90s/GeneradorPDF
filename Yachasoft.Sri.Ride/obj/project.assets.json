@@ -518,19 +518,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\siste\\.nuget\\packages\\": {}
+    "/home/bitnami/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj",
+      "projectUniqueName": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Ride/Yachasoft.Sri.Ride.csproj",
       "projectName": "Yachasoft.Sri.Ride",
-      "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\Yachasoft.Sri.Ride.csproj",
-      "packagesPath": "C:\\Users\\siste\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Ride\\obj\\",
+      "projectPath": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Ride/Yachasoft.Sri.Ride.csproj",
+      "packagesPath": "/home/bitnami/.nuget/packages/",
+      "outputPath": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Ride/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\siste\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/bitnami/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -542,11 +542,11 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "projectReferences": {
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Pdf\\Yachasoft.Pdf.csproj"
+            "/home/bitnami/GeneradorPDF/Yachasoft.Pdf/Yachasoft.Pdf.csproj": {
+              "projectPath": "/home/bitnami/GeneradorPDF/Yachasoft.Pdf/Yachasoft.Pdf.csproj"
             },
-            "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj": {
-              "projectPath": "C:\\Users\\siste\\Documents\\GitHub\\Yachasoft.Sri\\Yachasoft.Sri.Modelos\\Yachasoft.Sri.Modelos.csproj"
+            "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/Yachasoft.Sri.Modelos.csproj": {
+              "projectPath": "/home/bitnami/GeneradorPDF/Yachasoft.Sri.Modelos/Yachasoft.Sri.Modelos.csproj"
             }
           }
         }
@@ -555,13 +555,7 @@
         "warnAsError": [
           "NU1605"
         ]
-      },
-      "restoreAuditProperties": {
-        "enableAudit": "true",
-        "auditLevel": "low",
-        "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.300"
+      }
     },
     "frameworks": {
       "net7.0": {
@@ -592,7 +586,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.302\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/home/bitnami/.dotnet/sdk/7.0.410/RuntimeIdentifierGraph.json"
       }
     }
   }

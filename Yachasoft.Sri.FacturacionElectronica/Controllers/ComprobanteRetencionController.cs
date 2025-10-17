@@ -1,16 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Xml;
 using System.Threading.Tasks;
 using Yachasoft.Sri.Core.Enumerados;
+using Yachasoft.Sri.Core.Atributos;
 using Yachasoft.Sri.Modelos;
 using Yachasoft.Sri.Modelos.Base;
 using Yachasoft.Sri.Modelos.Enumerados;
 using Yachasoft.Sri.Xsd;
 using Yachasoft.Sri.Xsd.Map;
+using Yachasoft.Sri.FacturacionElectronica.Models.Request;
+using Yachasoft.Core.Extensions;
 
-namespace Yachasoft.Sri.FacturacionElectronica. ollers
+namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -30,82 +35,62 @@ namespace Yachasoft.Sri.FacturacionElectronica. ollers
             this.rIDEService = rIDEService;
         }
 
-        [HttpGet("GenerarRetencion")]
-        public async Task<IActionResult> GenerarRetencion()
+        [HttpPost("GenerarRetencion")]
+        public async Task<IActionResult> GenerarRetencion([FromBody] RetencionRequest request)
         {
+            Console.Write("LLego la peticion");
             try
             {
-                // 1️⃣ Crear emisor, establecimiento y punto de emisión
+                Console.WriteLine($"Recibido request para RUC: {request.Emisor.RUC}, Secuencial: {request.Secuencial}, Fecha: {request.FechaEmision}");
                 var emisor = new Emisor
                 {
-                    DireccionMatriz = "Casa",
-                    EnumTipoAmbiente = Core.Enumerados.EnumTipoAmbiente.Prueba,
-                    Logo = @"C:\Users\siste\Downloads\Logo_UTPL.png",
-                    NombreComercial = "Yachasoft pruebas",
-                    ObligadoContabilidad = false,
-                    RazonSocial = "Sri pruebas",
-                    RegimenMicroEmpresas = false,
-                    RUC = "0992352434001",
-                    ContribuyenteEspecial = null,
-                    //AgenteRetencion = "1",
+                    DireccionMatriz = request.Emisor.DireccionMatriz,
+                    EnumTipoAmbiente = ParseTipoAmbiente(request.Emisor.EnumTipoAmbiente),
+                    Logo = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/Logo_UTPL.png",
+                    NombreComercial = request.Emisor.NombreComercial,
+                    ObligadoContabilidad = request.Emisor.ObligadoContabilidad,
+                    RazonSocial = request.Emisor.RazonSocial,
+                    RegimenMicroEmpresas = request.Emisor.RegimenMicroEmpresas,
+                    RUC = request.Emisor.RUC,
+                    ContribuyenteEspecial = request.Emisor.ContribuyenteEspecial,
+                    AgenteRetencion = request.Emisor.AgenteRetencion,
                 };
 
                 var establecimiento = new Establecimiento
                 {
-                    Codigo = 1,
-                    DireccionEstablecimiento = "Mi casa",
+                    Codigo = request.CodigoEstablecimiento,
+                    DireccionEstablecimiento = request.Emisor.DireccionEstablecimiento,
                     Emisor = emisor
                 };
 
                 var puntoEmision = new PuntoEmision
                 {
-                    Codigo = 2,
+                    Codigo = request.CodigoPuntoEmision,
                     Establecimiento = establecimiento
                 };
 
-                // 2️⃣ Crear comprobante de retención
                 var retencion = new ComprobanteRetencion_1_0_0Modelo.ComprobanteRetencion
                 {
                     PuntoEmision = puntoEmision,
-                    FechaEmision = DateTime.Now,
+                    FechaEmision = request.FechaEmision,
                     InfoCompRetencion = new ComprobanteRetencion_1_0_0Modelo.InfoCompRetencion
                     {
-                        PeriodoFiscal = "10/2025",
+                        PeriodoFiscal = request.PeriodoFiscal,
                     },
                     Sujeto = new Sujeto
                     {
-                        Identificacion = "9999999999999",
-                        RazonSocial = "Proveedor Prueba",
-                        TipoIdentificador = EnumTipoIdentificacion.RUC
+                        Identificacion = request.Sujeto.Identificacion,
+                        RazonSocial = request.Sujeto.RazonSocial,
+                        TipoIdentificador = ParseTipoIdentificacion(request.Sujeto.TipoIdentificador)
                     },
-                    Impuestos = new List<ComprobanteRetencion_1_0_0Modelo.ImpuestoRetencion>
-            {
-                new ComprobanteRetencion_1_0_0Modelo.ImpuestoRenta
-                {
-                    BaseImponible = 100,
-                    Tarifa = 1.75M,
-                    Valor = Math.Round(100 * 1.75M / 100, 2),
-                    CodigoRetencion = EnumTipoRetencionRenta.Actividadesdeconstruccióndeobramaterialinmuebleurbanizaciónlotizaciónoactividadessimilares,
-                    DocumentoSustento = new DocumentoSustento
-                    {
-                        CodDocumento = EnumTipoDocumento.Factura,
-                        NumDocumento = "001001000000001", // quitar los guiones
-                        FechaEmisionDocumento = DateTime.Now
-                    }
-                }
-            },
-                    InfoAdicional = new List<CampoAdicional>
-                    {
-                new CampoAdicional { Nombre = "CorreoProveedor", Valor = "proveedor@test.com" },
-                new CampoAdicional { Nombre = "Observacion", Valor = "Pago por servicios de octubre 2025" }
-            }
+                    Impuestos = MapearImpuestos(request.Impuestos),
+                    InfoAdicional = request.InfoAdicional
                 };
 
-                // 3️⃣ Generar InfoTributaria y ClaveAcceso
                 retencion.InfoTributaria = new InfoTributaria
                 {
-                    Secuencial = 4,
-                    EnumTipoEmision = EnumTipoEmision.Normal
+                    Secuencial = request.Secuencial,
+                    EnumTipoEmision = ParseTipoEmision(request.EnumTipoEmision)
                 };
 
                 retencion.InfoTributaria.ClaveAcceso = Utils.GenerarClaveAcceso(
@@ -116,44 +101,244 @@ namespace Yachasoft.Sri.FacturacionElectronica. ollers
                     retencion.InfoTributaria.EnumTipoEmision
                 );
 
-                // 4️⃣ Mapear al XSD
                 var comprobanteXml = ComprobanteRetencion_1_0_0Mapper.Map(retencion);
 
-                // 5️⃣ Cargar certificado y firmar
-                certificadoService.CargarDesdeP12(@"C:\Users\siste\Downloads\signature.p12", "Compus1234");
+                certificadoService.CargarDesdeP12("/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/signature.p12", "Compus1234");
                 var xmlFirmado = certificadoService.FirmarDocumento(comprobanteXml);
 
-                // 6️⃣ Guardar XML firmado
-                xmlFirmado.Save("COMPROBANTE_RETENCION_FIRMADO.xml");
+                var nombreArchivoXml = $"COMPROBANTE_RETENCION_{retencion.InfoTributaria.ClaveAcceso}.xml";
+                xmlFirmado.Save(nombreArchivoXml);
 
-                // 7️⃣ Validar con el SRI
                 var envio = await webService.ValidarComprobanteAsync(xmlFirmado);
+                Console.WriteLine($"ESTADO DE COMPROBANTE DE ENVIO: {System.Text.Json.JsonSerializer.Serialize(envio, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
                 if (envio.Ok)
                 {
                     Console.WriteLine("RECIBIDA");
                     System.Threading.Thread.Sleep(3000);
 
-                    // 8️⃣ Solicitar autorización
                     var auto = await webService.AutorizacionComprobanteAsync(retencion.InfoTributaria.ClaveAcceso);
+                    Console.WriteLine($"ESTADO DE COMPROBANTE DE AUTORIZACION: {System.Text.Json.JsonSerializer.Serialize(auto, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
                     if (auto.Ok)
                     {
                         Console.WriteLine(auto.Ok ? "AUTORIZADO" : auto.Error);
-                        // ✅ Generar PDF RIDE de la retención
-                        rIDEService.ComprobanteRetencion_1_0_0(retencion, @"C:\Users\siste\Desktop\RETENCION.pdf");
+                        rIDEService.ComprobanteRetencion_1_0_0(retencion, "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/RETENCION.pdf");
                         Console.WriteLine("PDF generado correctamente");
-                        return Ok(auto);
+                        
+                        return Ok(new
+                        {
+                            success = true,
+                            claveAcceso = retencion.InfoTributaria.ClaveAcceso,
+                            mensaje = "Retención autorizada y PDF generado correctamente",
+                            autorizacion = auto
+                        });
                     }
 
-                    return Ok(auto);
+                    return Ok(new
+                    {
+                        success = false,
+                        mensaje = "Error en la autorización",
+                        error = auto.Error,
+                        autorizacion = auto
+                    });
                 }
 
-                return Ok(envio);
+                return Ok(new
+                {
+                    success = false,
+                    mensaje = "Error en el envío al SRI",
+                    error = envio.Error,
+                    envio = envio
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { error = ex.Message });
+                return BadRequest(new
+                {
+                    success = false,
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace
+                });
             }
         }
 
+        #region Métodos de Mapeo y Parseo
+
+        private List<ComprobanteRetencion_1_0_0Modelo.ImpuestoRetencion> MapearImpuestos(List<ImpuestoRetencionRequest> impuestos)
+        {
+            var resultado = new List<ComprobanteRetencion_1_0_0Modelo.ImpuestoRetencion>();
+
+            foreach (var impuesto in impuestos)
+            {
+                try
+                {
+                    Console.WriteLine($"Procesando impuesto con código: {impuesto.CodigoRetencion}");
+                    
+                    var codigoRetencion = ParseCodigoRetencion(impuesto.CodigoRetencion);
+                    Console.WriteLine($"Código parseado: {codigoRetencion.GetType().Name} = {codigoRetencion}");
+                    
+                    if (codigoRetencion is EnumTipoRetencionRenta)
+                    {
+                        var impuestoRenta = new ComprobanteRetencion_1_0_0Modelo.ImpuestoRenta
+                        {
+                            BaseImponible = impuesto.BaseImponible,
+                            Tarifa = impuesto.Tarifa,
+                            Valor = Math.Round(impuesto.BaseImponible * impuesto.Tarifa / 100, 2),
+                            CodigoRetencion = (EnumTipoRetencionRenta)codigoRetencion,
+                            DocumentoSustento = MapearDocumentoSustento(impuesto.DocumentoSustento)
+                        };
+                        
+                        Console.WriteLine($"Impuesto Renta creado - Base: {impuestoRenta.BaseImponible}, Código: {impuestoRenta.CodigoRetencion}");
+                        resultado.Add(impuestoRenta);
+                    }
+                    else if (codigoRetencion is EnumTipoRetencionIVA)
+                    {
+                        var impuestoIVA = new ComprobanteRetencion_1_0_0Modelo.ImpuestoIVA
+                        {
+                            BaseImponible = impuesto.BaseImponible,
+                            Tarifa = impuesto.Tarifa,
+                            Valor = Math.Round(impuesto.BaseImponible * impuesto.Tarifa / 100, 2),
+                            CodigoRetencion = (EnumTipoRetencionIVA)codigoRetencion,
+                            DocumentoSustento = MapearDocumentoSustento(impuesto.DocumentoSustento)
+                        };
+
+                        
+                        Console.WriteLine($"Impuesto IVA creado - Base: {impuestoIVA.BaseImponible}, Código: {impuestoIVA.CodigoRetencion}");
+                        resultado.Add(impuestoIVA);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al mapear impuesto: {ex.Message}");
+                    throw new ArgumentException($"Error al mapear impuesto con código {impuesto.CodigoRetencion}: {ex.Message}", ex);
+                }
+            }
+
+            return resultado;
+        }
+
+        private DocumentoSustento MapearDocumentoSustento(DocumentoSustentoRequest documentoRequest)
+        {
+            if (documentoRequest == null)
+                throw new ArgumentNullException(nameof(documentoRequest), "El documento sustento no puede ser nulo");
+
+            var tipoDocumento = Enum.GetValues(typeof(EnumTipoDocumento))
+                                    .Cast<EnumTipoDocumento>()
+                                    .FirstOrDefault(e => e.GetAttributeOfType<SRICodigoAttribute>()?.Code == documentoRequest.CodDocumento.ToString());
+
+           if (!Enum.IsDefined(typeof(EnumTipoDocumento), tipoDocumento))
+                throw new ArgumentException($"Código de documento inválido: {documentoRequest.CodDocumento}");
+
+            Console.WriteLine($"Código de documento a retener: {documentoRequest.CodDocumento} mapeado es {tipoDocumento}");
+
+            return new DocumentoSustento
+            {
+                CodDocumento = tipoDocumento,
+                NumDocumento = documentoRequest.NumDocumento,
+                FechaEmisionDocumento = documentoRequest.FechaEmisionDocumento
+            };
+        }
+
+
+        private object ParseCodigoRetencion(string codigoRetencion)
+        {
+            // Primero intentar buscar por SRICodigo en EnumTipoRetencionIVA
+            var enumIVA = BuscarEnumPorSRICodigo<EnumTipoRetencionIVA>(codigoRetencion);
+            if (enumIVA.HasValue)
+            {
+                Console.WriteLine($"Encontrado en IVA: {enumIVA.Value}");
+                return enumIVA.Value;
+            }
+
+            // Luego intentar buscar por SRICodigo en EnumTipoRetencionRenta
+            var enumRenta = BuscarEnumPorSRICodigo<EnumTipoRetencionRenta>(codigoRetencion);
+            if (enumRenta.HasValue)
+            {
+                Console.WriteLine($"Encontrado en Renta: {enumRenta.Value}");
+                return enumRenta.Value;
+            }
+
+            // Si no se encuentra por código SRI, intentar parsear por nombre
+            if (Enum.TryParse<EnumTipoRetencionIVA>(codigoRetencion, true, out var iva))
+            {
+                return iva;
+            }
+            
+            if (Enum.TryParse<EnumTipoRetencionRenta>(codigoRetencion, true, out var renta))
+            {
+                return renta;
+            }
+
+            throw new ArgumentException($"Código de retención inválido: '{codigoRetencion}'. No se encontró en ningún enum de retención.");
+        }
+
+        private T? BuscarEnumPorSRICodigo<T>(string codigo) where T : struct, Enum
+        {
+            var enumType = typeof(T);
+            foreach (var field in enumType.GetFields(BindingFlags.Public | BindingFlags.Static))
+            {
+                var atributo = field.GetCustomAttribute<SRICodigoAttribute>();
+                if (atributo != null && atributo.Code == codigo)
+                {
+                    return (T)field.GetValue(null);
+                }
+            }
+            return null;
+        }
+
+        private EnumTipoAmbiente ParseTipoAmbiente(string tipoAmbiente)
+        {
+            // Buscar por SRICodigo
+            var enumValue = BuscarEnumPorSRICodigo<EnumTipoAmbiente>(tipoAmbiente);
+            if (enumValue.HasValue)
+            {
+                return enumValue.Value;
+            }
+
+            // Intentar por nombre
+            if (Enum.TryParse<EnumTipoAmbiente>(tipoAmbiente, true, out var resultado))
+            {
+                return resultado;
+            }
+
+            throw new ArgumentException($"Tipo de ambiente inválido: {tipoAmbiente}");
+        }
+
+        private EnumTipoIdentificacion ParseTipoIdentificacion(string tipoIdentificacion)
+        {
+            // Buscar por SRICodigo
+            var enumValue = BuscarEnumPorSRICodigo<EnumTipoIdentificacion>(tipoIdentificacion);
+            if (enumValue.HasValue)
+            {
+                return enumValue.Value;
+            }
+
+            // Intentar por nombre
+            if (Enum.TryParse<EnumTipoIdentificacion>(tipoIdentificacion, true, out var resultado))
+            {
+                return resultado;
+            }
+
+            throw new ArgumentException($"Tipo de identificación inválido: {tipoIdentificacion}");
+        }
+
+        private EnumTipoEmision ParseTipoEmision(string tipoEmision)
+        {
+            // Buscar por SRICodigo
+            var enumValue = BuscarEnumPorSRICodigo<EnumTipoEmision>(tipoEmision);
+            if (enumValue.HasValue)
+            {
+                return enumValue.Value;
+            }
+
+            // Intentar por nombre
+            if (Enum.TryParse<EnumTipoEmision>(tipoEmision, true, out var resultado))
+            {
+                return resultado;
+            }
+
+            throw new ArgumentException($"Tipo de emisión inválido: {tipoEmision}");
+        }
+
+        #endregion
     }
 }
