@@ -49,7 +49,7 @@ namespace Yachasoft.Sri.FacturacionElectronica
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Yachasoft.Sri.FacturacionElectronica v1"));
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 

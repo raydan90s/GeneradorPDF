@@ -31,5 +31,12 @@ namespace Yachasoft.Core.Extensions
         }
 
         public static string GetDisplayName(this Enum enumerate) => DisplayAttributeExtensions.GetDisplayAttribute((object)enumerate)?.GetName();
+        public static T GetAttributeOfType<T>(this Enum enumVal) where T : Attribute
+        {
+            return enumVal.GetType()
+                        .GetField(enumVal.ToString())
+                        .GetCustomAttributes(typeof(T), false)
+                        .FirstOrDefault() as T;
+        }
     }
 }
