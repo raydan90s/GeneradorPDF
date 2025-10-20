@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
@@ -12,7 +13,7 @@ using Yachasoft.Sri.Modelos.Enumerados;
 using Yachasoft.Sri.Xsd;
 using Yachasoft.Sri.Xsd.Contratos.LiquidacionCompra_1_0_0;
 using Yachasoft.Sri.Xsd.Map;
-using Yachasoft.Sri.FacturacionElectronica.DTOs;
+using Yachasoft.Sri.FacturacionElectronica.Models.Request;
 
 namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 {
@@ -46,7 +47,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
         /// <param name="request">Datos de la liquidación en formato JSON</param>
         /// <returns>Respuesta del SRI con la clave de acceso</returns>
         [HttpPost("Generar")]
-        public async Task<IActionResult> GenerarLiquidacionDinamica([FromBody] LiquidacionRequestDto request)
+        public async Task<IActionResult> GenerarLiquidacionDinamica([FromBody] LiquidacionRequest request)
         {
             try
             {
@@ -60,7 +61,9 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 var emisor = new Emisor
                 {
                     DireccionMatriz = request.Emisor.DireccionMatriz,
-                    EnumTipoAmbiente = request.Emisor.EsAmbientePrueba ? EnumTipoAmbiente.Prueba : EnumTipoAmbiente.Produccion,
+                    EnumTipoAmbiente = request.Emisor.EnumTipoAmbiente == "Produccion" 
+                        ? EnumTipoAmbiente.Produccion 
+                        : EnumTipoAmbiente.Prueba,
                     Logo = LOGO_PATH,
                     NombreComercial = request.Emisor.NombreComercial,
                     ObligadoContabilidad = request.Emisor.ObligadoContabilidad,
@@ -71,16 +74,27 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 
                 var establecimiento = new Establecimiento
                 {
-                    Codigo = request.Establecimiento.Codigo,
-                    DireccionEstablecimiento = request.Establecimiento.Direccion,
+                    Codigo = request.CodigoEstablecimiento,
+                    DireccionEstablecimiento = request.Emisor.DireccionEstablecimiento,
                     Emisor = emisor
                 };
 
                 var puntoEmision = new PuntoEmision
                 {
-                    Codigo = request.PuntoEmision.Codigo,
+                    Codigo = request.CodigoPuntoEmision,
                     Establecimiento = establecimiento
                 };
+
+                // 🔍 Buscar la dirección en InfoAdicional (si existe)
+                string direccionCliente = null;
+                if (request.InfoAdicional != null)
+                {
+                    var direccionAdicional = request.InfoAdicional.FirstOrDefault(ca => 
+                        ca.Nombre.Equals("Direccion", StringComparison.OrdinalIgnoreCase) || 
+                        ca.Nombre.Equals("Dirección", StringComparison.OrdinalIgnoreCase));
+                    
+                    direccionCliente = direccionAdicional?.Valor;
+                }
 
                 // 2️⃣ Crear Liquidación de compra
                 var liquidacion = new LiquidacionCompra_1_0_0Modelo.LiquidacionCompra
@@ -89,28 +103,28 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     FechaEmision = request.FechaEmision,
                     Sujeto = new Sujeto
                     {
-                        Identificacion = request.Proveedor.Identificacion,
-                        RazonSocial = request.Proveedor.RazonSocial,
-                        TipoIdentificador = (EnumTipoIdentificacion)request.Proveedor.TipoIdentificacion
+                        Identificacion = request.Cliente.Identificacion,
+                        RazonSocial = request.Cliente.RazonSocial,
+                        TipoIdentificador = (EnumTipoIdentificacion)Enum.Parse(typeof(EnumTipoIdentificacion), request.Cliente.TipoIdentificador)
                     },
                     InfoLiquidacionCompra = new LiquidacionCompra_1_0_0Modelo.InfoLiquidacionCompra
                     {
                         TotalSinImpuestos = request.InfoLiquidacion.TotalSinImpuestos,
                         TotalDescuento = request.InfoLiquidacion.TotalDescuento,
                         ImporteTotal = request.InfoLiquidacion.ImporteTotal,
-                        DireccionProveedor = request.Proveedor.Direccion,
+                        DireccionProveedor = direccionCliente, // ⚠️ Puede ser null si no existe en InfoAdicional
                         TotalConImpuestos = MapearImpuestosVenta(request.InfoLiquidacion.TotalConImpuestos),
                         Pagos = MapearPagos(request.InfoLiquidacion.Pagos)
                     },
                     Detalles = MapearDetalles(request.Detalles),
-                    InfoAdicional = MapearCamposAdicionales(request.InfoAdicional)
+                    InfoAdicional = request.InfoAdicional
                 };
 
                 // 3️⃣ Crear InfoTributaria y clave de acceso
                 liquidacion.InfoTributaria = new InfoTributaria
                 {
                     Secuencial = request.Secuencial,
-                    EnumTipoEmision = EnumTipoEmision.Normal
+                    EnumTipoEmision = ParseTipoEmision(request.EnumTipoEmision)
                 };
 
                 liquidacion.InfoTributaria.ClaveAcceso = Utils.GenerarClaveAcceso(
@@ -204,7 +218,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 
         #region Métodos de mapeo privados
 
-        private List<ImpuestoVenta> MapearImpuestosVenta(List<ImpuestoVentaDto> impuestosDto)
+        private List<ImpuestoVenta> MapearImpuestosVenta(List<ImpuestoVentaRequest> impuestosDto)
         {
             var impuestos = new List<ImpuestoVenta>();
             foreach (var imp in impuestosDto)
@@ -223,14 +237,14 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
             return impuestos;
         }
 
-        private List<Pago> MapearPagos(List<PagoDto> pagosDto)
+        private List<Pago> MapearPagos(List<PagoRequest> pagosDto)
         {
             var pagos = new List<Pago>();
             foreach (var pago in pagosDto)
             {
                 pagos.Add(new Pago
                 {
-                    FormaPago = (EnumFormaPago)pago.FormaPago,
+                    FormaPago = (EnumFormaPago)Enum.Parse(typeof(EnumFormaPago), pago.FormaPago),
                     Total = pago.Total,
                     Plazo = pago.Plazo,
                     UnidadTiempo = pago.UnidadTiempo
@@ -239,7 +253,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
             return pagos;
         }
 
-        private List<DetalleDocumentoItemPrecio> MapearDetalles(List<DetalleDto> detallesDto)
+        private List<DetalleDocumentoItemPrecio> MapearDetalles(List<DetalleRequest> detallesDto)
         {
             var detalles = new List<DetalleDocumentoItemPrecio>();
             foreach (var det in detallesDto)
@@ -257,14 +271,14 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     Descuento = det.Descuento,
                     PrecioTotalSinImpuesto = det.PrecioTotalSinImpuesto,
                     Impuestos = MapearImpuestosDetalle(det.Impuestos),
-                    DetallesAdicionales = MapearCamposAdicionales(det.DetallesAdicionales)
+                    DetallesAdicionales = det.DetallesAdicionales
                 };
                 detalles.Add(detalle);
             }
             return detalles;
         }
 
-        private List<Impuesto> MapearImpuestosDetalle(List<ImpuestoDto> impuestosDto)
+        private List<Impuesto> MapearImpuestosDetalle(List<ImpuestoRequest> impuestosDto)
         {
             var impuestos = new List<Impuesto>();
             foreach (var imp in impuestosDto)
@@ -283,37 +297,39 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
             return impuestos;
         }
 
-        private List<CampoAdicional> MapearCamposAdicionales(List<CampoAdicionalDto> camposDto)
-        {
-            if (camposDto == null) return new List<CampoAdicional>();
-
-            var campos = new List<CampoAdicional>();
-            foreach (var campo in camposDto)
-            {
-                campos.Add(new CampoAdicional
-                {
-                    Nombre = campo.Nombre,
-                    Valor = campo.Valor
-                });
-            }
-            return campos;
-        }
-
         /// <summary>
-        /// Mapea el código numérico del JSON al enum EnumTipoImpuestoIVA
+        /// Mapea el código string del JSON al enum EnumTipoImpuestoIVA
         /// </summary>
-        private EnumTipoImpuestoIVA ObtenerCodigoIVA(int codigo)
+        private EnumTipoImpuestoIVA ObtenerCodigoIVA(string codigo)
         {
             return codigo switch
             {
-                0 => EnumTipoImpuestoIVA._0,                 // IVA 0%
-                2 => EnumTipoImpuestoIVA._12,                // IVA 12%
-                3 => EnumTipoImpuestoIVA._14,                // IVA 14%
-                4 => EnumTipoImpuestoIVA._15,                // IVA 15%
-                6 => EnumTipoImpuestoIVA.NoObjetoImpuesto,   // No objeto de impuesto
-                7 => EnumTipoImpuestoIVA.ExentoIVA,          // Exento de IVA
+                "0" => EnumTipoImpuestoIVA._0,                 // IVA 0%
+                "2" => EnumTipoImpuestoIVA._12,                // IVA 12%
+                "3" => EnumTipoImpuestoIVA._14,                // IVA 14%
+                "4" => EnumTipoImpuestoIVA._15,                // IVA 15%
+                "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,   // No objeto de impuesto
+                "7" => EnumTipoImpuestoIVA.ExentoIVA,          // Exento de IVA
                 _ => throw new ArgumentException($"Código de IVA '{codigo}' no es válido. Códigos válidos: 0, 2, 3, 4, 6, 7")
             };
+        }
+
+        private EnumTipoEmision ParseTipoEmision(string tipoEmision)
+        {
+            // Buscar por SRICodigo
+            var enumValue = BuscarEnumPorSRICodigo<EnumTipoEmision>(tipoEmision);
+            if (enumValue.HasValue)
+            {
+                return enumValue.Value;
+            }
+
+            // Intentar por nombre
+            if (Enum.TryParse<EnumTipoEmision>(tipoEmision, true, out var resultado))
+            {
+                return resultado;
+            }
+
+            throw new ArgumentException($"Tipo de emisión inválido: {tipoEmision}");
         }
 
         #endregion

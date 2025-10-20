@@ -51,6 +51,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Models.Request
     {
         public string CodDocumento { get; set; }
         public string NumDocumento { get; set; }
-        public DateTime FechaEmisionDocumento { get; set; } // ⬅️ CAMBIADO: usar el mismo nombre que el modelo base
+        public DateTime FechaEmisionDocumento { get; set; }
     }
 }

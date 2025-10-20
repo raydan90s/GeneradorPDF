@@ -1,86 +1,56 @@
 using System;
 using System.Collections.Generic;
+using Yachasoft.Sri.Modelos.Base;
 
-namespace Yachasoft.Sri.FacturacionElectronica.DTOs
+namespace Yachasoft.Sri.FacturacionElectronica.Models.Request
 {
-    public class LiquidacionRequestDto
+    public class LiquidacionRequest
     {
-        public EmisorDto Emisor { get; set; }
-        public EstablecimientoDto Establecimiento { get; set; }
-        public PuntoEmisionDto PuntoEmision { get; set; }
-        public ProveedorDto Proveedor { get; set; }
-        public InfoLiquidacionDto InfoLiquidacion { get; set; }
-        public List<DetalleDto> Detalles { get; set; }
-        public List<CampoAdicionalDto> InfoAdicional { get; set; }
+        public EmisorRequest Emisor { get; set; }
+        public int CodigoEstablecimiento { get; set; }
+        public int CodigoPuntoEmision { get; set; }
         public DateTime FechaEmision { get; set; }
+        public ClienteRequest Cliente { get; set; }
+        public InfoLiquidacionRequest InfoLiquidacion { get; set; }
+        public List<DetalleRequest> Detalles { get; set; }
+        public List<CampoAdicional> InfoAdicional { get; set; }
         public int Secuencial { get; set; }
+        public string EnumTipoEmision { get; set; }
     }
 
-    public class EmisorDto
-    {
-        public string RUC { get; set; }
-        public string RazonSocial { get; set; }
-        public string NombreComercial { get; set; }
-        public string DireccionMatriz { get; set; }
-        public bool ObligadoContabilidad { get; set; }
-        public bool RegimenMicroEmpresas { get; set; }
-        public bool EsAmbientePrueba { get; set; } = true;
-    }
-
-    public class EstablecimientoDto
-    {
-        public int Codigo { get; set; }
-        public string Direccion { get; set; }
-    }
-
-    public class PuntoEmisionDto
-    {
-        public int Codigo { get; set; }
-    }
-
-    public class ProveedorDto
+    public class ClienteRequest
     {
         public string Identificacion { get; set; }
         public string RazonSocial { get; set; }
-        public string Direccion { get; set; }
-        public int TipoIdentificacion { get; set; } // 4 = RUC, 5 = Cédula, 6 = Pasaporte, 7 = Consumidor Final
+        public string TipoIdentificador { get; set; }
     }
 
-    public class InfoLiquidacionDto
+    public class InfoLiquidacionRequest
     {
         public decimal TotalSinImpuestos { get; set; }
         public decimal TotalDescuento { get; set; }
         public decimal ImporteTotal { get; set; }
-        public List<ImpuestoVentaDto> TotalConImpuestos { get; set; }
-        public List<PagoDto> Pagos { get; set; }
+        public List<ImpuestoVentaRequest> TotalConImpuestos { get; set; }
+        public List<PagoRequest> Pagos { get; set; }
     }
 
-    public class ImpuestoVentaDto
+    public class ImpuestoVentaRequest
     {
         public decimal BaseImponible { get; set; }
         public decimal Tarifa { get; set; }
         public decimal Valor { get; set; }
-        /// <summary>
-        /// Código de porcentaje IVA según EnumTipoImpuestoIVA:
-        /// 0 = IVA 0%
-        /// 2 = IVA 12%
-        /// 3 = IVA 14%
-        /// 4 = IVA 15%
-        /// 6 = No objeto de impuesto
-        /// 7 = Exento de IVA
-        /// </summary>
-        public int CodigoPorcentaje { get; set; }
+        public string CodigoPorcentaje { get; set; }
     }
 
-    public class PagoDto
+    public class PagoRequest
     {
-        public int FormaPago { get; set; } // 01=Sin utilizar sistema financiero, 16=Tarjeta débito, 19=Tarjeta crédito, 20=Otros
+        public string FormaPago { get; set; }
         public decimal Total { get; set; }
         public int Plazo { get; set; }
-        public string UnidadTiempo { get; set; } // dias, meses, años
+        public string UnidadTiempo { get; set; }
     }
 
-    public class DetalleDto
+    public class DetalleRequest
     {
         public string CodigoPrincipal { get; set; }
         public string CodigoAuxiliar { get; set; }
@@ -89,30 +59,15 @@ namespace Yachasoft.Sri.FacturacionElectronica.DTOs
         public decimal PrecioUnitario { get; set; }
         public decimal Descuento { get; set; }
         public decimal PrecioTotalSinImpuesto { get; set; }
-        public List<ImpuestoDto> Impuestos { get; set; }
-        public List<CampoAdicionalDto> DetallesAdicionales { get; set; }
+        public List<ImpuestoRequest> Impuestos { get; set; }
+        public List<CampoAdicional> DetallesAdicionales { get; set; }
     }
 
-    public class ImpuestoDto
+    public class ImpuestoRequest
     {
         public decimal BaseImponible { get; set; }
         public decimal Tarifa { get; set; }
         public decimal Valor { get; set; }
-        /// <summary>
-        /// Código de porcentaje IVA según EnumTipoImpuestoIVA:
-        /// 0 = IVA 0%
-        /// 2 = IVA 12%
-        /// 3 = IVA 14%
-        /// 4 = IVA 15%
-        /// 6 = No objeto de impuesto
-        /// 7 = Exento de IVA
-        /// </summary>
-        public int CodigoPorcentaje { get; set; }
-    }
-
-    public class CampoAdicionalDto
-    {
-        public string Nombre { get; set; }
-        public string Valor { get; set; }
+        public string CodigoPorcentaje { get; set; }
     }
 }
