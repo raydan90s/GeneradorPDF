@@ -14,6 +14,10 @@ using Yachasoft.Sri.Xsd;
 using Yachasoft.Sri.Xsd.Map;
 using Yachasoft.Sri.FacturacionElectronica.Models.Request;
 using Yachasoft.Core.Extensions;
+using Yachasoft.Sri.FacturacionElectronica.Services;
+using System.IO;
+
+
 
 namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 {
@@ -24,15 +28,19 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
         private readonly Signer.ICertificadoService certificadoService;
         private readonly WebService.ISriWebService webService;
         private readonly Ride.IRIDEService rIDEService;
+        private readonly FrappeFileUploader _frappeUploader;
 
         public RetencionController(
             Signer.ICertificadoService certificadoService,
             WebService.ISriWebService webService,
-            Ride.IRIDEService rIDEService)
+            Ride.IRIDEService rIDEService,
+            FrappeFileUploader frappeUploader
+            )
         {
             this.certificadoService = certificadoService;
             this.webService = webService;
             this.rIDEService = rIDEService;
+            this._frappeUploader = frappeUploader;
         }
 
         [HttpPost("GenerarRetencion")]
@@ -134,29 +142,46 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                             }
                         }
 
-                        rIDEService.ComprobanteRetencion_1_0_0(
-                            retencion,
-                            "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/RETENCION.pdf"
+                        // Generar PDF
+                        var rutaPDF = $"/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/COMPROBANTE_RETENCION_{retencion.InfoTributaria.ClaveAcceso}.pdf";
+                        rIDEService.ComprobanteRetencion_1_0_0(retencion, rutaPDF);
+
+                        // Subir PDF al Frappe
+                        var respuestaUpload = await _frappeUploader.UploadFileAsync(
+                            rutaPDF,
+                            Path.GetFileName(rutaPDF),
+                            folder: "Home/Documento de Retencion/PDF"
                         );
+                        Console.WriteLine("📤 Archivo PDF subido a Frappe:");
+                        Console.WriteLine(respuestaUpload);
+
+                        // Subir XML también (opcional)
+                        var rutaXML = $"/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/COMPROBANTE_RETENCION_{retencion.InfoTributaria.ClaveAcceso}.xml";
+                        var respuestaXmlUpload = await _frappeUploader.UploadFileAsync(
+                            rutaXML,
+                            Path.GetFileName(rutaXML),
+                            folder: "Home/Documento de Retencion/XML"
+                        );
+                        Console.WriteLine("📤 Archivo XML subido a Frappe:");
+                        Console.WriteLine(respuestaXmlUpload);
+
+                        await FileCleanupHelper.DeleteFileAsync(rutaPDF);
+                        await FileCleanupHelper.DeleteFileAsync(rutaXML);
 
                         var resultado = new
                         {
                             success = true,
                             claveAcceso = retencion.InfoTributaria.ClaveAcceso,
-                            mensaje = "Retención autorizada y PDF generado correctamente",
+                            mensaje = "Retención autorizada, PDF generado y archivos subidos a Frappe correctamente",
                             numeroAutorizacion = retencion.Autorizacion.Numero,
-                            fechaAutorizacion = retencion.Autorizacion.Fecha.ToString("yyyy-MM-dd HH:mm:ss")
+                            fechaAutorizacion = retencion.Autorizacion.Fecha.ToString("yyyy-MM-dd HH:mm:ss"),
+                            respuestaFrappePDF = respuestaUpload,
+                            respuestaFrappeXML = respuestaXmlUpload
                         };
-
-                        Console.WriteLine($"DATOS RETORNADOS:\n" +
-                                        $"Success: {resultado.success}\n" +
-                                        $"Clave Acceso: {resultado.claveAcceso}\n" +
-                                        $"Mensaje: {resultado.mensaje}\n" +
-                                        $"Número Autorización: {resultado.numeroAutorizacion}\n" +
-                                        $"Fecha Autorización: {resultado.fechaAutorizacion}");
 
                         return Ok(resultado);
                     }
+
                     else
                     {
                         // Manejo de errores de autorización

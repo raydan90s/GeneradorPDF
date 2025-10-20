@@ -582,3 +582,59 @@ Número Autorización: 1710202507099235243400110010010000000281234567819
 Fecha Autorización: 2025-10-17 16:56:06
 ❌ ERROR: Object reference not set to an instance of an object.
    at Yachasoft.Sri.FacturacionElectronica.Controllers.LiquidacionController.GenerarLiquidacionDinamica(LiquidacionRequestDto request) in /home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/Controllers/LiquidacionCompraController.cs:line 60
+❌ ERROR: Object reference not set to an instance of an object.
+   at Yachasoft.Sri.FacturacionElectronica.Controllers.LiquidacionController.GenerarLiquidacionDinamica(LiquidacionRequestDto request) in /home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/Controllers/LiquidacionCompraController.cs:line 60
+<?xml version="1.0" encoding="utf-8"?>
+<liquidacionCompra xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0.0" id="comprobante">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>COMPUSTORE S.A.</razonSocial>
+    <ruc>0992352434001</ruc>
+    <claveAcceso>1710202503099235243400110010010000000501234567813</claveAcceso>
+    <codDoc>03</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+ 
+✅ Respuesta SRI: {"Data":{"Estado":"DEVUELTA","Comprobantes":{"Comprobante":[{"ClaveAcceso":"1710202503099235243400110010010000000501234567813","Mensajes":{"Mensaje":[{"Identificador":"35","Mensaje_":"ARCHIVO NO CUMPLE ESTRUCTURA XML","Tipo":"ERROR","InformacionAdicional":"Se encontró el siguiente error en la estructura del comprobante: cvc-complex-type.2.4.b: The content of element 'detallesAdicionales' is not complete. One of '{detAdicional}' is expected.."}]}}]}},"Error":null,"Ok":false}
+<?xml version="1.0" encoding="utf-8"?>
+<liquidacionCompra xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0.0" id="comprobante">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>COMPUSTORE S.A.</razonSocial>
+    <ruc>0992352434001</ruc>
+    <claveAcceso>1710202503099235243400110010010000000501234567813</claveAcceso>
+    <codDoc>03</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+ 
+✅ Respuesta SRI: {"Data":{"Estado":"DEVUELTA","Comprobantes":{"Comprobante":[{"ClaveAcceso":"1710202503099235243400110010010000000501234567813","Mensajes":{"Mensaje":[{"Identificador":"35","Mensaje_":"ARCHIVO NO CUMPLE ESTRUCTURA XML","Tipo":"ERROR","InformacionAdicional":"Se encontró el siguiente error en la estructura del comprobante: cvc-complex-type.2.4.b: The content of element 'detallesAdicionales' is not complete. One of '{detAdicional}' is expected.."}]}}]}},"Error":null,"Ok":false}
+<?xml version="1.0" encoding="utf-8"?>
+<liquidacionCompra xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0.0" id="comprobante">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>COMPUSTORE S.A.</razonSocial>
+    <ruc>0992352434001</ruc>
+    <claveAcceso>1710202503099235243400110010010000000501234567813</claveAcceso>
+    <codDoc>03</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+ 
+✅ Respuesta SRI: {"Data":{"Estado":"DEVUELTA","Comprobantes":{"Comprobante":[{"ClaveAcceso":"1710202503099235243400110010010000000501234567813","Mensajes":{"Mensaje":[{"Identificador":"35","Mensaje_":"ARCHIVO NO CUMPLE ESTRUCTURA XML","Tipo":"ERROR","InformacionAdicional":"Se encontró el siguiente error en la estructura del comprobante: cvc-complex-type.2.4.b: The content of element 'detallesAdicionales' is not complete. One of '{detAdicional}' is expected.."}]}}]}},"Error":null,"Ok":false}
+<?xml version="1.0" encoding="utf-8"?>
+<liquidacionCompra xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" version="1.0.0" id="comprobante">
+  <infoTributaria>
+    <ambiente>1</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>COMPUSTORE S.A.</razonSocial>
+    <ruc>0992352434001</ruc>
+    <claveAcceso>1710202503099235243400110010010000000501234567813</claveAcceso>
+    <codDoc>03</codDoc>
+    <estab>001</estab>
+    <ptoEmi>001</ptoEmi>
+ 
+✅ Respuesta SRI: {"Data":{"Estado":"DEVUELTA","Comprobantes":{"Comprobante":[{"ClaveAcceso":"1710202503099235243400110010010000000501234567813","Mensajes":{"Mensaje":[{"Identificador":"35","Mensaje_":"ARCHIVO NO CUMPLE ESTRUCTURA XML","Tipo":"ERROR","InformacionAdicional":"Se encontró el siguiente error en la estructura del comprobante: cvc-complex-type.2.4.b: The content of element 'detallesAdicionales' is not complete. One of '{detAdicional}' is expected.."}]}}]}},"Error":null,"Ok":false}
+warn: Microsoft.AspNetCore.Server.Kestrel[22]
+      As of "10/18/2025 21:53:35 +00:00", the heartbeat has been running for "00:00:01.4996761" which is longer than "00:00:01". This could be caused by thread pool starvation.
