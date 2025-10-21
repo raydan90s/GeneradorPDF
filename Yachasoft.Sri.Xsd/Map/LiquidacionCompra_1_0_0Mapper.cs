@@ -121,13 +121,18 @@ namespace Yachasoft.Sri.Xsd.Map
     })).ToArray();
 
     internal static liquidacionCompraDetalleDetAdicional[] Map2(
-      List<CampoAdicional> detallesAdicionales)
+    List<CampoAdicional> detallesAdicionales)
     {
-      return detallesAdicionales.ConvertAll<liquidacionCompraDetalleDetAdicional>((Converter<CampoAdicional, liquidacionCompraDetalleDetAdicional>) (detalle => new liquidacionCompraDetalleDetAdicional()
-      {
-        nombre = detalle.Nombre,
-        valor = detalle.Valor
-      })).ToArray();
+        if (detallesAdicionales == null || !detallesAdicionales.Any())
+            return null;
+
+        return detallesAdicionales
+            .ConvertAll(detalle => new liquidacionCompraDetalleDetAdicional()
+            {
+                nombre = detalle.Nombre,
+                valor = detalle.Valor
+            })
+            .ToArray();
     }
 
     internal static liquidacionCompraInfoLiquidacionCompraTotalImpuesto[] Map(

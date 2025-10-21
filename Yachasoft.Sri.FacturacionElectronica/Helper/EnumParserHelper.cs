@@ -4,6 +4,8 @@ using Yachasoft.Sri.Core.Atributos;
 using Yachasoft.Sri.Core.Enumerados;
 using Yachasoft.Sri.Modelos.Enumerados;
 using Yachasoft.Core.Extensions;
+using Yachasoft.Sri.Modelos.Enumerados;
+
 
 namespace Yachasoft.Sri.FacturacionElectronica.Services
 {
@@ -66,7 +68,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
             throw new ArgumentException($"Tipo de emisión inválido: {tipoEmision}");
         }
 
-
         public static object ParseCodigoRetencion(string codigoRetencion)
         {
             var enumIVA = BuscarEnumPorSRICodigo<EnumTipoRetencionIVA>(codigoRetencion);
@@ -93,6 +94,20 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
             throw new ArgumentException($"Código de retención inválido: '{codigoRetencion}'. No se encontró en ningún enum de retención.");
         }
 
+        public static EnumTipoImpuestoIVA ParseCodigoIVA(string codigoIVA)
+        {
+            var enumValue = BuscarEnumPorSRICodigo<EnumTipoImpuestoIVA>(codigoIVA);
+            if (enumValue.HasValue)
+            {
+                return enumValue.Value;
+            }
+            if (Enum.TryParse<EnumTipoImpuestoIVA>(codigoIVA, true, out var resultado))
+            {
+                return resultado;
+            }
+            throw new ArgumentException($"Código IVA inválido: '{codigoIVA}'");
+        }
+
         public static EnumFormaPago ParseFormaPago(string formaPago)
         {
             var enumValue = BuscarEnumPorSRICodigo<EnumFormaPago>(formaPago);
@@ -104,40 +119,8 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
             {
                 return resultado;
             }
-            throw new ArgumentException($"Forma de pago inválida: {formaPago}");
+            throw new ArgumentException($"Forma de pago inválida: '{formaPago}'");
         }
 
-        public static EnumTipoImpuestoIVA ParseCodigoIVA(string codigo)
-        {
-            var enumValue = BuscarEnumPorSRICodigo<EnumTipoImpuestoIVA>(codigo);
-            if (enumValue.HasValue)
-            {
-                return enumValue.Value;
-            }
-
-            if (Enum.TryParse<EnumTipoImpuestoIVA>(codigo, true, out var resultado))
-            {
-                return resultado;
-            }
-
-            throw new ArgumentException($"Código de IVA inválido: {codigo}");
-        }
-
-
-        public static EnumTipoDocumento ParseTipoDocumento(string tipoDocumento)
-        {
-            var enumValue = BuscarEnumPorSRICodigo<EnumTipoDocumento>(tipoDocumento);
-            if (enumValue.HasValue)
-            {
-                return enumValue.Value;
-            }
-
-            if (Enum.TryParse<EnumTipoDocumento>(tipoDocumento, true, out var resultado))
-            {
-                return resultado;
-            }
-
-            throw new ArgumentException($"Tipo de documento inválido: {tipoDocumento}");
-        }
     }
 }

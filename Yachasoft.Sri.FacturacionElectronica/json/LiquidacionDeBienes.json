@@ -1,78 +1,78 @@
 {
-  "emisor": {
-    "ruc": "0992352434001",
-    "razonSocial": "Sri pruebas",
-    "nombreComercial": "Yachasoft pruebas",
-    "direccionMatriz": "Casa",
-    "obligadoContabilidad": false,
-    "regimenMicroEmpresas": false,
-    "esAmbientePrueba": true
+  "Emisor": {
+    "DireccionMatriz": "Av. Ejemplo 123, Quito",
+    "DireccionEstablecimiento": "Av. Ejemplo 123, Quito",
+    "EnumTipoAmbiente": "1",
+    "NombreComercial": "Comercial Ejemplo",
+    "ObligadoContabilidad": true,
+    "RazonSocial": "Comercial Ejemplo S.A.",
+    "RegimenMicroEmpresas": false,
+    "RUC": "0992352434001",
+    "ContribuyenteEspecial": null,
+    "AgenteRetencion": null
   },
-  "establecimiento": {
-    "codigo": 1,
-    "direccion": "Mi casa"
+  "CodigoEstablecimiento": "001",
+  "CodigoPuntoEmision": "002",
+  "FechaEmision": "2025-10-17T15:00:00-05:00",
+  "Secuencial": "000000010",
+  "EnumTipoEmision": "1",
+  "Cliente": {
+    "Identificacion": "0956076269",
+    "RazonSocial": "Cliente Prueba S.A.",
+    "TipoIdentificador": "05"
   },
-  "puntoEmision": {
-    "codigo": 2
-  },
-  "proveedor": {
-    "identificacion": "1799999999001",
-    "razonSocial": "Proveedor Ejemplo",
-    "direccion": "Av. Amazonas y NNUU, Quito",
-    "tipoIdentificacion": 4
-  },
-  "infoLiquidacion": {
-    "totalSinImpuestos": 100.00,
-    "totalDescuento": 0.00,
-    "importeTotal": 115.00,
-    "totalConImpuestos": [
+  "InfoAdicional": [
+    {
+      "Nombre": "Direccion",
+      "Valor": "Av. Cliente 456, Guayaquil"
+    },
+    {
+      "Nombre": "Telefono",
+      "Valor": "0999999999"
+    }
+  ],
+  "InfoLiquidacion": {
+    "TotalSinImpuestos": 100.00,
+    "TotalDescuento": 0.00,
+    "ImporteTotal": 115.00,
+    "TotalConImpuestos": [
       {
-        "baseImponible": 100.00,
-        "codigoPorcentaje": 3,
-        "tarifa": 15.00,
-        "valor": 15.00
+        "Codigo": "2",
+        "CodigoPorcentaje": "4",
+        "BaseImponible": 100.00,
+        "Valor": 15.00
       }
     ],
-    "pagos": [
+    "Pagos": [
       {
-        "formaPago": 1,
-        "total": 115.00,
-        "plazo": 30,
-        "unidadTiempo": "dias"
+        "FormaPago": "01",
+        "Total": 115.00
       }
     ]
   },
-  "detalles": [
+  "Detalles": [
     {
-      "codigoPrincipal": "P001",
-      "codigoAuxiliar": "P001-EXT",
-      "descripcion": "Servicio de mantenimiento",
-      "cantidad": 1,
-      "precioUnitario": 100.00,
-      "descuento": 0.00,
-      "precioTotalSinImpuesto": 100.00,
-      "impuestos": [
+      "CodigoPrincipal": "PROD001",
+      "Descripcion": "Producto de prueba 1",
+      "Cantidad": 1,
+      "PrecioUnitario": 100.00,
+      "Descuento": 0.00,
+      "PrecioTotalSinImpuesto": 100.00,
+      "Impuestos": [
         {
-          "baseImponible": 100.00,
-          "codigoPorcentaje": 3,
-          "tarifa": 15.00,
-          "valor": 15.00
+          "Codigo": "2",
+          "CodigoPorcentaje": "4",
+          "Tarifa": 15.0,
+          "BaseImponible": 100.00,
+          "Valor": 15.00
         }
       ],
-      "detallesAdicionales": [
-        {
-          "nombre": "Detalle",
-          "valor": "Servicio realizado en sitio"
-        }
-      ]
+      "DetallesAdicionales": [
+      {
+        "Nombre": "fff",
+        "Valor": "fff"
+      }
+    ]
     }
-  ],
-  "infoAdicional": [
-    {
-      "nombre": "Email",
-      "valor": "proveedor@ejemplo.com"
-    }
-  ],
-  "fechaEmision": "2025-10-14T10:30:00",
-  "secuencial": 8
+  ]
 }

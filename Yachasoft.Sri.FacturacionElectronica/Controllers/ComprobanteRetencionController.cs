@@ -17,8 +17,6 @@ using Yachasoft.Core.Extensions;
 using Yachasoft.Sri.FacturacionElectronica.Services;
 using System.IO;
 
-
-
 namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 {
     [Route("api/[controller]")]
@@ -51,7 +49,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 var emisor = new Emisor
                 {
                     DireccionMatriz = request.Emisor.DireccionMatriz,
-                    EnumTipoAmbiente = ParseTipoAmbiente(request.Emisor.EnumTipoAmbiente),
+                    EnumTipoAmbiente = EnumParserHelper.ParseTipoAmbiente(request.Emisor.EnumTipoAmbiente),
                     Logo = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/Logo_UTPL.png",
                     NombreComercial = request.Emisor.NombreComercial,
                     ObligadoContabilidad = request.Emisor.ObligadoContabilidad,
@@ -87,7 +85,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     {
                         Identificacion = request.Sujeto.Identificacion,
                         RazonSocial = request.Sujeto.RazonSocial,
-                        TipoIdentificador = ParseTipoIdentificacion(request.Sujeto.TipoIdentificador)
+                        TipoIdentificador = EnumParserHelper.ParseTipoIdentificacion(request.Sujeto.TipoIdentificador)
                     },
                     Impuestos = MapearImpuestos(request.Impuestos),
                     InfoAdicional = request.InfoAdicional
@@ -96,7 +94,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 retencion.InfoTributaria = new InfoTributaria
                 {
                     Secuencial = request.Secuencial,
-                    EnumTipoEmision = ParseTipoEmision(request.EnumTipoEmision)
+                    EnumTipoEmision = EnumParserHelper.ParseTipoEmision(request.EnumTipoEmision)
                 };
 
                 retencion.InfoTributaria.ClaveAcceso = Utils.GenerarClaveAcceso(
@@ -272,7 +270,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 {
                     Console.WriteLine($"Procesando impuesto con código: {impuesto.CodigoRetencion}");
                     
-                    var codigoRetencion = ParseCodigoRetencion(impuesto.CodigoRetencion);
+                    var codigoRetencion = EnumParserHelper.ParseCodigoRetencion(impuesto.CodigoRetencion);
                     Console.WriteLine($"Código parseado: {codigoRetencion.GetType().Name} = {codigoRetencion}");
                     
                     if (codigoRetencion is EnumTipoRetencionRenta)
@@ -335,107 +333,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 NumDocumento = documentoRequest.NumDocumento,
                 FechaEmisionDocumento = documentoRequest.FechaEmisionDocumento
             };
-        }
-
-
-        private object ParseCodigoRetencion(string codigoRetencion)
-        {
-            // Primero intentar buscar por SRICodigo en EnumTipoRetencionIVA
-            var enumIVA = BuscarEnumPorSRICodigo<EnumTipoRetencionIVA>(codigoRetencion);
-            if (enumIVA.HasValue)
-            {
-                Console.WriteLine($"Encontrado en IVA: {enumIVA.Value}");
-                return enumIVA.Value;
-            }
-
-            // Luego intentar buscar por SRICodigo en EnumTipoRetencionRenta
-            var enumRenta = BuscarEnumPorSRICodigo<EnumTipoRetencionRenta>(codigoRetencion);
-            if (enumRenta.HasValue)
-            {
-                Console.WriteLine($"Encontrado en Renta: {enumRenta.Value}");
-                return enumRenta.Value;
-            }
-
-            // Si no se encuentra por código SRI, intentar parsear por nombre
-            if (Enum.TryParse<EnumTipoRetencionIVA>(codigoRetencion, true, out var iva))
-            {
-                return iva;
-            }
-            
-            if (Enum.TryParse<EnumTipoRetencionRenta>(codigoRetencion, true, out var renta))
-            {
-                return renta;
-            }
-
-            throw new ArgumentException($"Código de retención inválido: '{codigoRetencion}'. No se encontró en ningún enum de retención.");
-        }
-
-        private T? BuscarEnumPorSRICodigo<T>(string codigo) where T : struct, Enum
-        {
-            var enumType = typeof(T);
-            foreach (var field in enumType.GetFields(BindingFlags.Public | BindingFlags.Static))
-            {
-                var atributo = field.GetCustomAttribute<SRICodigoAttribute>();
-                if (atributo != null && atributo.Code == codigo)
-                {
-                    return (T)field.GetValue(null);
-                }
-            }
-            return null;
-        }
-
-        private EnumTipoAmbiente ParseTipoAmbiente(string tipoAmbiente)
-        {
-            // Buscar por SRICodigo
-            var enumValue = BuscarEnumPorSRICodigo<EnumTipoAmbiente>(tipoAmbiente);
-            if (enumValue.HasValue)
-            {
-                return enumValue.Value;
-            }
-
-            // Intentar por nombre
-            if (Enum.TryParse<EnumTipoAmbiente>(tipoAmbiente, true, out var resultado))
-            {
-                return resultado;
-            }
-
-            throw new ArgumentException($"Tipo de ambiente inválido: {tipoAmbiente}");
-        }
-
-        private EnumTipoIdentificacion ParseTipoIdentificacion(string tipoIdentificacion)
-        {
-            // Buscar por SRICodigo
-            var enumValue = BuscarEnumPorSRICodigo<EnumTipoIdentificacion>(tipoIdentificacion);
-            if (enumValue.HasValue)
-            {
-                return enumValue.Value;
-            }
-
-            // Intentar por nombre
-            if (Enum.TryParse<EnumTipoIdentificacion>(tipoIdentificacion, true, out var resultado))
-            {
-                return resultado;
-            }
-
-            throw new ArgumentException($"Tipo de identificación inválido: {tipoIdentificacion}");
-        }
-
-        private EnumTipoEmision ParseTipoEmision(string tipoEmision)
-        {
-            // Buscar por SRICodigo
-            var enumValue = BuscarEnumPorSRICodigo<EnumTipoEmision>(tipoEmision);
-            if (enumValue.HasValue)
-            {
-                return enumValue.Value;
-            }
-
-            // Intentar por nombre
-            if (Enum.TryParse<EnumTipoEmision>(tipoEmision, true, out var resultado))
-            {
-                return resultado;
-            }
-
-            throw new ArgumentException($"Tipo de emisión inválido: {tipoEmision}");
         }
 
         #endregion

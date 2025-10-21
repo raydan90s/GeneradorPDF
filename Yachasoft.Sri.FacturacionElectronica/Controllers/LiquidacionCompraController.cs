@@ -14,6 +14,7 @@ using Yachasoft.Sri.Xsd;
 using Yachasoft.Sri.Xsd.Contratos.LiquidacionCompra_1_0_0;
 using Yachasoft.Sri.Xsd.Map;
 using Yachasoft.Sri.FacturacionElectronica.Models.Request;
+using Yachasoft.Sri.FacturacionElectronica.Services;
 
 namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 {
@@ -24,52 +25,37 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
         private readonly Signer.ICertificadoService certificadoService;
         private readonly WebService.ISriWebService webService;
         private readonly Ride.IRIDEService rIDEService;
-
-        // ⚙️ Configuración hardcoded
-        private const string LOGO_PATH = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/Logo_UTPL.png";
-        private const string PDF_OUTPUT_PATH = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/LIQUIDACION.pdf";
-        private const string CERTIFICADO_PATH = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/signature.p12";
-        private const string CERTIFICADO_PASSWORD = "Compus1234";
+        private readonly FrappeFileUploader _frappeUploader;
 
         public LiquidacionController(
             Signer.ICertificadoService certificadoService,
             WebService.ISriWebService webService,
-            Ride.IRIDEService rIDEService)
+            Ride.IRIDEService rIDEService,
+            FrappeFileUploader frappeUploader)
         {
             this.certificadoService = certificadoService;
             this.webService = webService;
             this.rIDEService = rIDEService;
+            this._frappeUploader = frappeUploader;
         }
 
-        /// <summary>
-        /// Genera, firma y envía una liquidación de compra al SRI con datos dinámicos (POST)
-        /// </summary>
-        /// <param name="request">Datos de la liquidación en formato JSON</param>
-        /// <returns>Respuesta del SRI con la clave de acceso</returns>
-        [HttpPost("Generar")]
-        public async Task<IActionResult> GenerarLiquidacionDinamica([FromBody] LiquidacionRequest request)
+        [HttpPost("GenerarLiquidacion")]
+        public async Task<IActionResult> GenerarLiquidacion([FromBody] LiquidacionRequest request)
         {
             try
             {
-                // 🔍 Validar request
-                if (request == null)
-                {
-                    return BadRequest(new { mensaje = "El cuerpo de la solicitud no puede estar vacío" });
-                }
-
-                // 1️⃣ Crear emisor, establecimiento y punto de emisión
                 var emisor = new Emisor
                 {
                     DireccionMatriz = request.Emisor.DireccionMatriz,
-                    EnumTipoAmbiente = request.Emisor.EnumTipoAmbiente == "Produccion" 
-                        ? EnumTipoAmbiente.Produccion 
-                        : EnumTipoAmbiente.Prueba,
-                    Logo = LOGO_PATH,
+                    EnumTipoAmbiente = EnumParserHelper.ParseTipoAmbiente(request.Emisor.EnumTipoAmbiente),
+                    Logo = "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/Logo_UTPL.png", //CAMBIAR ESTO QUEMADO
                     NombreComercial = request.Emisor.NombreComercial,
                     ObligadoContabilidad = request.Emisor.ObligadoContabilidad,
                     RazonSocial = request.Emisor.RazonSocial,
                     RegimenMicroEmpresas = request.Emisor.RegimenMicroEmpresas,
-                    RUC = request.Emisor.RUC
+                    RUC = request.Emisor.RUC,
+                    ContribuyenteEspecial = request.Emisor.ContribuyenteEspecial,
+                    AgenteRetencion = request.Emisor.AgenteRetencion,
                 };
 
                 var establecimiento = new Establecimiento
@@ -85,18 +71,15 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     Establecimiento = establecimiento
                 };
 
-                // 🔍 Buscar la dirección en InfoAdicional (si existe)
                 string direccionCliente = null;
                 if (request.InfoAdicional != null)
                 {
                     var direccionAdicional = request.InfoAdicional.FirstOrDefault(ca => 
                         ca.Nombre.Equals("Direccion", StringComparison.OrdinalIgnoreCase) || 
                         ca.Nombre.Equals("Dirección", StringComparison.OrdinalIgnoreCase));
-                    
                     direccionCliente = direccionAdicional?.Valor;
                 }
-
-                // 2️⃣ Crear Liquidación de compra
+                var detallesMapeados = MapperHelper.MapearDetalles(request.Detalles);
                 var liquidacion = new LiquidacionCompra_1_0_0Modelo.LiquidacionCompra
                 {
                     PuntoEmision = puntoEmision,
@@ -105,26 +88,29 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     {
                         Identificacion = request.Cliente.Identificacion,
                         RazonSocial = request.Cliente.RazonSocial,
-                        TipoIdentificador = (EnumTipoIdentificacion)Enum.Parse(typeof(EnumTipoIdentificacion), request.Cliente.TipoIdentificador)
+                        TipoIdentificador = EnumParserHelper.ParseTipoIdentificacion(request.Cliente.TipoIdentificador)
                     },
                     InfoLiquidacionCompra = new LiquidacionCompra_1_0_0Modelo.InfoLiquidacionCompra
                     {
                         TotalSinImpuestos = request.InfoLiquidacion.TotalSinImpuestos,
                         TotalDescuento = request.InfoLiquidacion.TotalDescuento,
                         ImporteTotal = request.InfoLiquidacion.ImporteTotal,
-                        DireccionProveedor = direccionCliente, // ⚠️ Puede ser null si no existe en InfoAdicional
-                        TotalConImpuestos = MapearImpuestosVenta(request.InfoLiquidacion.TotalConImpuestos),
-                        Pagos = MapearPagos(request.InfoLiquidacion.Pagos)
+                        DireccionProveedor = direccionCliente,
+                        
+                        TotalConImpuestos = MapperHelper.MapearImpuestosVentaDesdeDetalles(detallesMapeados),
+                        
+                        Pagos = MapperHelper.MapearPagos(request.InfoLiquidacion.Pagos)
                     },
-                    Detalles = MapearDetalles(request.Detalles),
+                    
+                    Detalles = detallesMapeados,
+                    
                     InfoAdicional = request.InfoAdicional
                 };
 
-                // 3️⃣ Crear InfoTributaria y clave de acceso
                 liquidacion.InfoTributaria = new InfoTributaria
                 {
                     Secuencial = request.Secuencial,
-                    EnumTipoEmision = ParseTipoEmision(request.EnumTipoEmision)
+                    EnumTipoEmision = EnumParserHelper.ParseTipoEmision(request.EnumTipoEmision)
                 };
 
                 liquidacion.InfoTributaria.ClaveAcceso = Utils.GenerarClaveAcceso(
@@ -135,10 +121,8 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     liquidacion.InfoTributaria.EnumTipoEmision
                 );
 
-                // 4️⃣ Mapear al XSD
                 var xmlObj = LiquidacionCompra_1_0_0Mapper.Map(liquidacion);
 
-                // 5️⃣ Serializar a XmlDocument (para firmar)
                 var xmlDoc = new XmlDocument();
                 using (var memoryStream = new MemoryStream())
                 {
@@ -148,190 +132,156 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     xmlDoc.Load(memoryStream);
                 }
 
-                // Forzar Id="comprobante"
                 xmlDoc.DocumentElement.SetAttribute("id", "comprobante");
 
-                // 6️⃣ Guardar XML sin firmar (opcional para debug)
-                xmlDoc.Save("LIQUIDACION_COMPRA_SIN_FIRMAR.xml");
-
-                // 7️⃣ Firmar
-                certificadoService.CargarDesdeP12(CERTIFICADO_PATH, CERTIFICADO_PASSWORD);
+                certificadoService.CargarDesdeP12(
+                    "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/signature.p12", //CAMBIAR ESTO QUEMADO
+                    "Compus1234" //CAMBIAR ESTO QUEMADO
+                );
                 var xmlFirmado = certificadoService.FirmarDocumento(xmlDoc);
 
-                // 8️⃣ Guardar XML firmado
-                xmlFirmado.Save("LIQUIDACION_COMPRA_FIRMADO.xml");
+                var nombreArchivoXml = $"LIQUIDACION_COMPRA_{liquidacion.InfoTributaria.ClaveAcceso}.xml";
+                xmlFirmado.Save(nombreArchivoXml);
 
-                // 9️⃣ Convertir a string para enviar al SRI
-                string xmlFirmadoStr = xmlFirmado.OuterXml;
-                Console.WriteLine(xmlFirmadoStr.Substring(0, Math.Min(500, xmlFirmadoStr.Length)));
+                var envio = await webService.ValidarComprobanteAsync(xmlFirmado);
+                Console.WriteLine($"ESTADO DE COMPROBANTE DE ENVIO: {System.Text.Json.JsonSerializer.Serialize(envio, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
 
-                // 🔟 Enviar al SRI
-                var envio = await webService.ValidarComprobanteAsync(xmlFirmadoStr);
-                Console.WriteLine("✅ Respuesta SRI: " + Newtonsoft.Json.JsonConvert.SerializeObject(envio));
-
-                if (!envio.Ok)
+                if (envio.Ok)
                 {
-                    return BadRequest(new
+                    System.Threading.Thread.Sleep(3000);
+                    
+                    var auto = await webService.AutorizacionComprobanteAsync(liquidacion.InfoTributaria.ClaveAcceso);
+                    var autorizacionData = auto.Data?.Autorizaciones?.Autorizacion?.FirstOrDefault();
+                    Console.WriteLine($"ESTADO DE COMPROBANTE DE AUTORIZACION: {System.Text.Json.JsonSerializer.Serialize(auto, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
+
+                    if (auto.Ok)
                     {
-                        mensaje = "Error al enviar la liquidación al SRI",
-                        detalle = envio
-                    });
+                        Console.WriteLine("AUTORIZADO");
+
+                        if (autorizacionData != null)
+                        {
+                            liquidacion.Autorizacion.Numero = autorizacionData.NumeroAutorizacion;
+                            if (DateTimeOffset.TryParse(autorizacionData.FechaAutorizacion, out var fechaOffset))
+                            {
+                                liquidacion.Autorizacion.Fecha = fechaOffset.ToOffset(TimeSpan.FromHours(-5)).DateTime;
+                            }
+                            else
+                            {
+                                throw new Exception($"Fecha de autorización inválida: {autorizacionData.FechaAutorizacion}");
+                            }
+                        }
+
+                        var rutaPDF = $"/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/LIQUIDACION_COMPRA_{liquidacion.InfoTributaria.ClaveAcceso}.pdf";
+                        rIDEService.LiquidacionCompra_1_0_0(liquidacion, rutaPDF);
+
+                        var respuestaUploadPDF = await _frappeUploader.UploadFileAsync(
+                            rutaPDF,
+                            Path.GetFileName(rutaPDF),
+                            folder: "Home/Liquidacion de Bienes y Servicios/PDF"
+                        );
+                        Console.WriteLine("📤 Archivo PDF subido a Frappe:");
+                        Console.WriteLine(respuestaUploadPDF);
+
+                        var rutaXML = $"/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/LIQUIDACION_COMPRA_{liquidacion.InfoTributaria.ClaveAcceso}.xml";
+                        var respuestaUploadXML = await _frappeUploader.UploadFileAsync(
+                            rutaXML,
+                            Path.GetFileName(rutaXML),
+                            folder: "Home/Liquidacion de Bienes y Servicios/XML"
+                        );
+                        Console.WriteLine("📤 Archivo XML subido a Frappe:");
+                        Console.WriteLine(respuestaUploadXML);
+
+                        await FileCleanupHelper.DeleteFileAsync(rutaPDF);
+                        await FileCleanupHelper.DeleteFileAsync(rutaXML);
+
+                        var resultado = new
+                        {
+                            success = true,
+                            claveAcceso = liquidacion.InfoTributaria.ClaveAcceso,
+                            mensaje = "Liquidación de compra autorizada, PDF generado y archivos subidos a Frappe correctamente",
+                            numeroAutorizacion = liquidacion.Autorizacion.Numero,
+                            fechaAutorizacion = liquidacion.Autorizacion.Fecha.ToString("yyyy-MM-dd HH:mm:ss"),
+                            respuestaFrappePDF = respuestaUploadPDF,
+                            respuestaFrappeXML = respuestaUploadXML
+                        };
+
+                        return Ok(resultado);
+                    }
+                    else
+                    {
+                        var mensajesAutorizacion = autorizacionData?.Mensajes?.Mensaje?
+                            .Select(m => new { m.Identificador, m.Mensaje_, m.Tipo, m.InformacionAdicional })
+                            .ToList();
+
+                        if (mensajesAutorizacion != null && mensajesAutorizacion.Count > 0)
+                        {
+                            Console.WriteLine("MENSAJES DE AUTORIZACIÓN:");
+                            foreach (var msg in mensajesAutorizacion)
+                            {
+                                Console.WriteLine($"- Identificador: {msg.Identificador}");
+                                Console.WriteLine($"  Mensaje: {msg.Mensaje_}");
+                                Console.WriteLine($"  Tipo: {msg.Tipo}");
+                                Console.WriteLine($"  Información Adicional: {msg.InformacionAdicional}");
+                                Console.WriteLine("-------------------------------");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("No hay mensajes de autorización disponibles.");
+                        }
+
+                        return Ok(new
+                        {
+                            success = false,
+                            estado = autorizacionData?.Estado,
+                            mensajes = mensajesAutorizacion
+                        });
+                    }
                 }
-
-                // 1️⃣1️⃣ Solicitar autorización
-                var auto = await webService.AutorizacionComprobanteAsync(liquidacion.InfoTributaria.ClaveAcceso);
-                Console.WriteLine("✅ Respuesta de autorización SRI: " + Newtonsoft.Json.JsonConvert.SerializeObject(auto));
-
-                if (!auto.Ok)
+                else
                 {
+                    var primerComprobante = envio.Data?.Comprobantes?.Comprobante?.FirstOrDefault();
+                    var mensajesEnvio = primerComprobante?.Mensajes?.Mensaje
+                        ?.Select(m => new { m.Identificador, m.Mensaje_, m.Tipo, m.InformacionAdicional })
+                        .ToList();
+
+                    if (mensajesEnvio != null && mensajesEnvio.Count > 0)
+                    {
+                        Console.WriteLine("MENSAJES DE ENVÍO:");
+                        foreach (var msg in mensajesEnvio)
+                        {
+                            Console.WriteLine($"- Identificador: {msg.Identificador}");
+                            Console.WriteLine($"  Mensaje: {msg.Mensaje_}");
+                            Console.WriteLine($"  Tipo: {msg.Tipo}");
+                            Console.WriteLine($"  Información Adicional: {msg.InformacionAdicional}");
+                            Console.WriteLine("-------------------------------");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("No hay mensajes de envío disponibles.");
+                    }
+
                     return Ok(new
                     {
-                        mensaje = "Liquidación enviada pero no autorizada",
-                        claveAcceso = liquidacion.InfoTributaria.ClaveAcceso,
-                        respuestaSri = auto
+                        success = false,
+                        estado = envio.Data?.Estado,
+                        mensajes = mensajesEnvio
                     });
                 }
-
-                // 1️⃣2️⃣ Generar PDF RIDE
-                rIDEService.LiquidacionCompra_1_0_0(liquidacion, PDF_OUTPUT_PATH);
-                Console.WriteLine("📄 PDF generado correctamente");
-
-                return Ok(new
-                {
-                    mensaje = "Liquidación autorizada correctamente",
-                    claveAcceso = liquidacion.InfoTributaria.ClaveAcceso,
-                    respuestaSri = auto
-                });
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ ERROR: " + ex.Message);
+                Console.WriteLine($"❌ ERROR: {ex.Message}");
                 Console.WriteLine(ex.StackTrace);
 
                 return BadRequest(new
                 {
+                    success = false,
                     error = ex.Message,
-                    stack = ex.StackTrace
+                    stackTrace = ex.StackTrace
                 });
             }
         }
-
-        #region Métodos de mapeo privados
-
-        private List<ImpuestoVenta> MapearImpuestosVenta(List<ImpuestoVentaRequest> impuestosDto)
-        {
-            var impuestos = new List<ImpuestoVenta>();
-            foreach (var imp in impuestosDto)
-            {
-                // Mapeo seguro de código a enum
-                EnumTipoImpuestoIVA codigoPorcentaje = ObtenerCodigoIVA(imp.CodigoPorcentaje);
-
-                impuestos.Add(new ImpuestoVentaIVA
-                {
-                    BaseImponible = imp.BaseImponible,
-                    Tarifa = imp.Tarifa,
-                    Valor = imp.Valor,
-                    CodigoPorcentaje = codigoPorcentaje
-                });
-            }
-            return impuestos;
-        }
-
-        private List<Pago> MapearPagos(List<PagoRequest> pagosDto)
-        {
-            var pagos = new List<Pago>();
-            foreach (var pago in pagosDto)
-            {
-                pagos.Add(new Pago
-                {
-                    FormaPago = (EnumFormaPago)Enum.Parse(typeof(EnumFormaPago), pago.FormaPago),
-                    Total = pago.Total,
-                    Plazo = pago.Plazo,
-                    UnidadTiempo = pago.UnidadTiempo
-                });
-            }
-            return pagos;
-        }
-
-        private List<DetalleDocumentoItemPrecio> MapearDetalles(List<DetalleRequest> detallesDto)
-        {
-            var detalles = new List<DetalleDocumentoItemPrecio>();
-            foreach (var det in detallesDto)
-            {
-                var detalle = new DetalleDocumentoItemPrecio
-                {
-                    Item = new Item
-                    {
-                        CodigoPrincipal = det.CodigoPrincipal,
-                        CodigoAuxiliar = det.CodigoAuxiliar,
-                        Descripcion = det.Descripcion
-                    },
-                    Cantidad = (int)det.Cantidad,
-                    PrecioUnitario = det.PrecioUnitario,
-                    Descuento = det.Descuento,
-                    PrecioTotalSinImpuesto = det.PrecioTotalSinImpuesto,
-                    Impuestos = MapearImpuestosDetalle(det.Impuestos),
-                    DetallesAdicionales = det.DetallesAdicionales
-                };
-                detalles.Add(detalle);
-            }
-            return detalles;
-        }
-
-        private List<Impuesto> MapearImpuestosDetalle(List<ImpuestoRequest> impuestosDto)
-        {
-            var impuestos = new List<Impuesto>();
-            foreach (var imp in impuestosDto)
-            {
-                // Mapeo seguro de código a enum
-                EnumTipoImpuestoIVA codigoPorcentaje = ObtenerCodigoIVA(imp.CodigoPorcentaje);
-
-                impuestos.Add(new ImpuestoIVA
-                {
-                    BaseImponible = imp.BaseImponible,
-                    Tarifa = imp.Tarifa,
-                    Valor = imp.Valor,
-                    CodigoPorcentaje = codigoPorcentaje
-                });
-            }
-            return impuestos;
-        }
-
-        /// <summary>
-        /// Mapea el código string del JSON al enum EnumTipoImpuestoIVA
-        /// </summary>
-        private EnumTipoImpuestoIVA ObtenerCodigoIVA(string codigo)
-        {
-            return codigo switch
-            {
-                "0" => EnumTipoImpuestoIVA._0,                 // IVA 0%
-                "2" => EnumTipoImpuestoIVA._12,                // IVA 12%
-                "3" => EnumTipoImpuestoIVA._14,                // IVA 14%
-                "4" => EnumTipoImpuestoIVA._15,                // IVA 15%
-                "6" => EnumTipoImpuestoIVA.NoObjetoImpuesto,   // No objeto de impuesto
-                "7" => EnumTipoImpuestoIVA.ExentoIVA,          // Exento de IVA
-                _ => throw new ArgumentException($"Código de IVA '{codigo}' no es válido. Códigos válidos: 0, 2, 3, 4, 6, 7")
-            };
-        }
-
-        private EnumTipoEmision ParseTipoEmision(string tipoEmision)
-        {
-            // Buscar por SRICodigo
-            var enumValue = BuscarEnumPorSRICodigo<EnumTipoEmision>(tipoEmision);
-            if (enumValue.HasValue)
-            {
-                return enumValue.Value;
-            }
-
-            // Intentar por nombre
-            if (Enum.TryParse<EnumTipoEmision>(tipoEmision, true, out var resultado))
-            {
-                return resultado;
-            }
-
-            throw new ArgumentException($"Tipo de emisión inválido: {tipoEmision}");
-        }
-
-        #endregion
     }
 }

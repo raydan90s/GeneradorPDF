@@ -50,10 +50,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
             new AuthenticationHeaderValue("token", $"{_apiKey}:{_apiSecret}");
     }
 
-
-        /// <summary>
-        /// Sube un archivo a Frappe desde una ruta del sistema
-        /// </summary>
         public async Task<FrappeUploadResult> UploadFileAsync(
             string filePath, 
             string fileName, 
@@ -63,7 +59,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
         {
             try
             {
-                // Verificar que el archivo existe
                 if (!File.Exists(filePath))
                 {
                     Console.WriteLine($"[ERROR] El archivo no existe: {filePath}");
@@ -75,7 +70,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
                     };
                 }
 
-                // Leer el archivo
                 using var fileStream = File.OpenRead(filePath);
                 return await UploadFileStreamAsync(fileStream, fileName, folder, doctype, docname);
             }
@@ -90,9 +84,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
             }
         }
 
-        /// <summary>
-        /// Sube un archivo a Frappe desde un Stream
-        /// </summary>
         public async Task<FrappeUploadResult> UploadFileStreamAsync(
             Stream fileStream,
             string fileName,
@@ -102,31 +93,25 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
         {
             try
             {
-                // Si el folder es nulo, usa el valor por defecto
                 folder ??= "Home/Attachments";
 
                 using var content = new MultipartFormDataContent();
 
-                // Agregar el archivo
                 var fileContent = new StreamContent(fileStream);
                 fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
                 content.Add(fileContent, "file", fileName);
 
-                // Agregar parámetros básicos
                 content.Add(new StringContent("0"), "is_private");
                 content.Add(new StringContent(folder), "folder");
 
-                // Si hay DocType y docname, vincular el archivo
                 if (!string.IsNullOrEmpty(doctype) && !string.IsNullOrEmpty(docname))
                 {
                     content.Add(new StringContent(doctype), "attached_to_doctype");
                     content.Add(new StringContent(docname), "attached_to_name");
                 }
 
-                // Realizar la petición
                 var response = await _httpClient.PostAsync("/api/method/upload_file", content);
 
-                // Leer la respuesta
                 var responseBody = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -141,7 +126,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
                     };
                 }
 
-                // Parsear respuesta exitosa
                 var jsonResponse = JObject.Parse(responseBody);
                 var messageData = jsonResponse["message"];
 

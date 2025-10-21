@@ -6,10 +6,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
 {
     public static class FileCleanupHelper
     {
-        /// <summary>
-        /// Elimina un archivo local de forma segura si existe.
-        /// </summary>
-        /// <param name="filePath">Ruta completa del archivo</param>
         public static async Task<bool> DeleteFileAsync(string filePath)
         {
             try

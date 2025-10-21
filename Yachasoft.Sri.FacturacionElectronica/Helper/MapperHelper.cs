@@ -1,0 +1,207 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Yachasoft.Sri.Core.Atributos;
+using Yachasoft.Sri.Core.Enumerados;
+using Yachasoft.Sri.Modelos;
+using Yachasoft.Sri.Modelos.Base;
+using Yachasoft.Sri.Modelos.Enumerados;
+using Yachasoft.Sri.Core.Extensions;
+using Yachasoft.Sri.Xsd.Map;
+using Yachasoft.Sri.FacturacionElectronica.Models.Request;
+using Yachasoft.Sri.FacturacionElectronica.Services;
+
+namespace Yachasoft.Sri.FacturacionElectronica.Services
+{
+    public static class MapperHelper
+    {
+        public static List<Impuesto> MapearImpuestosDetalle(List<ImpuestoRequest> impuestosDto)
+        {
+            var impuestos = new List<Impuesto>();
+            
+            if (impuestosDto == null || !impuestosDto.Any())
+                return impuestos;
+            
+            foreach (var imp in impuestosDto)
+            {
+                try
+                {
+                    Console.WriteLine($"Procesando impuesto detalle con código: {imp.CodigoPorcentaje}");
+                    
+                    var codigoPorcentaje = EnumParserHelper.ParseCodigoIVA(imp.CodigoPorcentaje);
+                    
+                    impuestos.Add(new ImpuestoIVA
+                    {
+                        BaseImponible = imp.BaseImponible,
+                        Tarifa = imp.Tarifa,
+                        Valor = imp.Valor,
+                        CodigoPorcentaje = codigoPorcentaje
+                    });
+                    
+                    Console.WriteLine($"Impuesto detalle mapeado correctamente - Base: {imp.BaseImponible}, Código: {codigoPorcentaje}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al mapear impuesto detalle: {ex.Message}");
+                    throw new ArgumentException($"Error al mapear impuesto con código {imp.CodigoPorcentaje}: {ex.Message}", ex);
+                }
+            }
+            
+            return impuestos;
+        }
+
+        public static List<DetalleDocumentoItemPrecio> MapearDetalles(List<DetalleRequest> detallesDto)
+        {
+            var detalles = new List<DetalleDocumentoItemPrecio>();
+            
+            if (detallesDto == null || !detallesDto.Any())
+                throw new ArgumentException("Debe proporcionar al menos un detalle en el documento");
+            
+            foreach (var det in detallesDto)
+            {
+                try
+                {
+                    Console.WriteLine($"Procesando detalle: {det.Descripcion}");
+                    
+                    var detalle = new DetalleDocumentoItemPrecio
+                    {
+                        Item = new Item
+                        {
+                            CodigoPrincipal = det.CodigoPrincipal,
+                            CodigoAuxiliar = det.CodigoAuxiliar,
+                            Descripcion = det.Descripcion
+                        },
+                        Cantidad = (int)det.Cantidad,
+                        PrecioUnitario = det.PrecioUnitario,
+                        Descuento = det.Descuento,
+                        PrecioTotalSinImpuesto = det.PrecioTotalSinImpuesto,
+                        Impuestos = MapearImpuestosDetalle(det.Impuestos),
+                        DetallesAdicionales = det.DetallesAdicionales
+                    };
+                    
+                    detalles.Add(detalle);
+                    Console.WriteLine($"Detalle mapeado correctamente: {det.CodigoPrincipal} - {det.Descripcion}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al mapear detalle: {ex.Message}");
+                    throw new ArgumentException($"Error al mapear detalle {det.Descripcion}: {ex.Message}", ex);
+                }
+            }
+            
+            return detalles;
+        }
+
+        public static List<Pago> MapearPagos(List<PagoRequest> pagosDto)
+        {
+            var pagos = new List<Pago>();
+            
+            if (pagosDto == null || !pagosDto.Any())
+                throw new ArgumentException("Debe proporcionar al menos una forma de pago");
+            
+            foreach (var pago in pagosDto)
+            {
+                try
+                {
+                    Console.WriteLine($"Procesando pago con forma: {pago.FormaPago}");
+                    
+                    var formaPago = EnumParserHelper.ParseFormaPago(pago.FormaPago);
+                    
+                    pagos.Add(new Pago
+                    {
+                        FormaPago = formaPago,
+                        Total = pago.Total,
+                        Plazo = pago.Plazo,
+                        UnidadTiempo = pago.UnidadTiempo
+                    });
+                    
+                    Console.WriteLine($"Pago mapeado correctamente: {formaPago} - ${pago.Total}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al mapear pago: {ex.Message}");
+                    throw new ArgumentException($"Error al mapear forma de pago {pago.FormaPago}: {ex.Message}", ex);
+                }
+            }
+            
+            return pagos;
+        }
+
+        public static List<ImpuestoVenta> MapearImpuestosVenta(List<ImpuestoVentaRequest> impuestosDto)
+        {
+            var impuestos = new List<ImpuestoVenta>();
+            
+            if (impuestosDto == null || !impuestosDto.Any())
+                throw new ArgumentException("Debe proporcionar al menos un impuesto en TotalConImpuestos");
+            
+            foreach (var imp in impuestosDto)
+            {
+                try
+                {
+                    Console.WriteLine($"Procesando impuesto venta con código: {imp.CodigoPorcentaje}");
+                    
+                    var codigoPorcentaje = EnumParserHelper.ParseCodigoIVA(imp.CodigoPorcentaje);
+                    Console.WriteLine($"Código parseado: {codigoPorcentaje}");
+
+                    impuestos.Add(new ImpuestoVentaIVA
+                    {
+                        BaseImponible = imp.BaseImponible,
+                        Tarifa = imp.Tarifa,
+                        Valor = imp.Valor,
+                        CodigoPorcentaje = codigoPorcentaje
+                    });
+                    
+                    Console.WriteLine($"Impuesto venta mapeado correctamente - Base: {imp.BaseImponible}, Código: {codigoPorcentaje}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al mapear impuesto venta: {ex.Message}");
+                    throw new ArgumentException($"Error al mapear impuesto con código {imp.CodigoPorcentaje}: {ex.Message}", ex);
+                }
+            }
+            
+            return impuestos;
+        }
+
+        public static List<ImpuestoVenta> MapearImpuestosVentaDesdeDetalles(List<DetalleDocumentoItemPrecio> detalles)
+        {
+            if (detalles == null || !detalles.Any())
+                throw new ArgumentException("Debe proporcionar al menos un detalle para calcular los impuestos");
+            
+            Console.WriteLine($"📊 Calculando TotalConImpuestos desde {detalles.Count} detalles (Liquidación)...");
+            
+            var impuestosAgrupados = detalles
+                .SelectMany(d => d.Impuestos.OfType<ImpuestoIVA>())
+                .GroupBy(i => i.CodigoPorcentaje)
+                .Select(g => new ImpuestoVentaIVA
+                {
+                    CodigoPorcentaje = g.Key,
+                    Tarifa = g.Key switch
+                    {
+                        EnumTipoImpuestoIVA._0 => 0m,
+                        EnumTipoImpuestoIVA._15 => 15m,
+                        EnumTipoImpuestoIVA._12 => 12m,
+                        EnumTipoImpuestoIVA._14 => 14m,
+                        _ => 0m
+                    },
+                    BaseImponible = g.Sum(x => x.BaseImponible),
+                    Valor = g.Sum(x => x.Valor),
+                    Codigo = g.First().Codigo
+                })
+                .Cast<ImpuestoVenta>()
+                .ToList();
+            
+            // Log para debug
+            foreach (var imp in impuestosAgrupados)
+            {
+                if (imp is ImpuestoVentaIVA iva)
+                {
+                    Console.WriteLine($"✅ IVA {iva.Tarifa}% - Base: {iva.BaseImponible:F2}, Valor: {iva.Valor:F2}");
+                }
+            }
+            
+            return impuestosAgrupados;
+        }
+    }
+}
