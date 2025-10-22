@@ -63,20 +63,90 @@ namespace Yachasoft.Sri.Ride.Documentos
           50.0,
           50.0
         }, defaultRowHeight: 25.0).AddRow().AddCell("Cod.\nPrincipal").AddCell("Cod.\nAuxiliar").AddCell("Cantidad").AddCell("Descripción").AddCell("Detalle Adicional").AddCell("Precio Unitario").AddCell("Descuento").AddCell("Precio Total");
+        
         foreach (DetalleDocumentoItemPrecio detalle in documento.Detalles)
         {
-          Impuesto impuesto = detalle.Impuestos.Where<Impuesto>((Func<Impuesto, bool>) (x => x is Yachasoft.Sri.Modelos.Base.ImpuestoIVA)).FirstOrDefault<Impuesto>();
-          if (impuesto != null)
-          {
-            Decimal tarifa = impuesto.Tarifa;
-          }
-          Generator generador = generator;
-          double anchoTexto = num1;
-          List<CampoAdicional> detallesAdicionales = detalle.DetallesAdicionales;
-          List<string> lineas = detallesAdicionales != null ? detallesAdicionales.ConvertAll<string>((Converter<CampoAdicional, string>) (x => x.Nombre)).ToList<string>() : (List<string>) null;
-          double num2 = (double) generador.CalcularLineas(anchoTexto, lineas) * 12.5;
-          generator.AddRow(new double?(num2)).AddCell(detalle.Item.CodigoPrincipal).AddCell(detalle.Item.CodigoAuxiliar).AddCell(new int?(detalle.Cantidad)).AddCell(detalle.Item.Descripcion).AddCell(detalle.DetallesAdicionales == null ? "" : string.Join<string>('\n', detalle.DetallesAdicionales.Select<CampoAdicional, string>((Func<CampoAdicional, string>) (x => x.Nombre)))).AddCell(new Decimal?(detalle.PrecioUnitario)).AddCell(new Decimal?(detalle.Descuento)).AddCell(new Decimal?(detalle.PrecioTotalSinImpuesto));
+            Impuesto impuesto = detalle.Impuestos
+                .Where(x => x is Yachasoft.Sri.Modelos.Base.ImpuestoIVA)
+                .FirstOrDefault();
+            if (impuesto != null)
+            {
+                decimal tarifa = impuesto.Tarifa;
+            }
+
+            // 🔹 Calcular altura según detalle adicional (ya existía)
+            Generator generador = generator;
+            double anchoDetalle = num1;
+            List<CampoAdicional> detallesAdicionales = detalle.DetallesAdicionales;
+            List<string> lineas = detallesAdicionales != null
+                ? detallesAdicionales.ConvertAll(x => x.Nombre).ToList()
+                : null;
+            double alturaDetalle = (double)generador.CalcularLineas(anchoDetalle, lineas) * 12.5;
+
+            // 🔹 PREPARAR campos
+            string codigoPrincipal = detalle.Item.CodigoPrincipal ?? "";
+            string codigoAuxiliar = detalle.Item.CodigoAuxiliar ?? "";
+            string descripcion = detalle.Item.Descripcion ?? "";
+            string detalleAdicional = detalle.DetallesAdicionales == null ? "" :
+                string.Join('\n', detalle.DetallesAdicionales.Select(x => x.Nombre));
+
+            // 🔹 AJUSTE dinámico del código principal (igual que en factura)
+            string codigoPrincipalModificado = codigoPrincipal;
+            int lineasCodigo = 1;
+
+            if (codigoPrincipal.Length > 10)
+            {
+                try
+                {
+                    var medida = generator.CurrentPage.CurrentGraphics.MeasureString(
+                        codigoPrincipal, generator.CurrentStyle.Font);
+
+                    // si excede el ancho de la celda (45)
+                    if (medida.Width > (45.0 - 8.0))
+                    {
+                        // cortar en un guion o a mitad del texto
+                        int puntoCorte = codigoPrincipal.IndexOf('-');
+                        if (puntoCorte <= 0 || puntoCorte >= codigoPrincipal.Length - 1)
+                            puntoCorte = codigoPrincipal.Length / 2;
+
+                        codigoPrincipalModificado = codigoPrincipal.Substring(0, puntoCorte) + "\n" +
+                                                    codigoPrincipal.Substring(puntoCorte);
+                        lineasCodigo = 2;
+                    }
+                }
+                catch
+                {
+                    // fallback en caso de error de medición
+                    if (codigoPrincipal.Length > 15)
+                    {
+                        int puntoCorte = codigoPrincipal.Length / 2;
+                        codigoPrincipalModificado = codigoPrincipal.Substring(0, puntoCorte) + "\n" +
+                                                    codigoPrincipal.Substring(puntoCorte);
+                        lineasCodigo = 2;
+                    }
+                }
+            }
+
+            // 🔹 Calcular altura final basada en líneas de texto
+            int lineasDescripcion = descripcion.Length > 35 ? (int)Math.Ceiling(descripcion.Length / 35.0) : 1;
+            int lineasDetalleAdicional = detalleAdicional.Contains('\n') ? detalleAdicional.Split('\n').Length : 1;
+
+            int maxLineas = Math.Max(lineasCodigo, Math.Max(lineasDescripcion, lineasDetalleAdicional));
+            double alturaFila = 18.0 + ((maxLineas - 1) * 6.0);
+
+            // 🔹 Crear fila ajustada
+            generator.AddRow(new double?(alturaFila))
+                .AddCell(codigoPrincipalModificado)
+                .AddCell(codigoAuxiliar)
+                .AddCell(new int?(detalle.Cantidad))
+                .AddCell(descripcion)
+                .AddCell(detalleAdicional)
+                .AddCell(new decimal?(detalle.PrecioUnitario))
+                .AddCell(new decimal?(detalle.Descuento))
+                .AddCell(new decimal?(detalle.PrecioTotalSinImpuesto));
         }
+
+
         GeneratorPage pagePointer;
         generator.GetPagePointer(out pagePointer).CrearInfoAdicional((Documento) documento).CrearFormasPago(documento.InfoLiquidacionCompra.Pagos);
         Decimal num3 = Convert.ToDecimal((object) documento.TipoImpuestoIVAVigente.ObtenerSRIPorcentaje());
