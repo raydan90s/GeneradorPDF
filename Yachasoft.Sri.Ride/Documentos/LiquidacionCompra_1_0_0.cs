@@ -51,7 +51,10 @@ namespace Yachasoft.Sri.Ride.Documentos
       using (Generator generator = Generator.Instance(document))
       {
         generator.CrearCabeceraDocumento((Documento) documento).Rectangle(new XRect(30.0, 365.0, 540.0, 75.0)).EstiloNormal().Write("Razón Social / Nombres y Apellidos:", 35.0, 380.0).Write(documento.Sujeto.RazonSocial, 250.0, 380.0).Write("Identificación", 35.0, 390.0).Write(documento.Sujeto.Identificacion, 115.0, 390.0).Write("Fecha de emisión", 35.0, 400.0).Write(documento.FechaEmision.ToSRIFecha(), 115.0, 400.0).Write("Dirección", 35.0, 410.0).Write(documento.InfoLiquidacionCompra.DireccionProveedor, 115.0, 410.0);
+        
         double num1 = 90.0;
+        
+        // ⬅️ CAMBIO: Última columna aumentada de 50.0 a 70.0
         generator.EstiloNormal().WithTable(30.0, 450.0, new List<double>()
         {
           45.0,
@@ -61,7 +64,7 @@ namespace Yachasoft.Sri.Ride.Documentos
           num1,
           50.0,
           50.0,
-          50.0
+          70.0  // ⬅️ CAMBIO: Era 50.0
         }, defaultRowHeight: 25.0).AddRow().AddCell("Cod.\nPrincipal").AddCell("Cod.\nAuxiliar").AddCell("Cantidad").AddCell("Descripción").AddCell("Detalle Adicional").AddCell("Precio Unitario").AddCell("Descuento").AddCell("Precio Total");
         
         foreach (DetalleDocumentoItemPrecio detalle in documento.Detalles)
@@ -160,10 +163,13 @@ namespace Yachasoft.Sri.Ride.Documentos
         Decimal num5 = documento.InfoLiquidacionCompra.TotalConImpuestos.Where<ImpuestoVenta>((Func<ImpuestoVenta, bool>) (x => x is ImpuestoVentaICE)).Sum<ImpuestoVenta>((Func<ImpuestoVenta, Decimal>) (x => x.Valor));
         Decimal num6 = documento.InfoLiquidacionCompra.TotalConImpuestos.Where<ImpuestoVenta>((Func<ImpuestoVenta, bool>) (x => x is ImpuestoVentaIRBPNR)).Sum<ImpuestoVenta>((Func<ImpuestoVenta, Decimal>) (x => x.Valor));
         Decimal num7 = documento.Detalles.Sum<DetalleDocumentoItemPrecio>((Func<DetalleDocumentoItemPrecio, Decimal>) (x => x.Descuento));
-        generator.SetPagePointer(pagePointer).WithTable(390.0, generator.PointerY, new List<double>()
+        
+        // ⬅️ CAMBIOS: Posición X ajustada para alinear con las últimas columnas
+        // Cálculo: 30 (margen) + 45 + 45 + 45 + 145 + 90 = 400 (inicio de últimas 3 columnas)
+        generator.SetPagePointer(pagePointer).WithTable(400.0, generator.PointerY, new List<double>()
         {
-          135.0,
-          45.0
+          100.0,  // ⬅️ Columna de etiquetas (ocupa espacio de "Precio Unitario" + "Descuento")
+          70.0    // ⬅️ Columna de valores alineada con "Precio Total"
         }, defaultRowHeight: 15.0).AddRow().AddCell(string.Format("SUBTOTAL {0}%", (object) num4)).AddCell(impuestoVenta5?.BaseImponible).AddRow().AddCell("SUBTOTAL 0%").AddCell(impuestoVenta2?.BaseImponible).AddRow().AddCell("SUBTOTAL NO OBJETO DE IVA").AddCell(impuestoVenta3?.BaseImponible).AddRow().AddCell("SUBTOTAL EXCENTO DE IVA").AddCell(impuestoVenta4?.BaseImponible).AddRow().AddCell("SUBTOTAL SIN IMPUESTOS").AddCell(new Decimal?(documento.InfoLiquidacionCompra.TotalSinImpuestos)).AddRow().AddCell("TOTAL DESCUENTO").AddCell(new Decimal?(num7)).AddRow().AddCell("ICE").AddCell(new Decimal?(num5)).AddRow().AddCell(string.Format("IVA {0}%", (object) num4)).AddCell(impuestoVenta5?.Valor).AddRow().AddCell("IRBPNR").AddCell(new Decimal?(num6)).AddRow().AddCell("VALOR TOTAL").AddCell(new Decimal?(documento.InfoLiquidacionCompra.ImporteTotal));
       }
       return document;
