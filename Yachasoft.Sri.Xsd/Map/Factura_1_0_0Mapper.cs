@@ -164,14 +164,16 @@ namespace Yachasoft.Sri.Xsd.Map
       return impuesto1;
     })).ToArray();
 
-    internal static facturaDetalleDetAdicional[] Map(
-      List<CampoAdicional> detallesAdicionales)
+    internal static facturaDetalleDetAdicional[] Map(List<CampoAdicional> detallesAdicionales)
     {
-      return detallesAdicionales.ConvertAll<facturaDetalleDetAdicional>((Converter<CampoAdicional, facturaDetalleDetAdicional>) (detalle => new facturaDetalleDetAdicional()
-      {
-        nombre = detalle.Nombre,
-        valor = detalle.Valor
-      })).ToArray();
+        if (detallesAdicionales == null || !detallesAdicionales.Any())
+            return null; 
+
+        return detallesAdicionales.ConvertAll<facturaDetalleDetAdicional>(detalle => new facturaDetalleDetAdicional()
+        {
+            nombre = detalle.Nombre,
+            valor = detalle.Valor
+        }).ToArray();
     }
   }
 }

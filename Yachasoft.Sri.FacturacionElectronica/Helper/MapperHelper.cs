@@ -51,6 +51,49 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
             return impuestos;
         }
 
+        public static List<DetalleDocumentoItemPrecioSubsidio> MapearDetallesConSubsidio(List<DetalleRequest> detallesDto)
+        {
+            var detalles = new List<DetalleDocumentoItemPrecioSubsidio>();
+            
+            if (detallesDto == null || !detallesDto.Any())
+                throw new ArgumentException("Debe proporcionar al menos un detalle en el documento");
+            
+            foreach (var det in detallesDto)
+            {
+                try
+                {
+                    Console.WriteLine($"Procesando detalle con subsidio: {det.Descripcion}");
+                    
+                    var detalle = new DetalleDocumentoItemPrecioSubsidio
+                    {
+                        Item = new Item
+                        {
+                            CodigoPrincipal = det.CodigoPrincipal,
+                            CodigoAuxiliar = det.CodigoAuxiliar,
+                            Descripcion = det.Descripcion
+                        },
+                        Cantidad = (int)det.Cantidad,
+                        PrecioUnitario = det.PrecioUnitario,
+                        Descuento = det.Descuento,
+                        PrecioTotalSinImpuesto = det.PrecioTotalSinImpuesto,
+                        Impuestos = MapearImpuestosDetalle(det.Impuestos),
+                        DetallesAdicionales = det.DetallesAdicionales
+                        // PrecioSubsidio se queda en 0 por defecto (no viene en el Request)
+                    };
+                    
+                    detalles.Add(detalle);
+                    Console.WriteLine($"Detalle con subsidio mapeado correctamente: {det.CodigoPrincipal} - {det.Descripcion}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al mapear detalle con subsidio: {ex.Message}");
+                    throw new ArgumentException($"Error al mapear detalle {det.Descripcion}: {ex.Message}", ex);
+                }
+            }
+            
+            return detalles;
+        }
+
         public static List<DetalleDocumentoItemPrecio> MapearDetalles(List<DetalleRequest> detallesDto)
         {
             var detalles = new List<DetalleDocumentoItemPrecio>();
@@ -203,5 +246,46 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
             
             return impuestosAgrupados;
         }
+
+        public static List<ImpuestoVenta> MapearImpuestosVentaDesdeDetallesConSubsidio(List<DetalleDocumentoItemPrecioSubsidio> detalles)
+        {
+            if (detalles == null || !detalles.Any())
+                throw new ArgumentException("Debe proporcionar al menos un detalle para calcular los impuestos");
+            
+            Console.WriteLine($"📊 Calculando TotalConImpuestos desde {detalles.Count} detalles (Factura)...");
+            
+            var impuestosAgrupados = detalles
+                .SelectMany(d => d.Impuestos.OfType<ImpuestoIVA>())
+                .GroupBy(i => i.CodigoPorcentaje)
+                .Select(g => new ImpuestoVentaIVA
+                {
+                    CodigoPorcentaje = g.Key,
+                    Tarifa = g.Key switch
+                    {
+                        EnumTipoImpuestoIVA._0 => 0m,
+                        EnumTipoImpuestoIVA._15 => 15m,
+                        EnumTipoImpuestoIVA._12 => 12m,
+                        EnumTipoImpuestoIVA._14 => 14m,
+                        _ => 0m
+                    },
+                    BaseImponible = g.Sum(x => x.BaseImponible),
+                    Valor = g.Sum(x => x.Valor),
+                    Codigo = g.First().Codigo
+                })
+                .Cast<ImpuestoVenta>()
+                .ToList();
+            
+            // Log para debug
+            foreach (var imp in impuestosAgrupados)
+            {
+                if (imp is ImpuestoVentaIVA iva)
+                {
+                    Console.WriteLine($"✅ IVA {iva.Tarifa}% - Base: {iva.BaseImponible:F2}, Valor: {iva.Valor:F2}");
+                }
+            }
+            
+            return impuestosAgrupados;
+        }
+          
     }
 }

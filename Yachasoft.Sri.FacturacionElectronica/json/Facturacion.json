@@ -1,0 +1,76 @@
+{
+  "Emisor": {
+    "DireccionMatriz": "Av. Ejemplo 123, Quito",
+    "DireccionEstablecimiento": "Av. Ejemplo 123, Quito",
+    "EnumTipoAmbiente": "1",
+    "NombreComercial": "Comercial Ejemplo",
+    "ObligadoContabilidad": true,
+    "RazonSocial": "Comercial Ejemplo S.A.",
+    "RegimenMicroEmpresas": false,
+    "RUC": "0992352434001",
+    "ContribuyenteEspecial": null,
+    "AgenteRetencion": null
+  },
+  "CodigoEstablecimiento": 1,
+  "CodigoPuntoEmision": 2,
+  "FechaEmision": "2025-10-24T15:00:00-05:00",
+  "Secuencial": 10,
+  "EnumTipoEmision": "1",
+  "Cliente": {
+    "Identificacion": "0956076269",
+    "RazonSocial": "Cliente Prueba S.A.",
+    "TipoIdentificador": "05"
+  },
+  "InfoAdicional": [
+    {
+      "Nombre": "Direccion",
+      "Valor": "Av. Cliente 456, Guayaquil"
+    },
+    {
+      "Nombre": "Telefono",
+      "Valor": "0999999999"
+    },
+    {
+      "Nombre": "Email",
+      "Valor": "cliente@ejemplo.com"
+    }
+  ],
+  "InfoFactura": {
+    "TotalSinImpuestos": 100.00,
+    "TotalDescuento": 0.00,
+    "ImporteTotal": 115.00,
+    "Pagos": [
+      {
+        "FormaPago": "01",
+        "Total": 115.00,
+        "Plazo": 0,
+        "UnidadTiempo": null
+      }
+    ]
+  },
+  "Detalles": [
+    {
+      "CodigoPrincipal": "PROD001",
+      "CodigoAuxiliar": null,
+      "Descripcion": "Producto de prueba factura 1",
+      "Cantidad": 1,
+      "PrecioUnitario": 100.00,
+      "Descuento": 0.00,
+      "PrecioTotalSinImpuesto": 100.00,
+      "Impuestos": [
+        {
+          "CodigoPorcentaje": "4",
+          "Tarifa": 15.0,
+          "BaseImponible": 100.00,
+          "Valor": 15.00
+        }
+      ],
+      "DetallesAdicionales": [
+        {
+          "Nombre": "Detalle adicional",
+          "Valor": "Información extra del producto"
+        }
+      ]
+    }
+  ]
+}

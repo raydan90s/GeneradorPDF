@@ -18,13 +18,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Models.Request
         public string EnumTipoEmision { get; set; }
     }
 
-    public class ClienteRequest
-    {
-        public string Identificacion { get; set; }
-        public string RazonSocial { get; set; }
-        public string TipoIdentificador { get; set; }
-    }
-
     public class InfoLiquidacionRequest
     {
         public decimal TotalSinImpuestos { get; set; }
