@@ -3,8 +3,6 @@ using System.Reflection;
 using Yachasoft.Sri.Core.Atributos;
 using Yachasoft.Sri.Core.Enumerados;
 using Yachasoft.Sri.Modelos.Enumerados;
-using Yachasoft.Core.Extensions;
-using Yachasoft.Sri.Modelos.Enumerados;
 
 
 namespace Yachasoft.Sri.FacturacionElectronica.Services
@@ -23,6 +21,21 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
                 }
             }
             return null;
+        }
+        public static EnumTipoDocumento ParseTipoDocumento(string codigo)
+        {
+            if (string.IsNullOrWhiteSpace(codigo))
+                throw new ArgumentException("El código de documento no puede estar vacío");
+
+            return codigo switch
+            {
+                "01" => EnumTipoDocumento.Factura,
+                "04" => EnumTipoDocumento.NotaCredito,
+                "05" => EnumTipoDocumento.NotaDebito,
+                "06" => EnumTipoDocumento.GuiaRemision,
+                "07" => EnumTipoDocumento.ComprobanteRetencion,
+                _ => throw new ArgumentException($"Código de documento no válido: {codigo}")
+            };
         }
 
         public static EnumTipoAmbiente ParseTipoAmbiente(string tipoAmbiente)
@@ -86,7 +99,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
             {
                 return iva;
             }
-            
+
             if (Enum.TryParse<EnumTipoRetencionRenta>(codigoRetencion, true, out var renta))
             {
                 return renta;

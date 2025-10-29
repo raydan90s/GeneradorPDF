@@ -1,0 +1,65 @@
+{
+  "Emisor": {
+    "DireccionMatriz": "Av. Ejemplo 123, Quito",
+    "DireccionEstablecimiento": "Av. Ejemplo 123, Quito",
+    "EnumTipoAmbiente": "1",
+    "NombreComercial": "Comercial Ejemplo",
+    "ObligadoContabilidad": true,
+    "RazonSocial": "Comercial Ejemplo S.A.",
+    "RegimenMicroEmpresas": false,
+    "RUC": "0992352434001",
+    "ContribuyenteEspecial": null,
+    "AgenteRetencion": null
+  },
+  "CodigoEstablecimiento": 1,
+  "CodigoPuntoEmision": 2,
+  "FechaEmision": "2025-10-28T10:30:00-05:00",
+  "Secuencial": 12,
+  "EnumTipoEmision": "1",
+  "Cliente": {
+    "Identificacion": "0956076269",
+    "RazonSocial": "Cliente Prueba S.A.",
+    "TipoIdentificador": "05"
+  },
+  "DocumentoModificado": {
+    "CodDocumento": "01",
+    "NumDocumento": "001-002-000000010",
+    "FechaEmisionDocumento": "2025-10-24T15:00:00-05:00"
+  },
+  "Motivos": [
+    {
+      "Razon": "Intereses por mora en pago",
+      "Valor": 25.00
+    }
+  ],
+  "InfoNotaDebito": {
+    "TotalSinImpuestos": 25.00,
+    "ValorTotal": 28.75,
+    "Impuestos": [
+      {
+        "CodigoPorcentaje": "4",
+        "Tarifa": 15.0,
+        "BaseImponible": 25.00,
+        "Valor": 3.75
+      }
+    ],
+    "Pagos": [
+      {
+        "FormaPago": "01",
+        "Total": 28.75,
+        "Plazo": 0,
+        "UnidadTiempo": "dias"
+      }
+    ]
+  },
+  "InfoAdicional": [
+    {
+      "Nombre": "Direccion",
+      "Valor": "Av. Cliente 456, Guayaquil"
+    },
+    {
+      "Nombre": "Email",
+      "Valor": "cliente@ejemplo.com"
+    }
+  ]
+}
