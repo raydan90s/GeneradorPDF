@@ -44,7 +44,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
         {
             try
             {
-                // 1. EMISOR - Construir desde request.Emisor
                 var emisor = new Emisor
                 {
                     DireccionMatriz = request.Emisor.DireccionMatriz,
@@ -59,7 +58,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     AgenteRetencion = request.Emisor.AgenteRetencion,
                 };
 
-                // 2. ESTABLECIMIENTO - Construir con CodigoEstablecimiento
                 var establecimiento = new Establecimiento
                 {
                     Codigo = request.CodigoEstablecimiento,
@@ -67,14 +65,12 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     Emisor = emisor
                 };
 
-                // 3. PUNTO EMISION - Construir con CodigoPuntoEmision
                 var puntoEmision = new PuntoEmision
                 {
                     Codigo = request.CodigoPuntoEmision,
                     Establecimiento = establecimiento
                 };
 
-                // 4. DIRECCION CLIENTE - Extraer de InfoAdicional (igual que factura)
                 string direccionCliente = null;
                 if (request.InfoAdicional != null)
                 {
@@ -84,14 +80,12 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     direccionCliente = direccionAdicional?.Valor;
                 }
 
-                // 5. MOTIVOS - Mapear desde request.Motivos
                 var motivos = request.Motivos.Select(m => new Motivo
                 {
                     Razon = m.Razon,
                     Valor = m.Valor
                 }).ToList();
 
-                // 6. DOCUMENTO MODIFICADO - Construir desde request.DocumentoModificado
                 var documentoModificado = new DocumentoSustento
                 {
                     CodDocumento = EnumParserHelper.ParseTipoDocumento(request.DocumentoModificado.CodDocumento),
@@ -99,10 +93,8 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     FechaEmisionDocumento = request.DocumentoModificado.FechaEmisionDocumento
                 };
 
-                // 7. IMPUESTOS - Mapear desde request.InfoNotaDebito.Impuestos
                 var impuestosMapeados = MapperHelper.MapearImpuestosVenta(request.InfoNotaDebito.Impuestos);
 
-                // 8. NOTA DE DEBITO - Construir modelo completo
                 var notaDebito = new NotaDebito_1_0_0Modelo.NotaDebito
                 {
                     PuntoEmision = puntoEmision,
@@ -128,14 +120,12 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     InfoAdicional = request.InfoAdicional
                 };
 
-                // 9. INFO TRIBUTARIA - Construir con Secuencial y EnumTipoEmision
                 notaDebito.InfoTributaria = new InfoTributaria
                 {
                     Secuencial = request.Secuencial,
                     EnumTipoEmision = EnumParserHelper.ParseTipoEmision(request.EnumTipoEmision)
                 };
 
-                // 10. CLAVE DE ACCESO - Generar automáticamente
                 notaDebito.InfoTributaria.ClaveAcceso = Utils.GenerarClaveAcceso(
                     NotaDebito_1_0_0Modelo.TipoDocumento,
                     notaDebito.FechaEmision,
@@ -144,10 +134,8 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     notaDebito.InfoTributaria.EnumTipoEmision
                 );
 
-                // 11. MAPEAR A XML - Usar NotaDebito_1_0_0Mapper
                 var xmlObj = NotaDebito_1_0_0Mapper.Map(notaDebito);
 
-                // 12. SERIALIZAR XML
                 var xmlDoc = new XmlDocument();
                 using (var memoryStream = new MemoryStream())
                 {
@@ -159,28 +147,22 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 
                 xmlDoc.DocumentElement.SetAttribute("id", "comprobante");
 
-                // 13. FIRMAR DOCUMENTO
-                // Cambiar línea 163-166:
                 certificadoService.CargarDesdeP12(
-                    "C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.FacturacionElectronica\\signature.p12",
+                    "/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/signature.p12",
                     "Compus1234"
                 );
                 var xmlFirmado = certificadoService.FirmarDocumento(xmlDoc);
 
-                // 14. GUARDAR XML FIRMADO
                 var nombreArchivoXml = $"NOTADEBITO_{notaDebito.InfoTributaria.ClaveAcceso}.xml";
                 xmlFirmado.Save(nombreArchivoXml);
 
-                // 15. VALIDAR COMPROBANTE EN EL SRI
                 var envio = await webService.ValidarComprobanteAsync(xmlFirmado);
                 Console.WriteLine($"ESTADO DE COMPROBANTE DE ENVIO: {System.Text.Json.JsonSerializer.Serialize(envio, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
 
                 if (envio.Ok)
                 {
-                    // 16. ESPERAR 3 SEGUNDOS
                     System.Threading.Thread.Sleep(3000);
 
-                    // 17. OBTENER AUTORIZACION
                     var auto = await webService.AutorizacionComprobanteAsync(notaDebito.InfoTributaria.ClaveAcceso);
                     var autorizacionData = auto.Data?.Autorizaciones?.Autorizacion?.FirstOrDefault();
                     Console.WriteLine($"ESTADO DE COMPROBANTE DE AUTORIZACION: {System.Text.Json.JsonSerializer.Serialize(auto, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
@@ -189,7 +171,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     {
                         Console.WriteLine("AUTORIZADO");
 
-                        // 18. ASIGNAR DATOS DE AUTORIZACION
                         if (autorizacionData != null)
                         {
                             notaDebito.Autorizacion.Numero = autorizacionData.NumeroAutorizacion;
@@ -204,24 +185,24 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                         }
 
                         // 19. GENERAR RIDE (PDF)
-                        var rutaPDF = $"C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.FacturacionElectronica\\NOTADEBITO_{notaDebito.InfoTributaria.ClaveAcceso}.pdf";
+                        var rutaPDF = $"/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/NOTADEBITO_{notaDebito.InfoTributaria.ClaveAcceso}.pdf";
                         rIDEService.NotaDebito_1_0_0(notaDebito, rutaPDF);
 
                         // 20. SUBIR PDF A FRAPPE
                         var respuestaUploadPDF = await _frappeUploader.UploadFileAsync(
                             rutaPDF,
                             Path.GetFileName(rutaPDF),
-                            folder: "Home/NotaDebito/PDF"
+                            folder: "Home/Nota de Débito/PDF"
                         );
                         Console.WriteLine("📤 Archivo PDF subido a Frappe:");
                         Console.WriteLine(respuestaUploadPDF);
 
                         // 21. SUBIR XML A FRAPPE
-                        var rutaXML = $"C:\\Users\\Sistemas\\Documents\\GeneradorPDF\\Yachasoft.Sri.FacturacionElectronica\\NOTADEBITO_{notaDebito.InfoTributaria.ClaveAcceso}.xml";
+                        var rutaXML = $"/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/NOTADEBITO_{notaDebito.InfoTributaria.ClaveAcceso}.xml";
                         var respuestaUploadXML = await _frappeUploader.UploadFileAsync(
                             rutaXML,
                             Path.GetFileName(rutaXML),
-                            folder: "Home/NotaDebito/XML"
+                            folder: "Home/Nota de Débito/XML"
                         );
                         Console.WriteLine("📤 Archivo XML subido a Frappe:");
                         Console.WriteLine(respuestaUploadXML);
