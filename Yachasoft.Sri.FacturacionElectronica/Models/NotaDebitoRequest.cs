@@ -29,8 +29,8 @@ namespace Yachasoft.Sri.FacturacionElectronica.Models.Request
 
     public class DocumentoModificadoRequest
     {
-        public string CodDocumento { get; set; }           // "01" para factura
-        public string NumDocumento { get; set; }            // 001-001-000000123
+        public string CodDocumento { get; set; }           
+        public string NumDocumento { get; set; }
         public DateTime FechaEmisionDocumento { get; set; }
     }
 

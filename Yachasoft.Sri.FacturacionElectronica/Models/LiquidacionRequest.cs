@@ -56,11 +56,8 @@ namespace Yachasoft.Sri.FacturacionElectronica.Models.Request
         public List<CampoAdicional> DetallesAdicionales { get; set; }
     }
 
-    public class ImpuestoRequest
+    public class ImpuestoRequest : Impuesto
     {
-        public decimal BaseImponible { get; set; }
-        public decimal Tarifa { get; set; }
-        public decimal Valor { get; set; }
-        public string CodigoPorcentaje { get; set; }
+        public string CodigoPorcentaje { get; set; } 
     }
 }

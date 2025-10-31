@@ -78,7 +78,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
                         PrecioTotalSinImpuesto = det.PrecioTotalSinImpuesto,
                         Impuestos = MapearImpuestosDetalle(det.Impuestos),
                         DetallesAdicionales = det.DetallesAdicionales
-                        // PrecioSubsidio se queda en 0 por defecto (no viene en el Request)
                     };
 
                     detalles.Add(detalle);
@@ -243,15 +242,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
                 .Cast<ImpuestoVenta>()
                 .ToList();
 
-            // Log para debug
-            foreach (var imp in impuestosAgrupados)
-            {
-                if (imp is ImpuestoVentaIVA iva)
-                {
-                    Console.WriteLine($"✅ IVA {iva.Tarifa}% - Base: {iva.BaseImponible:F2}, Valor: {iva.Valor:F2}");
-                }
-            }
-
             return impuestosAgrupados;
         }
         public static List<Impuesto> MapearImpuestosDetalleDesdeRequest(List<ImpuestoVentaRequest> impuestosDto)
@@ -305,16 +295,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Services
                 })
                 .Cast<ImpuestoVenta>()
                 .ToList();
-
-            // Log para debug
-            foreach (var imp in impuestosAgrupados)
-            {
-                if (imp is ImpuestoVentaIVA iva)
-                {
-                    Console.WriteLine($"✅ IVA {iva.Tarifa}% - Base: {iva.BaseImponible:F2}, Valor: {iva.Valor:F2}");
-                }
-            }
-
             return impuestosAgrupados;
         }
 

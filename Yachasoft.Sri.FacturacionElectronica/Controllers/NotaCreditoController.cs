@@ -11,7 +11,7 @@ using Yachasoft.Sri.Modelos;
 using Yachasoft.Sri.Modelos.Base;
 using Yachasoft.Sri.Modelos.Enumerados;
 using Yachasoft.Sri.Xsd;
-using Yachasoft.Sri.Xsd.Contratos.NotaDebito_1_0_0;
+using Yachasoft.Sri.Xsd.Contratos.NotaCredito_1_0_0;
 using Yachasoft.Sri.Xsd.Map;
 using Yachasoft.Sri.FacturacionElectronica.Models.Request;
 using Yachasoft.Sri.FacturacionElectronica.Services;
@@ -20,14 +20,14 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class NotaDebitoController : ControllerBase
+    public class NotaCreditoController : ControllerBase
     {
         private readonly Signer.ICertificadoService certificadoService;
         private readonly WebService.ISriWebService webService;
         private readonly Ride.IRIDEService rIDEService;
         private readonly FrappeFileUploader _frappeUploader;
 
-        public NotaDebitoController(
+        public NotaCreditoController(
             Signer.ICertificadoService certificadoService,
             WebService.ISriWebService webService,
             Ride.IRIDEService rIDEService,
@@ -39,8 +39,8 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
             this._frappeUploader = frappeUploader;
         }
 
-        [HttpPost("GenerarNotaDebito")]
-        public async Task<IActionResult> GenerarNotaDebito([FromBody] NotaDebitoRequest request)
+        [HttpPost("GenerarNotaCredito")]
+        public async Task<IActionResult> GenerarNotaCredito([FromBody] NotaCreditoRequest request)
         {
             try
             {
@@ -71,21 +71,6 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     Establecimiento = establecimiento
                 };
 
-                string direccionCliente = null;
-                if (request.InfoAdicional != null)
-                {
-                    var direccionAdicional = request.InfoAdicional.FirstOrDefault(ca =>
-                        ca.Nombre.Equals("Direccion", StringComparison.OrdinalIgnoreCase) ||
-                        ca.Nombre.Equals("Dirección", StringComparison.OrdinalIgnoreCase));
-                    direccionCliente = direccionAdicional?.Valor;
-                }
-
-                var motivos = request.Motivos.Select(m => new Motivo
-                {
-                    Razon = m.Razon,
-                    Valor = m.Valor
-                }).ToList();
-
                 var documentoModificado = new DocumentoSustento
                 {
                     CodDocumento = EnumParserHelper.ParseTipoDocumento(request.DocumentoModificado.CodDocumento),
@@ -93,9 +78,32 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                     FechaEmisionDocumento = request.DocumentoModificado.FechaEmisionDocumento
                 };
 
-                var impuestosMapeados = MapperHelper.MapearImpuestosVenta(request.InfoNotaDebito.Impuestos);
+                var impuestosMapeados = MapperHelper.MapearImpuestosVenta(request.InfoNotaCredito.TotalConImpuestos);
 
-                var notaDebito = new NotaDebito_1_0_0Modelo.NotaDebito
+                var detalles = request.Detalles.Select(d => new DetalleDocumentoItemPrecio
+                {
+                    Item = new Item
+                    {
+                        CodigoPrincipal = d.Item.CodigoPrincipal,
+                        CodigoAuxiliar = d.Item.CodigoAuxiliar,
+                        Descripcion = d.Item.Descripcion
+                    },
+                    Cantidad = d.Cantidad,
+                    PrecioUnitario = d.PrecioUnitario,
+                    Descuento = d.Descuento,
+                    PrecioTotalSinImpuesto = d.PrecioTotalSinImpuesto,
+                    Impuestos = MapperHelper.MapearImpuestosDetalle(d.Impuestos?.Select(i => new ImpuestoCreditoRequest
+                    {
+                        BaseImponible = i.BaseImponible,
+                        Valor = i.Valor,
+                        Tarifa = i.Tarifa,
+                        Codigo = i.Codigo,
+                        CodigoPorcentaje = i.CodigoPorcentaje
+                    }).ToList()),
+                    DetallesAdicionales = d.DetallesAdicionales
+                }).ToList();
+
+                var notaCredito = new NotaCredito_1_0_0Modelo.NotaCredito
                 {
                     PuntoEmision = puntoEmision,
                     FechaEmision = request.FechaEmision,
@@ -107,39 +115,40 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                         TipoIdentificador = EnumParserHelper.ParseTipoIdentificacion(request.Cliente.TipoIdentificador)
                     },
 
-                    InfoNotaDebito = new NotaDebito_1_0_0Modelo.InfoNotaDebito
+                    InfoNotaCredito = new NotaCredito_1_0_0Modelo.InfoNotaCredito
                     {
                         DocumentoModificado = documentoModificado,
-                        TotalSinImpuestos = request.InfoNotaDebito.TotalSinImpuestos,
-                        Impuestos = impuestosMapeados,
-                        ValorTotal = request.InfoNotaDebito.ValorTotal,
-                        Pagos = MapperHelper.MapearPagosParaDocumento(request.InfoNotaDebito.Pagos)
+                        TotalSinImpuestos = request.InfoNotaCredito.TotalSinImpuestos,
+                        ValorModificacion = request.InfoNotaCredito.ValorModificacion,
+                        Moneda = request.InfoNotaCredito.Moneda,
+                        TotalConImpuestos = impuestosMapeados,
+                        Motivo = request.Motivo
                     },
 
-                    Motivos = motivos,
+                    Detalles = detalles,
                     InfoAdicional = request.InfoAdicional
                 };
 
-                notaDebito.InfoTributaria = new InfoTributaria
+                notaCredito.InfoTributaria = new InfoTributaria
                 {
                     Secuencial = request.Secuencial,
                     EnumTipoEmision = EnumParserHelper.ParseTipoEmision(request.EnumTipoEmision)
                 };
 
-                notaDebito.InfoTributaria.ClaveAcceso = Utils.GenerarClaveAcceso(
-                    NotaDebito_1_0_0Modelo.TipoDocumento,
-                    notaDebito.FechaEmision,
-                    notaDebito.PuntoEmision,
-                    notaDebito.InfoTributaria.Secuencial,
-                    notaDebito.InfoTributaria.EnumTipoEmision
+                notaCredito.InfoTributaria.ClaveAcceso = Utils.GenerarClaveAcceso(
+                    NotaCredito_1_0_0Modelo.TipoDocumento,
+                    notaCredito.FechaEmision,
+                    notaCredito.PuntoEmision,
+                    notaCredito.InfoTributaria.Secuencial,
+                    notaCredito.InfoTributaria.EnumTipoEmision
                 );
 
-                var xmlObj = NotaDebito_1_0_0Mapper.Map(notaDebito);
+                var xmlObj = NotaCredito_1_0_0Mapper.Map(notaCredito);
 
                 var xmlDoc = new XmlDocument();
                 using (var memoryStream = new MemoryStream())
                 {
-                    var serializer = new XmlSerializer(typeof(notaDebito));
+                    var serializer = new XmlSerializer(typeof(notaCredito));
                     serializer.Serialize(memoryStream, xmlObj);
                     memoryStream.Position = 0;
                     xmlDoc.Load(memoryStream);
@@ -153,7 +162,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 );
                 var xmlFirmado = certificadoService.FirmarDocumento(xmlDoc);
 
-                var nombreArchivoXml = $"NOTADEBITO_{notaDebito.InfoTributaria.ClaveAcceso}.xml";
+                var nombreArchivoXml = $"NOTACREDITO_{notaCredito.InfoTributaria.ClaveAcceso}.xml";
                 xmlFirmado.Save(nombreArchivoXml);
 
                 var envio = await webService.ValidarComprobanteAsync(xmlFirmado);
@@ -163,7 +172,7 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                 {
                     System.Threading.Thread.Sleep(3000);
 
-                    var auto = await webService.AutorizacionComprobanteAsync(notaDebito.InfoTributaria.ClaveAcceso);
+                    var auto = await webService.AutorizacionComprobanteAsync(notaCredito.InfoTributaria.ClaveAcceso);
                     var autorizacionData = auto.Data?.Autorizaciones?.Autorizacion?.FirstOrDefault();
                     Console.WriteLine($"ESTADO DE COMPROBANTE DE AUTORIZACION: {System.Text.Json.JsonSerializer.Serialize(auto, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })}");
 
@@ -173,10 +182,10 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
 
                         if (autorizacionData != null)
                         {
-                            notaDebito.Autorizacion.Numero = autorizacionData.NumeroAutorizacion;
+                            notaCredito.Autorizacion.Numero = autorizacionData.NumeroAutorizacion;
                             if (DateTimeOffset.TryParse(autorizacionData.FechaAutorizacion, out var fechaOffset))
                             {
-                                notaDebito.Autorizacion.Fecha = fechaOffset.ToOffset(TimeSpan.FromHours(-5)).DateTime;
+                                notaCredito.Autorizacion.Fecha = fechaOffset.ToOffset(TimeSpan.FromHours(-5)).DateTime;
                             }
                             else
                             {
@@ -184,22 +193,22 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                             }
                         }
 
-                        var rutaPDF = $"/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/NOTADEBITO_{notaDebito.InfoTributaria.ClaveAcceso}.pdf";
-                        rIDEService.NotaDebito_1_0_0(notaDebito, rutaPDF);
+                        var rutaPDF = $"/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/NOTACREDITO_{notaCredito.InfoTributaria.ClaveAcceso}.pdf";
+                        rIDEService.NotaCredito_1_0_0(notaCredito, rutaPDF);
 
                         var respuestaUploadPDF = await _frappeUploader.UploadFileAsync(
                             rutaPDF,
                             Path.GetFileName(rutaPDF),
-                            folder: "Home/Nota de Débito/PDF"
+                            folder: "Home/Nota de Crédito/PDF"
                         );
                         Console.WriteLine("📤 Archivo PDF subido a Frappe:");
                         Console.WriteLine(respuestaUploadPDF);
 
-                        var rutaXML = $"/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/NOTADEBITO_{notaDebito.InfoTributaria.ClaveAcceso}.xml";
+                        var rutaXML = $"/home/bitnami/GeneradorPDF/Yachasoft.Sri.FacturacionElectronica/NOTACREDITO_{notaCredito.InfoTributaria.ClaveAcceso}.xml";
                         var respuestaUploadXML = await _frappeUploader.UploadFileAsync(
                             rutaXML,
                             Path.GetFileName(rutaXML),
-                            folder: "Home/Nota de Débito/XML"
+                            folder: "Home/Nota de Crédito/XML"
                         );
                         Console.WriteLine("📤 Archivo XML subido a Frappe:");
                         Console.WriteLine(respuestaUploadXML);
@@ -210,10 +219,10 @@ namespace Yachasoft.Sri.FacturacionElectronica.Controllers
                         var resultado = new
                         {
                             success = true,
-                            claveAcceso = notaDebito.InfoTributaria.ClaveAcceso,
-                            mensaje = "Nota de Débito autorizada, PDF generado y archivos subidos a Frappe correctamente",
-                            numeroAutorizacion = notaDebito.Autorizacion.Numero,
-                            fechaAutorizacion = notaDebito.Autorizacion.Fecha.ToString("yyyy-MM-dd HH:mm:ss"),
+                            claveAcceso = notaCredito.InfoTributaria.ClaveAcceso,
+                            mensaje = "Nota de Crédito autorizada, PDF generado y archivos subidos a Frappe correctamente",
+                            numeroAutorizacion = notaCredito.Autorizacion.Numero,
+                            fechaAutorizacion = notaCredito.Autorizacion.Fecha.ToString("yyyy-MM-dd HH:mm:ss"),
                             respuestaFrappePDF = respuestaUploadPDF,
                             respuestaFrappeXML = respuestaUploadXML
                         };
